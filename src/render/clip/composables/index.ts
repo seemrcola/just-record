@@ -1,0 +1,1 @@
+export { useSvgRegion } from './useSvgRegion'
