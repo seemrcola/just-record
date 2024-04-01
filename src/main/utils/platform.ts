@@ -25,6 +25,16 @@ function shim(win: BrowserWindow | null, createWindow: () => void) {
     else
       createWindow()
   })
+
+  // 退出项目时关闭所有窗口
+  app.on('before-quit', () => {
+    // 获取所有窗口
+    const allWindows = BrowserWindow.getAllWindows()
+    // 遍历窗口并关闭
+    allWindows.forEach(win => {
+      win.close()
+    })
+  })
 }
 
 function getPlatform() {
