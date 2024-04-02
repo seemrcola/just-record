@@ -2,6 +2,7 @@ import type { App } from 'vue'
 import { createApp, ref } from 'vue'
 import useRecordTipTemp from './useRecordTipTemp.vue'
 import useSvgRegionTemp from './useSvgRegionTemp.vue'
+import Timer from './timer.vue'
 
 interface RecordOptions {
   x: number
@@ -28,9 +29,11 @@ export function useSvgRegion(regionLifeCycle: RegionLifeCycle) {
   let svg: SVGSVGElement // svg 获取到这个名称是useSvgRegionTemp中的svg-mask
   let drag: SVGRectElement // drag-rect 用于拖拽
   let hole: SVGRectElement // svg mask 挖出来的洞
-  let tip: HTMLElement // resize的提示
-  let recordBox: App<Element> // 录制的提示盒子 即recordTipTemp.vue组件createApp的返回值
+  let resizeBoxDom: HTMLElement // resize的提示盒子
   let recordBoxDom: HTMLElement // 录制的提示盒子的dom
+  let timerBoxDom: HTMLElement // 计时器的提示盒子的dom
+  let recordBox: App<Element> // 录制的提示盒子 即recordTipTemp.vue组件createApp的返回值
+  let timerBox: App<Element> // 计时器的提示盒子 即timer.vue组件createApp的返回值
 
   // ⚠️ 这里的宽高是屏幕的宽高 因为是全屏的 如果不是全屏 则需要除以缩放比例
   const WINDOW_WIDTH = window.innerWidth // 窗口宽度
@@ -54,6 +57,9 @@ export function useSvgRegion(regionLifeCycle: RegionLifeCycle) {
     // 渲染提示框
     resizeTip()
     recordTip()
+    // 停止计时器
+    timerBox?.unmount()
+    timerBoxDom?.remove()
     // 添加回来esc按钮的监听
     document.addEventListener('keydown', escCallback)
   })
@@ -272,9 +278,9 @@ export function useSvgRegion(regionLifeCycle: RegionLifeCycle) {
 
   // 在drag-rect的右下角加一个resize标识
   function resizeTip() {
-    tip?.remove()
-    tip = document.createElement('div')
-    tip.style.cssText = `
+    resizeBoxDom?.remove()
+    resizeBoxDom = document.createElement('div')
+    resizeBoxDom.style.cssText = `
       transform: translate(0, 0);
       position: absolute;
       width: 150px;
@@ -283,7 +289,6 @@ export function useSvgRegion(regionLifeCycle: RegionLifeCycle) {
       display: flex;
       justify-content: center;
       align-items: center;
-      background-color: red;
       cursor: pointer;
       z-index: 9999;
       font-size: 12px;
@@ -292,12 +297,34 @@ export function useSvgRegion(regionLifeCycle: RegionLifeCycle) {
       border-radius: 4px;
       color: #fff;
     `
-    tip.textContent = '↖️ 可拖拽该点改变大小'
+    resizeBoxDom.textContent = '↖️ 可拖拽该点改变大小'
     // 找到drag的位置
     const { x, y, width, height } = hole.getBBox()
-    tip.style.left = `${x + width}px`
-    tip.style.top = `${y + height}px`
-    document.body.appendChild(tip)
+    resizeBoxDom.style.left = `${x + width}px`
+    resizeBoxDom.style.top = `${y + height}px`
+    document.body.appendChild(resizeBoxDom)
+  }
+
+  // 增加一个计时器
+  function timerTip() {
+    timerBox = createApp(Timer)
+    timerBoxDom = document.createElement('div')
+    timerBox.mount(timerBoxDom)
+
+    const holeRect = hole.getBBox()
+    timerBoxDom.style.cssText = `
+      width: 180px;
+      height: 32px;
+      position: fixed;
+      top: ${holeRect.y + holeRect.height + 36}px;
+      left: ${holeRect.x + holeRect.width / 2}px;
+      transform: translate(-50%, -100%);
+      z-index: 9999;
+      background-color: rgb(29, 29, 29);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      border-radius: 4px;
+    `
+    document.body.appendChild(timerBoxDom)
   }
 
   function recordTip() {
@@ -335,8 +362,10 @@ export function useSvgRegion(regionLifeCycle: RegionLifeCycle) {
             }
             else {
               // 需要删掉各种提示框
-              tip?.remove()
+              resizeBoxDom?.remove()
               recordBoxDom?.remove()
+              // 增加计时器
+              timerTip()
               // 去掉esc按钮的监听
               document.removeEventListener('keydown', escCallback)
               // 一般情况下需要 告诉窗口让它变成可穿透窗口
@@ -354,7 +383,6 @@ export function useSvgRegion(regionLifeCycle: RegionLifeCycle) {
     recordBox.mount(recordBoxDom)
 
     const holeRect = hole.getBBox()
-
     recordBoxDom.style.cssText = `
       position: fixed;
       top: ${holeRect.y + holeRect.height - 10}px;

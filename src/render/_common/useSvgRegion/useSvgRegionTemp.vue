@@ -3,7 +3,7 @@
     <mask id="mask">
       <rect width="100%" height="100%" fill="white" />
     </mask>
-    <rect width="100%" height="100%" mask="url(#mask)" fill="rgba(0, 0, 0, 0.3)" />
+    <rect width="100%" height="100%" mask="url(#mask)" fill="rgba(0, 0, 0, 0.5)" />
   </svg>
 </template>
 

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Ref } from 'vue'
-import { defineProps } from 'vue'
 import { NButton, NTooltip } from 'naive-ui'
 
 const props = defineProps<{
