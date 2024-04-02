@@ -16,6 +16,7 @@ pnpm build
 必须要生成一个至少 512x512px 的图标。可以使用ffmpeg等工具进行转换。
 ```
 ffmpeg -i input.jpg -vf "scale=512:512" output.jpg
+```
 
 ### 打包体积
 目前我将渲染进程的依赖写入了`package.json`的`devDependencies`字段。  
