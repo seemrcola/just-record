@@ -31,7 +31,7 @@ function shim(win: BrowserWindow | null, createWindow: () => void) {
     // 获取所有窗口
     const allWindows = BrowserWindow.getAllWindows()
     // 遍历窗口并销毁
-    allWindows.forEach(win => {
+    allWindows.forEach((win) => {
       win.destroy()
     })
   })

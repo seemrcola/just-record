@@ -1,11 +1,11 @@
 <script setup lang='ts'>
-import { ref, watch } from 'vue';
+import { ref, watch } from 'vue'
 
 const props = defineProps({
   number: {
     type: String,
-    required: true
-  }
+    required: true,
+  },
 })
 
 /**
@@ -14,7 +14,7 @@ const props = defineProps({
  *     3
  * 4       5
  *     6
-*/
+ */
 
 const digitsMap = new Map()
 const segments = ref([])
@@ -35,25 +35,25 @@ watch(
     const segmentsArray = digitsMap.get(number)
     segments.value = segmentsArray
   },
-  { immediate: true }
+  { immediate: true },
 )
 </script>
 
 <template>
   <svg width="16" height="24" xmlns="http://www.w3.org/2000/svg">
     <!-- Top segment -->
-    <rect x="4" y="0" width="8" height="2" rx="1" ry="1" fill="white" v-if="segments[0]" />
+    <rect v-if="segments[0]" x="4" y="0" width="8" height="2" rx="1" ry="1" fill="white" />
     <!-- Top left segment -->
-    <rect x="2" y="2" width="2" height="7" rx="1" ry="1" fill="white" v-if="segments[1]" />
+    <rect v-if="segments[1]" x="2" y="2" width="2" height="7" rx="1" ry="1" fill="white" />
     <!-- Top right segment -->
-    <rect x="12" y="2" width="2" height="7" rx="1" ry="1" fill="white" v-if="segments[2]" />
+    <rect v-if="segments[2]" x="12" y="2" width="2" height="7" rx="1" ry="1" fill="white" />
     <!-- Middle segment -->
-    <rect x="4" y="10" width="8" height="2" rx="1" ry="1" fill="white" v-if="segments[3]" />
+    <rect v-if="segments[3]" x="4" y="10" width="8" height="2" rx="1" ry="1" fill="white" />
     <!-- Bottom left segment -->
-    <rect x="2" y="12" width="2" height="7" rx="1" ry="1" fill="white" v-if="segments[4]" />
+    <rect v-if="segments[4]" x="2" y="12" width="2" height="7" rx="1" ry="1" fill="white" />
     <!-- Bottom right segment -->
-    <rect x="12" y="12" width="2" height="7" rx="1" ry="1" fill="white" v-if="segments[5]" />
+    <rect v-if="segments[5]" x="12" y="12" width="2" height="7" rx="1" ry="1" fill="white" />
     <!-- Bottom segment -->
-    <rect x="4" y="20" width="8" height="2" rx="1" ry="1" fill="white" v-if="segments[6]" />
+    <rect v-if="segments[6]" x="4" y="20" width="8" height="2" rx="1" ry="1" fill="white" />
   </svg>
 </template>

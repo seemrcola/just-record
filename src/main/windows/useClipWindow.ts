@@ -67,7 +67,7 @@ export async function useClipWindow() {
   // 最上层
   childWindow.setAlwaysOnTop(true, 'screen-saver')
 
-  if (process.env.VITE_DEV_SERVER_URL){
+  if (process.env.VITE_DEV_SERVER_URL) {
     await childWindow.loadURL(`${url}clip.html`)
     childWindow.webContents.openDevTools({ mode: 'detach' })
   }

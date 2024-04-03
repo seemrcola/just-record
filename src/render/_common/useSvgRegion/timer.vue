@@ -1,38 +1,37 @@
 <script setup lang="ts">
-import { ref, onBeforeUnmount, onMounted } from 'vue';
-import dayjs from 'dayjs';
-import Number from './number.vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue'
+import dayjs from 'dayjs'
+import Number from './number.vue'
 
-const hour = ref<string>('00');
-const minute = ref<string>('00');
-const second = ref<string>('00');
+const hour = ref<string>('00')
+const minute = ref<string>('00')
+const second = ref<string>('00')
 
-const interval = ref<NodeJS.Timeout | null>(null);
+const interval = ref<NodeJS.Timeout | null>(null)
 
 function startTimer() {
-  const startTime = dayjs();
+  const startTime = dayjs()
   interval.value = setInterval(() => {
-    const now = dayjs();
-    const diff = now.diff(startTime, 'second');
-    const h = Math.floor(diff / 3600);
-    const m = Math.floor((diff % 3600) / 60);
-    const s = diff % 60;
+    const now = dayjs()
+    const diff = now.diff(startTime, 'second')
+    const h = Math.floor(diff / 3600)
+    const m = Math.floor((diff % 3600) / 60)
+    const s = diff % 60
 
-    hour.value = h.toString().padStart(2, '0');
-    minute.value = m.toString().padStart(2, '0');
-    second.value = s.toString().padStart(2, '0');
+    hour.value = h.toString().padStart(2, '0')
+    minute.value = m.toString().padStart(2, '0')
+    second.value = s.toString().padStart(2, '0')
   }, 1000)
 }
 
 onMounted(() => {
-  startTimer();
-});
+  startTimer()
+})
 
 onBeforeUnmount(() => {
-  if (interval.value) {
-    clearInterval(interval.value);
-  }
-});
+  if (interval.value)
+    clearInterval(interval.value)
+})
 </script>
 
 <template>
