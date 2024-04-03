@@ -313,7 +313,7 @@ export function useSvgRegion(regionLifeCycle: RegionLifeCycle) {
 
     const holeRect = hole.getBBox()
     timerBoxDom.style.cssText = `
-      width: 180px;
+      width: 200px;
       height: 32px;
       position: fixed;
       top: ${holeRect.y + holeRect.height + 36}px;
