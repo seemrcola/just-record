@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import dayjs from 'dayjs'
-import Number from './number.vue'
+import Number from './useNumber.vue'
 
 const hour = ref<string>('00')
 const minute = ref<string>('00')
@@ -50,3 +50,4 @@ onBeforeUnmount(() => {
     </div>
   </div>
 </template>
+./useNumber.vue
