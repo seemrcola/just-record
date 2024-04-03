@@ -2,7 +2,7 @@ import type { App } from 'vue'
 import { createApp, ref } from 'vue'
 import useRecordTipTemp from './useRecordTipTemp.vue'
 import useSvgRegionTemp from './useSvgRegionTemp.vue'
-import Timer from './timer.vue'
+import Timer from './useTimer.vue'
 
 interface RecordOptions {
   x: number
