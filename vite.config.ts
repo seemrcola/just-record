@@ -67,6 +67,7 @@ export default defineConfig(({ command }) => {
         input: {
           index: 'index.html',
           clip: 'clip.html',
+          replay: 'replay.html'
         },
       },
     },

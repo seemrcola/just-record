@@ -23,21 +23,22 @@ process.env.VITE_PUBLIC = process.env.VITE_DEV_SERVER_URL
   : process.env.DIST
 
 const preload = join(__dirname, '../preload/index.mjs')
+console.log('preload:', preload)
 const url = process.env.VITE_DEV_SERVER_URL
-const clipHtml = join(process.env.DIST, 'clip.html')
+const replayHtml = join(process.env.DIST, 'replay.html')
 
 function getSize() {
   const { size, scaleFactor } = screen.getPrimaryDisplay()
   return [size.width * scaleFactor, size.height * scaleFactor]
 }
 
-export async function useClipWindow() {
+export async function useReplayWindow() {
   const [width, height] = getSize()
 
   const childWindow = new BrowserWindow({
     width,
     height,
-    title: 'Replay',
+    title: 'FFMPEG Recorder',
     show: false,
 
     // movable: false,
@@ -65,14 +66,14 @@ export async function useClipWindow() {
   // 设置窗口在所有工作区都可见
   childWindow.setVisibleOnAllWorkspaces(true)
   // 最上层
-  childWindow.setAlwaysOnTop(true, 'screen-saver')
+  // childWindow.setAlwaysOnTop(true, 'screen-saver')
 
   if (process.env.VITE_DEV_SERVER_URL) {
-    await childWindow.loadURL(`${url}clip.html`)
-    // childWindow.webContents.openDevTools({ mode: 'detach' })
+    await childWindow.loadURL(`${url}replay.html`)
+    childWindow.webContents.openDevTools({ mode: 'detach' })
   }
   else {
-    await childWindow.loadFile(clipHtml)
+    await childWindow.loadFile(replayHtml)
   }
 
   return childWindow
