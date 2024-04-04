@@ -1,4 +1,5 @@
-import { BrowserWindow, ipcMain } from 'electron'
+import type { BrowserWindow } from 'electron'
+import { ipcMain } from 'electron'
 
 export async function useReplay(replayWin: BrowserWindow) {
   ipcMain.handle('open', () => {

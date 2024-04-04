@@ -90,13 +90,12 @@ async function createWindow() {
   // replay
   useReplay(replayWindow)
 
-  if (process.env.VITE_DEV_SERVER_URL) {
+  if (process.env.VITE_DEV_SERVER_URL)
     await win.loadURL(url)
     // win.webContents.openDevTools({ mode: 'detach' })
-  }
-  else {
+
+  else
     await win.loadFile(indexHtml)
-  }
 
   win.webContents.on('did-finish-load', () => {
     win?.webContents.send('main-process-message', new Date().toLocaleString())
