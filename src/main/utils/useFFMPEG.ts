@@ -37,8 +37,6 @@ export function useFFMPEG() {
         .fps(30)
         .videoCodec('libx264')
         .videoBitrate('2000k')
-        .audioCodec('aac')
-        .audioBitrate('128k')
         .output(`${filename}`)
         .run()
     }
@@ -53,6 +51,8 @@ export function useFFMPEG() {
         .output(`${filename}`)
         .run()
     }
+
+    return filename
   }
 
   function stopRecord() {

@@ -86,7 +86,7 @@ async function createWindow() {
   // drag
   useDrag(win)
   // record
-  useRecord(clipWindow, replayWindow)
+  useRecord(clipWindow)
   // replay
   useReplay(replayWindow)
 

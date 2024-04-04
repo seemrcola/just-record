@@ -37,7 +37,7 @@ export async function useClipWindow() {
   const childWindow = new BrowserWindow({
     width,
     height,
-    title: 'Replay',
+    title: 'FFmpeg Record',
     show: false,
 
     // movable: false,

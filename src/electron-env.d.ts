@@ -44,7 +44,8 @@ interface Window {
 
   // expose in the `electron/preload/useReplay.ts`
   useReplay: {
-    'open': (filePath: string) => Promise<any>
+    'open': () => Promise<any>
     'close': () => Promise<any>
+    'onReplayFile': (cb: (filePath: any) => void) => void
   }
 }

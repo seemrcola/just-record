@@ -38,7 +38,7 @@ export async function useReplayWindow() {
   const childWindow = new BrowserWindow({
     width,
     height,
-    title: 'FFMPEG Recorder',
+    title: 'Replay',
     show: false,
 
     // movable: false,
