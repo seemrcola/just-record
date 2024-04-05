@@ -1,4 +1,3 @@
-import { fileURLToPath } from 'node:url';
 import { BrowserWindow, ipcMain } from 'electron'
 import { useFFMPEG } from './utils/useFFMPEG'
 
@@ -31,9 +30,8 @@ export async function useRecord(userClipWin: BrowserWindow) {
     allWindows.forEach((win) => {
       win.webContents.send('change-icon', false) // change-icon 的 msg 是 boolean
       // 如果是replay窗口 则发送file-path消息
-      if (win.title === 'Replay') {
+      if (win.title === 'Replay')
         win.webContents.send('replay-file', currentfilePath)
-      }
     })
   })
 

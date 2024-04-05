@@ -7,6 +7,7 @@ import { useClipWindow } from './windows/useClipWindow'
 import { useReplayWindow } from './windows/useReplayWindow'
 
 import { shim } from './utils/platform'
+import { protocolHandle } from './utils/protocol'
 import { useDrag } from './useDrag'
 import { useRecord } from './useRecord'
 import { useReplay } from './useReplay'
@@ -55,6 +56,10 @@ function getSize() {
 }
 
 async function createWindow() {
+  // 协议处理
+  protocolHandle()
+
+  // 主页面window创建
   const [width, _] = getSize()
   win = new BrowserWindow({
     width: 240,

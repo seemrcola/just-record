@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted } from 'vue'
-import Player from './player.vue'
+import Player from './components/player.vue'
 
 function escHandler(event: KeyboardEvent) {
   if (event.key === 'Escape') {
@@ -20,6 +20,6 @@ onUnmounted(() => {
 
 <template>
   <div w-full h-full bg="rgba(0,0,0,1)">
-    <Player></Player>
+    <Player />
   </div>
 </template>
