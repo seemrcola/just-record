@@ -8,6 +8,9 @@ export function useReplay() {
     close: () => {
       return ipcRenderer.invoke('close')
     },
+    del: () => {
+      return ipcRenderer.invoke('del')
+    },
     onReplayFile: (cb: (filePath: any) => void) => {
       ipcRenderer.on('replay-file', (event, filePath) => {
         cb(filePath)

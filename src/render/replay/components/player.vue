@@ -1,5 +1,7 @@
 <script setup lang='ts'>
 import { ref } from 'vue'
+import { useDialog } from 'naive-ui'
+const dialog = useDialog()
 
 const video = ref<HTMLVideoElement>()
 
@@ -25,10 +27,35 @@ window.useReplay.onReplayFile((videoSrc: any) => {
     })
   })
 })
+
+function close() {
+  window.useReplay.close()
+}
+
+function del() {
+  dialog.warning({
+    title: '警告',
+    content: '确定要删除该录制文件吗',
+    positiveText: '确定',
+    negativeText: '取消',
+    onPositiveClick: () => {
+      // 删除
+      window.useRecord.del()
+      window.useReplay.close()
+    },
+    onNegativeClick: () => {
+      // 取消删除
+    }
+  })
+}
 </script>
 
 <template>
-  <div w-full h-full flex-center>
+  <div relative>
+    <div absolute w-6 h-6 bg-light top--8 right-0 cursor-pointer hover="scale-110 bg-orange" i-mdi:close-box
+      @click="close()" />
+    <div absolute w-6 h-6 bg-light top--8 right-8 cursor-pointer hover="scale-110 bg-orange" i-material-symbols:delete
+      @click="del()" />
     <video ref="video" playsinline autoplay muted b="2px solid orange" />
   </div>
 </template>

@@ -1,5 +1,6 @@
 import { BrowserWindow, ipcMain } from 'electron'
 import { useFFMPEG } from './utils/useFFMPEG'
+import fs from 'node:fs'
 
 const ffmpeg = useFFMPEG()
 
@@ -54,6 +55,17 @@ export async function useRecord(userClipWin: BrowserWindow) {
       allWindows.forEach((win) => {
         win.webContents.send('change-icon', msg) // change-icon 的 msg 是 boolean
       })
+    }
+  })
+
+  ipcMain.handle('del', (event) => {
+    console.log('del', currentfilePath)
+    // 删除文件
+    try {
+      fs.unlinkSync(currentfilePath as string)
+    }
+    catch (error) {
+      console.log(error)
     }
   })
 }

@@ -20,6 +20,9 @@ export function useRecord() {
     message: ({ type, msg }: { type: string, msg: any }) => {
       ipcRenderer.send('message', { type, msg })
     },
+    del: () => {
+      return ipcRenderer.invoke('del')
+    },
 
     // 主进程给渲染进程发送消息
     onChangeIcon: (cb: (msg: any) => void) => {

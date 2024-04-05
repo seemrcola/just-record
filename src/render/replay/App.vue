@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted } from 'vue'
 import Player from './components/player.vue'
+import { NDialogProvider } from 'naive-ui'
 
 function escHandler(event: KeyboardEvent) {
   if (event.key === 'Escape') {
@@ -19,9 +20,11 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div w-full h-full class="bg">
-    <Player />
-  </div>
+  <n-dialog-provider>
+    <div w-full h-full flex-center class="bg">
+      <Player />
+    </div>
+  </n-dialog-provider>
 </template>
 
 <style scoped lang="scss">
