@@ -16,7 +16,7 @@ function rafDebounce(cb: () => void, queue: any[]) {
 }
 
 interface DragLifecycles {
-  afterDrag: ({ x, y }: { x: number, y: number }) => void
+  afterDrag?: ({ x, y }: { x: number, y: number }) => void
 }
 
 export function useDrag(options: DragLifecycles) {
@@ -65,7 +65,7 @@ export function useDrag(options: DragLifecycles) {
   function use() {
     const { x, y } = deltaCoords
     // window.useDrag.drag({ x, y })
-    afterDrag({ x, y })
+    afterDrag && afterDrag({ x, y })
   }
 
   return { run }

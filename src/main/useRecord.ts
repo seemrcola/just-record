@@ -15,9 +15,9 @@ export async function useRecord(userClipWin: BrowserWindow) {
     currentfilePath = ffmpeg.startRecord(recordOptions)
   })
 
-  ipcMain.handle('stop', () => {
+  ipcMain.handle('stop', async () => {
     // 停止录制
-    ffmpeg.stopRecord()
+    await ffmpeg.stopRecord()
     // 关闭窗口发送事件
     userClipWin.webContents.send('close-win')
     // 将窗口不再设置成可穿透

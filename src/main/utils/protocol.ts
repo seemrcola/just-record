@@ -31,7 +31,7 @@ function convertPath(originalPath: string) {
 export function protocolHandle() {
   protocol.handle(
     'local-resource',
-    (request) => {
+    async (request) => {
       // 解码请求URL，去掉协议部分，以获得原始路径。
       // 这里使用正则表达式将"local-resource:/"替换为空字符串，并解码URL编码。
       const decodedUrl = decodeURIComponent(
@@ -50,7 +50,7 @@ export function protocolHandle() {
       console.log('fullPath', fullPath)
 
       // 异步读取文件内容。
-      const data = fs.readFileSync(fullPath)
+      const data = await fs.promises.readFile(fullPath);
 
       // 将读取的文件内容封装在Response对象中返回。
       // 这允许Electron应用加载和显示来自自定义协议URL的内容。

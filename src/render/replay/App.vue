@@ -19,7 +19,13 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div w-full h-full bg="rgba(0,0,0,1)">
+  <div w-full h-full class="bg">
     <Player />
   </div>
 </template>
+
+<style scoped lang="scss">
+.bg {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+</style>

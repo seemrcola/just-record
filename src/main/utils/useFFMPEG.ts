@@ -57,10 +57,18 @@ export function useFFMPEG() {
 
   function stopRecord() {
     // 停止录制
-    ffcommand
-      .on('end', () => { console.log('Finished recording') })
-      .on('error', (err) => { console.log('Error:', err) })
-      .kill('SIGINT')
+    return new Promise((resolve) => {
+      ffcommand
+        .on('end', () => {
+          console.log('Finished recording')
+          resolve(true)
+        })
+        .on('error', (err) => {
+          console.log('Error:', err)
+          resolve(false)
+        })
+        .kill('SIGINT')
+    })
   }
 
   function pauseRecord() {
