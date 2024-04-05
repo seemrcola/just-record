@@ -1,5 +1,5 @@
 <script setup lang='ts'>
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 
 const video = ref<HTMLVideoElement>()
 
@@ -7,7 +7,7 @@ window.useReplay.onReplayFile((videoSrc: any) => {
   window.useReplay.open()
 
   setTimeout(() => {
-      // 准备视频播放
+    // 准备视频播放
     const videoPlayUrl = `local-resource://${videoSrc}`
     video.value!.src = videoPlayUrl
 
@@ -25,7 +25,6 @@ window.useReplay.onReplayFile((videoSrc: any) => {
     })
   })
 })
-
 </script>
 
 <template>

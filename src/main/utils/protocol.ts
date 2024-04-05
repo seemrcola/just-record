@@ -50,7 +50,7 @@ export function protocolHandle() {
       console.log('fullPath', fullPath)
 
       // 异步读取文件内容。
-      const data = await fs.promises.readFile(fullPath);
+      const data = await fs.promises.readFile(fullPath)
 
       // 将读取的文件内容封装在Response对象中返回。
       // 这允许Electron应用加载和显示来自自定义协议URL的内容。
