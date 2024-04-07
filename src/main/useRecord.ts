@@ -1,6 +1,6 @@
+import fs from 'node:fs'
 import { BrowserWindow, ipcMain } from 'electron'
 import { useFFMPEG } from './utils/useFFMPEG'
-import fs from 'node:fs'
 
 const ffmpeg = useFFMPEG()
 
