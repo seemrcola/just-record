@@ -23,6 +23,9 @@ export function useRecord() {
     del: () => {
       return ipcRenderer.invoke('del')
     },
+    getCaptureResource: () => {
+      return ipcRenderer.invoke('getCaptureResource')
+    },
 
     // 主进程给渲染进程发送消息
     onChangeIcon: (cb: (msg: any) => void) => {

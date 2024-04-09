@@ -1,5 +1,5 @@
 import fs from 'node:fs'
-import { BrowserWindow, ipcMain } from 'electron'
+import { BrowserWindow, ipcMain, desktopCapturer } from 'electron'
 import { useFFMPEG } from './utils/useFFMPEG'
 
 const ffmpeg = useFFMPEG()
@@ -13,12 +13,12 @@ export async function useRecord(userClipWin: BrowserWindow) {
   })
 
   ipcMain.handle('startRecord', (e, recordOptions: RecordOptions) => {
-    currentfilePath = ffmpeg.startRecord(recordOptions)
+    // currentfilePath = ffmpeg.startRecord(recordOptions)
   })
 
   ipcMain.handle('stop', async () => {
     // 停止录制
-    await ffmpeg.stopRecord()
+    // await ffmpeg.stopRecord()
     // 关闭窗口发送事件
     userClipWin.webContents.send('close-win')
     // 将窗口不再设置成可穿透
@@ -30,9 +30,6 @@ export async function useRecord(userClipWin: BrowserWindow) {
     // fixme： 这里用来告诉其他窗口录制状态关闭 但是这个名字取得不好
     allWindows.forEach((win) => {
       win.webContents.send('change-icon', false) // change-icon 的 msg 是 boolean
-      // 如果是replay窗口 则发送file-path消息
-      if (win.title === 'Replay')
-        win.webContents.send('replay-file', currentfilePath)
     })
   })
 
@@ -56,6 +53,21 @@ export async function useRecord(userClipWin: BrowserWindow) {
         win.webContents.send('change-icon', msg) // change-icon 的 msg 是 boolean
       })
     }
+  })
+
+  ipcMain.handle('getCaptureResource', async (event) => {
+    const sources = await desktopCapturer.getSources({ types: ['screen', 'window'] })
+    for(const source of sources){
+      if(source.id === 'screen:1:0'){
+        return {
+          id: source.id,
+          name: source.name,
+          thumbnail: source.thumbnail.toDataURL(),
+          display_id: source.display_id,
+        }
+      }
+    }
+    return {}
   })
 
   ipcMain.handle('del', (event) => {

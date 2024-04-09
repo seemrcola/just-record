@@ -38,10 +38,11 @@ interface Window {
     'hide': () => Promise<any>
     'message': ({ type: string, msg: any }) => Promise<void>
     'transparentClipWin': () => Promise<any>
+    'getCaptureResource': () => Promise<any>
+    'del': (filePath?: string) => Promise<any>
+
     'onChangeIcon': (cb: (msg: any) => void) => void
     'onCloseWin': (cb: (msg: any) => void) => void
-
-    'del': (filePath?: string) => Promise<any>
   }
 
   // expose in the `electron/preload/useReplay.ts`

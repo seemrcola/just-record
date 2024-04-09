@@ -95,9 +95,10 @@ async function createWindow() {
   // replay
   useReplay(replayWindow)
 
-  if (process.env.VITE_DEV_SERVER_URL)
+  if (process.env.VITE_DEV_SERVER_URL) {
     await win.loadURL(url)
-    // win.webContents.openDevTools({ mode: 'detach' })
+    win.webContents.openDevTools({ mode: 'detach' })
+  }
 
   else
     await win.loadFile(indexHtml)

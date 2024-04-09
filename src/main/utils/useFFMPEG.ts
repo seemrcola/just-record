@@ -16,6 +16,7 @@ export function useFFMPEG() {
   let ffcommand: ffmpeg.FfmpegCommand
 
   function startRecord(recordOptions: RecordOptions) {
+    return '---------------'
     // 1. 采集桌面/桌面区域
     const type = recordOptions.fullScreen ? 'window' : 'area'
     const filename = `${dir}/record-output-${Date.now()}.mp4`
@@ -29,7 +30,7 @@ export function useFFMPEG() {
     //   -r 30 \                                     // 帧率
     //   -preset ultrafast ~/desktop/${filename}     // 输出文件
 
-    ffcommand = ffmpeg({ source: '1:0' })
+    ffcommand = ffmpeg({ source: '1' })
 
     if (type === 'window') {
       ffcommand
@@ -56,6 +57,7 @@ export function useFFMPEG() {
   }
 
   function stopRecord() {
+    return '------------------------'
     // 停止录制
     return new Promise((resolve) => {
       ffcommand
