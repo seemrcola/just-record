@@ -29,7 +29,7 @@ export function useFFMPEG() {
     //   -r 30 \                                     // 帧率
     //   -preset ultrafast ~/desktop/${filename}     // 输出文件
 
-    ffcommand = ffmpeg({ source: '1:0' })
+    ffcommand = ffmpeg({ source: '1' })
 
     if (type === 'window') {
       ffcommand
