@@ -24,13 +24,15 @@ interface RegionLifeCycle {
   onStartFullRecordSuccess: () => void
 }
 
-export function useSvgRegion(regionLifeCycle: RegionLifeCycle) {
+export function useSvgRegion(wrapper: string, regionLifeCycle: RegionLifeCycle) {
   let svg: SVGSVGElement // svg 获取到这个名称是useSvgRegionTemp中的svg-mask
   let drag: SVGRectElement // drag-rect 用于拖拽
   let hole: SVGRectElement // svg mask 挖出来的洞
   let resizeBoxDom: HTMLElement // resize的提示盒子
   let recordBoxDom: HTMLElement // 录制的提示盒子的dom
   let recordBox: App<Element> // 录制的提示盒子 即recordTipTemp.vue组件createApp的返回值
+
+  const wrapperElement = ( document.querySelector(wrapper) || document.body) as HTMLElement
 
   // ⚠️ 这里的宽高是屏幕的宽高 因为是全屏的 如果不是全屏 则需要除以缩放比例
   const WINDOW_WIDTH = window.innerWidth // 窗口宽度
@@ -207,7 +209,7 @@ export function useSvgRegion(regionLifeCycle: RegionLifeCycle) {
     const app = createApp(useSvgRegionTemp)
     const fragment = document.createDocumentFragment()
     app.mount(fragment as unknown as HTMLElement)
-    document.body.appendChild(fragment)
+    wrapperElement.appendChild(fragment)
   }
 
   function drawRegion({ startX, startY, endX, endY }: { startX: number, startY: number, endX: number, endY: number }) {
@@ -306,7 +308,7 @@ export function useSvgRegion(regionLifeCycle: RegionLifeCycle) {
     const { x, y, width, height } = hole.getBBox()
     resizeBoxDom.style.left = `${x + width}px`
     resizeBoxDom.style.top = `${y + height}px`
-    document.body.appendChild(resizeBoxDom)
+    wrapperElement.appendChild(resizeBoxDom)
   }
 
   function recordTip() {
@@ -374,7 +376,7 @@ export function useSvgRegion(regionLifeCycle: RegionLifeCycle) {
       border-radius: 4px;
       color: #fff;
     `
-    document.body.appendChild(recordBoxDom)
+    wrapperElement.appendChild(recordBoxDom)
   }
 
   return {

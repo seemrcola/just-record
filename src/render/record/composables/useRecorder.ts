@@ -107,6 +107,10 @@ export function useRecorder(sliceTime = 1000) {
     return blobList;
   }
 
+  function clearBlobList() {
+    blobList = [];
+  }
+
   return {
     mediaRecorder,
     startRecording,
@@ -114,5 +118,6 @@ export function useRecorder(sliceTime = 1000) {
     download,
     clear,
     getBlobList,
+    clearBlobList,
   }
 }

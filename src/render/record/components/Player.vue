@@ -9,6 +9,8 @@ const props = defineProps({
   }
 })
 
+const emits = defineEmits(['close', 'del', 'download'])
+
 const dialog = useDialog()
 
 const video = ref<HTMLVideoElement>()
@@ -35,6 +37,7 @@ function play() {
 }
 
 function close() {
+  emits('close')
 }
 
 function del() {
@@ -45,21 +48,17 @@ function del() {
     negativeText: '取消',
     onPositiveClick: () => {
       // 删除
+      emits('del')
     },
     onNegativeClick: () => {
       // 取消删除
+      return 0
     },
   })
 }
 
 function download() {
-  const url = props.url
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'video.webm'
-  a.click()
-  URL.revokeObjectURL(url)
-  a.remove()
+  emits('download')
 }
 
 onMounted(() => {
@@ -76,6 +75,10 @@ onMounted(() => {
     <div
       absolute w-6 h-6 bg-light top--8 right-8 cursor-pointer hover="scale-110 bg-orange" i-material-symbols:delete
       @click="del()"
+    />
+    <div
+      absolute w-6 h-6 bg-light top--8 right-16 cursor-pointer hover="scale-110 bg-orange" i-material-symbols:download
+      @click="download()"
     />
     <video ref="video" controls playsinline autoplay muted b="2px solid orange" />
   </div>

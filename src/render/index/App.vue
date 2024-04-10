@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import { useDrag } from '../_common/useDrag'
 import RecordBar from './components/RecordBar.vue'
-import Timer from '../_common/useTimer/index.vue'
 import Camera from './components/Camera.vue'
 import Settings from './components/Settings.vue'
+import { useDrag, Timer} from './composables'
 
 const { run } = useDrag({
   afterDrag: (opt: { x: number, y: number }) => {

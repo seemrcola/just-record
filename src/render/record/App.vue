@@ -10,7 +10,9 @@ const recorder = useRecorder()
 const playUrl = ref('')
 
 onMounted(() => {
-  const { start } = useSvgRegion({
+  const { start } = useSvgRegion(
+   '#the_mask_wrapper',
+    {
     // 当窗口展示的时候
     winOnShow: () => { },
     // 当窗口隐藏的时候 我们需要隐藏录屏窗口
@@ -43,12 +45,37 @@ onMounted(() => {
   })
   start()
 })
+
+function close() {
+  recorder.clearBlobList()
+  playUrl.value = ''
+  window.useRecord.hide()
+}
+
+function del() {
+  recorder.clearBlobList()
+  playUrl.value = ''
+  window.useRecord.hide()
+}
+
+function download() {
+  const url = playUrl.value
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'video.webm'
+  a.click()
+  URL.revokeObjectURL(url)
+  a.remove()
+}
 </script>
 
 <template>
   <NDialogProvider>
-    <div w-full h-full flex-center text-light class="mask">
-      <Player v-if="playUrl" :url="playUrl" />
+    <div v-if="!playUrl" w-full h-full flex-center class="mask" id="the_mask_wrapper">
+      <!-- svg -->
+    </div>
+    <div v-else flex-center class="video-container">
+      <Player v-if="playUrl" :url="playUrl" @close="close" @del="del" @download="download" />
     </div>
   </NDialogProvider>
 </template>
@@ -58,5 +85,18 @@ onMounted(() => {
   position: fixed;
   overflow: hidden;
   background: transparent;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.video-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background-color: rgba(0, 0, 0, 0.3);
 }
 </style>
