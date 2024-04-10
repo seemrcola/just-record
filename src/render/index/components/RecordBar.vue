@@ -5,7 +5,6 @@ import { NTooltip } from 'naive-ui'
 const recordingStatus = ref(false)
 
 function toggleRecording(status: 'start' | 'stop') {
-  return 
   window.useRecord[status]()
     .then(() => {})
     .catch(err => console.error(err))

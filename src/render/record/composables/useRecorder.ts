@@ -1,5 +1,4 @@
 // 这个文件是用来实现录屏的功能的，主要是使用 MediaRecorder API 来实现录屏的功能。
-
 const Kbps = 1000;
 
 export function useRecorder(sliceTime = 1000) {
@@ -10,8 +9,15 @@ export function useRecorder(sliceTime = 1000) {
 
   // 获取音频流
   async function getAudioStream() {
-    const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    return audioStream;
+    // mac 系统下，录制音频需要额外使用别的工具 （但是在chrome插件里是可以做到录制麦克风音频的）
+    try {
+      const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+      console.log('audio stream', audioStream);
+      return audioStream;
+    }
+    catch (error) {
+      return new MediaStream();
+    }
   }
 
   // 获取屏幕流id
@@ -45,6 +51,8 @@ export function useRecorder(sliceTime = 1000) {
     videoBitsPerSecond: 3000 * Kbps,
     audioBitsPerSecond: 128 * Kbps,
   }) {
+    // 先清空之前的记录
+    blobList = [];
     // 将音频流合进来
     const source = await getScreenSource();
     displayStream = await getDisplayMedia(source.id);
@@ -69,6 +77,7 @@ export function useRecorder(sliceTime = 1000) {
     mediaRecorder?.addEventListener('dataavailable', e => {
       if (e.data.size > 0)
         blobList.push(e.data);
+      console.log('data available', e.data);
     })
     // 结束录屏监听
     mediaRecorder?.addEventListener('stop', () => {
@@ -81,7 +90,6 @@ export function useRecorder(sliceTime = 1000) {
     displayStream?.getTracks().forEach(track => track.stop());
     audioStream?.getTracks().forEach(track => track.stop());
     mediaRecorder = null;
-    blobList = [];
   }
 
   function download(blobList: Blob[]) {
@@ -95,11 +103,16 @@ export function useRecorder(sliceTime = 1000) {
     a.remove();
   }
 
+  function getBlobList() {
+    return blobList;
+  }
+
   return {
+    mediaRecorder,
     startRecording,
     endRecording,
-    mediaRecorder,
-    blobList,
     download,
+    clear,
+    getBlobList,
   }
 }

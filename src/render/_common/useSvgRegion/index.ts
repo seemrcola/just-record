@@ -30,9 +30,7 @@ export function useSvgRegion(regionLifeCycle: RegionLifeCycle) {
   let hole: SVGRectElement // svg mask 挖出来的洞
   let resizeBoxDom: HTMLElement // resize的提示盒子
   let recordBoxDom: HTMLElement // 录制的提示盒子的dom
-  let timerBoxDom: HTMLElement // 计时器的提示盒子的dom
   let recordBox: App<Element> // 录制的提示盒子 即recordTipTemp.vue组件createApp的返回值
-  let timerBox: App<Element> // 计时器的提示盒子 即timer.vue组件createApp的返回值
 
   // ⚠️ 这里的宽高是屏幕的宽高 因为是全屏的 如果不是全屏 则需要除以缩放比例
   const WINDOW_WIDTH = window.innerWidth // 窗口宽度
@@ -46,6 +44,16 @@ export function useSvgRegion(regionLifeCycle: RegionLifeCycle) {
   let startPoint = { x: 0, y: 0 }
   let startDragPoint = { x: 0, y: 0 }
 
+  // 清除svg
+  function clearSvg() {
+    const mask = svg.querySelector('#mask-svg') as SVGMaskElement
+
+    mask?.remove()
+    resizeBoxDom?.remove()
+    recordBoxDom?.remove()
+    recordBox?.unmount()
+  }
+
   // 监听窗口的关闭 即监听录制结束
   regionLifeCycle.onStopRecord(() => {
     // 还原颜色以便于下一次打开的时候颜色正常
@@ -56,9 +64,6 @@ export function useSvgRegion(regionLifeCycle: RegionLifeCycle) {
     // 渲染提示框
     resizeTip()
     recordTip()
-    // 停止计时器
-    timerBox?.unmount()
-    timerBoxDom?.remove()
     // 添加回来esc按钮的监听
     document.addEventListener('keydown', escCallback)
   })
@@ -199,11 +204,6 @@ export function useSvgRegion(regionLifeCycle: RegionLifeCycle) {
   }
 
   function createFullScreenSvg() {
-    // 先清除掉之前的svg（如果有的话）
-    const oldSvg = document.querySelector('#mask-svg')
-    if (oldSvg)
-      oldSvg.remove()
-
     const app = createApp(useSvgRegionTemp)
     const fragment = document.createDocumentFragment()
     app.mount(fragment as unknown as HTMLElement)
@@ -379,5 +379,6 @@ export function useSvgRegion(regionLifeCycle: RegionLifeCycle) {
 
   return {
     start,
+    clearSvg
   }
 }

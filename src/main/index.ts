@@ -3,7 +3,7 @@ import * as process from 'node:process'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { BrowserWindow, app, ipcMain, screen, shell } from 'electron'
-import { useClipWindow } from './windows/useRecordWindow'
+import { useRecordWindow } from './windows/useRecordWindow'
 
 import { shim } from './utils/platform'
 import { protocolHandle } from './utils/protocol'
@@ -79,15 +79,15 @@ async function createWindow() {
     },
   })
 
-  // clipWindow
-  const clipWindow = await useClipWindow()
+  // recordWindow
+  const recordWindow = await useRecordWindow()
 
   // keep ratio
   win.setAspectRatio(1)
   // drag
   useDrag(win)
   // record
-  useRecord(clipWindow)
+  useRecord(recordWindow)
 
   if (process.env.VITE_DEV_SERVER_URL) {
     await win.loadURL(url)

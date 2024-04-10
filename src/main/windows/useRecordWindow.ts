@@ -24,14 +24,14 @@ process.env.VITE_PUBLIC = process.env.VITE_DEV_SERVER_URL
 
 const preload = join(__dirname, '../preload/index.mjs')
 const url = process.env.VITE_DEV_SERVER_URL
-const clipHtml = join(process.env.DIST, 'clip.html')
+const recordHtml = join(process.env.DIST, 'record.html')
 
 function getSize() {
   const { size, scaleFactor } = screen.getPrimaryDisplay()
   return [size.width * scaleFactor, size.height * scaleFactor]
 }
 
-export async function useClipWindow() {
+export async function useRecordWindow() {
   const [width, height] = getSize()
 
   const childWindow = new BrowserWindow({
@@ -74,12 +74,12 @@ export async function useClipWindow() {
   })
 
   if (process.env.VITE_DEV_SERVER_URL) {
-    await childWindow.loadURL(`${url}clip.html`)
+    await childWindow.loadURL(`${url}record.html`)
     childWindow.webContents.openDevTools({ mode: 'detach' })
   }
 
   else
-    await childWindow.loadFile(clipHtml)
+    await childWindow.loadFile(recordHtml)
 
   return childWindow
 }

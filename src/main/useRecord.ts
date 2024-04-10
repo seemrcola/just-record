@@ -1,41 +1,36 @@
-import fs from 'node:fs'
 import { BrowserWindow, ipcMain, desktopCapturer } from 'electron'
 
-// use ffmpeg to start recording
-export async function useRecord(userClipWin: BrowserWindow) {
-  let currentfilePath: string | null = null
-
+export async function useRecord(recordWin: BrowserWindow) {
   ipcMain.handle('start', () => {
-    userClipWin.show()
+    recordWin.show()
+  })
+
+  ipcMain.handle('hide', () => {
+    // 开始录制前可隐藏窗口
+    recordWin.hide()
   })
 
   ipcMain.handle('startRecord', (e, recordOptions: RecordOptions) => {
     // todo 可能有一些别的事要做
+    console.log('recordOptions', recordOptions)
   })
 
   ipcMain.handle('stop', async () => {
-    // 关闭窗口发送事件
-    userClipWin.webContents.send('close-win')
     // 将窗口不再设置成可穿透
-    userClipWin.setIgnoreMouseEvents(false)
-    // 关闭窗口
-    userClipWin.hide()
+    recordWin.setIgnoreMouseEvents(false)
     // 获取所有窗口
     const allWindows = BrowserWindow.getAllWindows()
-    // fixme： 这里用来告诉其他窗口录制状态关闭 但是这个名字取得不好
+    // 录制结束事件发送
+    recordWin.webContents.send('stop-record')
+    // 状态改变事件发送 这里将状态改变和结束录制分成了两个事件
     allWindows.forEach((win) => {
       win.webContents.send('change-icon', false) // change-icon 的 msg 是 boolean
     })
   })
 
-  ipcMain.handle('hide', () => {
-    // 开始录制前可隐藏窗口
-    userClipWin.hide()
-  })
-
   ipcMain.handle('transparentClipWin', () => {
     // 设置窗口为可穿透
-    userClipWin.setIgnoreMouseEvents(true)
+    recordWin.setIgnoreMouseEvents(true)
   })
 
   ipcMain.on('message', (event, { type, msg }) => {
@@ -52,8 +47,8 @@ export async function useRecord(userClipWin: BrowserWindow) {
 
   ipcMain.handle('getCaptureResource', async (event) => {
     const sources = await desktopCapturer.getSources({ types: ['screen', 'window'] })
-    for(const source of sources){
-      if(source.id === 'screen:1:0'){
+    for (const source of sources) {
+      if (source.id === 'screen:1:0') {
         return {
           id: source.id,
           name: source.name,
@@ -63,16 +58,5 @@ export async function useRecord(userClipWin: BrowserWindow) {
       }
     }
     return {}
-  })
-
-  ipcMain.handle('del', (event) => {
-    console.log('del', currentfilePath)
-    // 删除文件
-    try {
-      fs.unlinkSync(currentfilePath as string)
-    }
-    catch (error) {
-      console.log(error)
-    }
   })
 }

@@ -20,9 +20,6 @@ export function useRecord() {
     message: ({ type, msg }: { type: string, msg: any }) => {
       ipcRenderer.send('message', { type, msg })
     },
-    del: () => {
-      return ipcRenderer.invoke('del')
-    },
     getCaptureResource: () => {
       return ipcRenderer.invoke('getCaptureResource')
     },
@@ -33,8 +30,8 @@ export function useRecord() {
         cb(msg)
       })
     },
-    onCloseWin: (cb: (msg: any) => void) => {
-      ipcRenderer.on('close-win', (event, msg) => {
+    onStopRecord: (cb: (msg: any) => void) => {
+      ipcRenderer.on('stop-record', (event, msg) => {
         cb(msg)
       })
     },
