@@ -1,7 +1,6 @@
 import { useLoading } from './useLoading'
 import { useDrag } from './useDrag'
 import { useRecord } from './useRecord'
-import { useReplay } from './useReplay'
 import { useVersions } from './useVersions'
 import './ipcRender'
 
@@ -35,5 +34,3 @@ useVersions()
 useDrag()
 // record------------
 useRecord()
-// replay------------
-useReplay()

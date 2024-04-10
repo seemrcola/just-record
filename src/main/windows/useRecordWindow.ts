@@ -1,7 +1,7 @@
 import { dirname, join } from 'node:path'
 import * as process from 'node:process'
 import { fileURLToPath } from 'node:url'
-import { BrowserWindow, screen } from 'electron'
+import { BrowserWindow, screen, shell} from 'electron'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -66,6 +66,12 @@ export async function useClipWindow() {
   childWindow.setVisibleOnAllWorkspaces(true)
   // 最上层
   childWindow.setAlwaysOnTop(true, 'screen-saver')
+
+  childWindow.webContents.setWindowOpenHandler(({ url }) => {
+    if (url.startsWith('https:'))
+      shell.openExternal(url)
+    return { action: 'deny' }
+  })
 
   if (process.env.VITE_DEV_SERVER_URL) {
     await childWindow.loadURL(`${url}clip.html`)

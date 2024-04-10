@@ -2,7 +2,6 @@ import type { App } from 'vue'
 import { createApp, ref } from 'vue'
 import useRecordTipTemp from './useRecordTipTemp.vue'
 import useSvgRegionTemp from './useSvgRegionTemp.vue'
-import Timer from './useTimer.vue'
 
 interface RecordOptions {
   x: number
@@ -200,6 +199,11 @@ export function useSvgRegion(regionLifeCycle: RegionLifeCycle) {
   }
 
   function createFullScreenSvg() {
+    // 先清除掉之前的svg（如果有的话）
+    const oldSvg = document.querySelector('#mask-svg')
+    if (oldSvg)
+      oldSvg.remove()
+
     const app = createApp(useSvgRegionTemp)
     const fragment = document.createDocumentFragment()
     app.mount(fragment as unknown as HTMLElement)
@@ -305,28 +309,6 @@ export function useSvgRegion(regionLifeCycle: RegionLifeCycle) {
     document.body.appendChild(resizeBoxDom)
   }
 
-  // 增加一个计时器
-  function timerTip() {
-    timerBox = createApp(Timer)
-    timerBoxDom = document.createElement('div')
-    timerBox.mount(timerBoxDom)
-
-    const holeRect = hole.getBBox()
-    timerBoxDom.style.cssText = `
-      width: 200px;
-      height: 32px;
-      position: fixed;
-      top: ${holeRect.y + holeRect.height + 36}px;
-      left: ${holeRect.x + holeRect.width / 2}px;
-      transform: translate(-50%, -100%);
-      z-index: 9999;
-      background-color: rgb(29, 29, 29);
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-      border-radius: 4px;
-    `
-    document.body.appendChild(timerBoxDom)
-  }
-
   function recordTip() {
     if (recordBox) {
       recordBox.unmount()
@@ -364,8 +346,6 @@ export function useSvgRegion(regionLifeCycle: RegionLifeCycle) {
               // 需要删掉各种提示框
               resizeBoxDom?.remove()
               recordBoxDom?.remove()
-              // 增加计时器
-              timerTip()
               // 去掉esc按钮的监听
               document.removeEventListener('keydown', escCallback)
               // 一般情况下需要 告诉窗口让它变成可穿透窗口

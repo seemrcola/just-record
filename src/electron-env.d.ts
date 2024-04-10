@@ -44,11 +44,4 @@ interface Window {
     'onChangeIcon': (cb: (msg: any) => void) => void
     'onCloseWin': (cb: (msg: any) => void) => void
   }
-
-  // expose in the `electron/preload/useReplay.ts`
-  useReplay: {
-    'open': () => Promise<any>
-    'close': () => Promise<any>
-    'onReplayFile': (cb: (filePath: any) => void) => void
-  }
 }

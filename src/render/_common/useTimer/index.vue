@@ -35,7 +35,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div w-full h-full flex rounded-1 bg-light>
+  <div flex rounded-1>
     <div flex-1 bg-dark text-light flex-center rounded-1>
       <Number :number="hour[0]" />
       <Number :number="hour[1]" />

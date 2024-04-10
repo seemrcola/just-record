@@ -1,8 +1,5 @@
 import fs from 'node:fs'
 import { BrowserWindow, ipcMain, desktopCapturer } from 'electron'
-import { useFFMPEG } from './utils/useFFMPEG'
-
-const ffmpeg = useFFMPEG()
 
 // use ffmpeg to start recording
 export async function useRecord(userClipWin: BrowserWindow) {
@@ -13,12 +10,10 @@ export async function useRecord(userClipWin: BrowserWindow) {
   })
 
   ipcMain.handle('startRecord', (e, recordOptions: RecordOptions) => {
-    // currentfilePath = ffmpeg.startRecord(recordOptions)
+    // todo 可能有一些别的事要做
   })
 
   ipcMain.handle('stop', async () => {
-    // 停止录制
-    // await ffmpeg.stopRecord()
     // 关闭窗口发送事件
     userClipWin.webContents.send('close-win')
     // 将窗口不再设置成可穿透
