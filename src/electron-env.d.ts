@@ -32,15 +32,17 @@ interface Window {
 
   // expose in the `electron/preload/useRecord.ts`
   useRecord: {
-    'start': () => Promise<any> // 类似于 show
-    'startRecord': (recordOptions: RecordOptions) => Promise<any>
-    'stop': () => Promise<any>
+    'show': (flag: boolean = true) => Promise<any>
     'hide': () => Promise<any>
+    'start': (recordOptions: RecordOptions) => Promise<any>
+    'stop': () => Promise<any>
     'message': ({ type: string, msg: any }) => Promise<void>
     'transparentClipWin': () => Promise<any>
     'getCaptureResource': () => Promise<any>
 
     'onChangeIcon': (cb: (msg: any) => void) => void
     'onStopRecord': (cb: (msg: any) => void) => void
+    'onRecordShow': (cb: (msg: any) => void) => void
+    'onRecordHide': (cb: (msg: any) => void) => void
   }
 }

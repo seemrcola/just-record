@@ -1,16 +1,28 @@
 import { BrowserWindow, desktopCapturer, ipcMain } from 'electron'
 
 export async function useRecord(recordWin: BrowserWindow) {
-  ipcMain.handle('start', () => {
+  ipcMain.handle('show', (event, flag: boolean) => {
     recordWin.show()
+    // 通知给渲染进程 窗口已显示
+    const allWindows = BrowserWindow.getAllWindows()
+    allWindows.forEach((win) => {
+      if (win.title === 'Record')
+        win.webContents.send('record-show')
+    })
   })
 
   ipcMain.handle('hide', () => {
     // 开始录制前可隐藏窗口
     recordWin.hide()
+    // 通知给渲染进程 窗口已隐藏
+    const allWindows = BrowserWindow.getAllWindows()
+    allWindows.forEach((win) => {
+      if (win.title === 'Record')
+        win.webContents.send('record-hide')
+    })
   })
 
-  ipcMain.handle('startRecord', (e, recordOptions: RecordOptions) => {
+  ipcMain.handle('start', (e, recordOptions: RecordOptions) => {
     // todo 可能有一些别的事要做
     console.log('recordOptions', recordOptions)
   })
@@ -35,7 +47,6 @@ export async function useRecord(recordWin: BrowserWindow) {
 
   ipcMain.on('message', (event, { type, msg }) => {
     // 发送给 摄像头的渲染进程 改变icon状态
-    console.log('message', type, msg)
     if (type === 'change-icon') {
       // 遍历所有窗口发送状态改变的消息
       const allWindows = BrowserWindow.getAllWindows()

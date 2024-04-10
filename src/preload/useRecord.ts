@@ -2,17 +2,17 @@ import { contextBridge, ipcRenderer } from 'electron'
 
 export function useRecord() {
   const api = {
-    start: () => {
-      return ipcRenderer.invoke('start')
-    },
-    startRecord: (recordOptions: RecordOptions) => {
-      return ipcRenderer.invoke('startRecord', recordOptions)
-    },
-    stop: () => {
-      return ipcRenderer.invoke('stop')
+    show: (flag: boolean = true) => {
+      return ipcRenderer.invoke('show', flag)
     },
     hide: () => {
       return ipcRenderer.invoke('hide')
+    },
+    start: (recordOptions: RecordOptions) => {
+      return ipcRenderer.invoke('start', recordOptions)
+    },
+    stop: () => {
+      return ipcRenderer.invoke('stop')
     },
     transparentClipWin: () => {
       return ipcRenderer.invoke('transparentClipWin')
@@ -32,6 +32,16 @@ export function useRecord() {
     },
     onStopRecord: (cb: (msg: any) => void) => {
       ipcRenderer.on('stop-record', (event, msg) => {
+        cb(msg)
+      })
+    },
+    onRecordShow: (cb: (msg: any) => void) => {
+      ipcRenderer.on('record-show', (event, msg) => {
+        cb(msg)
+      })
+    },
+    onRecordHide: (cb: (msg: any) => void) => {
+      ipcRenderer.on('record-hide', (event, msg) => {
         cb(msg)
       })
     },

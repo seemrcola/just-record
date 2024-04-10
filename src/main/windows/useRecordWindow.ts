@@ -37,7 +37,7 @@ export async function useRecordWindow() {
   const childWindow = new BrowserWindow({
     width,
     height,
-    title: 'FFmpeg Record',
+    title: 'Record',
     show: false,
 
     // movable: false,

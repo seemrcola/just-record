@@ -12,7 +12,6 @@ export function useRecorder(sliceTime = 1000) {
     // mac 系统下，录制音频需要额外使用别的工具 （但是在chrome插件里是可以做到录制麦克风音频的）
     try {
       const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-      console.log('audio stream', audioStream)
       return audioStream
     }
     catch (error) {
@@ -89,7 +88,6 @@ export function useRecorder(sliceTime = 1000) {
     mediaRecorder?.stream.getTracks().forEach(track => track.stop())
     displayStream?.getTracks().forEach(track => track.stop())
     audioStream?.getTracks().forEach(track => track.stop())
-    mediaRecorder = null
   }
 
   function download(blobList: Blob[]) {
@@ -111,6 +109,16 @@ export function useRecorder(sliceTime = 1000) {
     blobList = []
   }
 
+  function clearRecorder() {
+    mediaRecorder = null
+  }
+
+  function clearAll() {
+    clear()
+    clearBlobList()
+    clearRecorder()
+  }
+
   return {
     mediaRecorder,
     startRecording,
@@ -119,5 +127,7 @@ export function useRecorder(sliceTime = 1000) {
     clear,
     getBlobList,
     clearBlobList,
+    clearRecorder,
+    clearAll,
   }
 }

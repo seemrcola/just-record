@@ -10,25 +10,29 @@ const recorder = useRecorder()
 const playUrl = ref('')
 
 onMounted(() => {
+  init()
+})
+
+function init() {
   const { start } = useSvgRegion(
     '#the_mask_wrapper',
     {
-    // 当窗口展示的时候
+      // 当窗口展示的时候
       winOnShow: () => { },
       // 当窗口隐藏的时候 我们需要隐藏录屏窗口
       winOnHide: () => window.useRecord.hide(),
       // 当点击按钮录制的时候 调用 useRecord.startRecord 方法
       onStartRecord: (recordOptions: RecordOptions) => {
         recorder.startRecording()
-        return window.useRecord.startRecord(recordOptions)
+        return window.useRecord.start(recordOptions)
       },
       // 当点击停止录制的时候 调用 useRecord.stopRecord 方法
       onStopRecord: (callback: () => void) => {
         window.useRecord.onStopRecord((msg) => {
-        // 这个callback是这个hooks用来处理内部的一些逻辑 需要手动调用
+          // 这个callback是这个hooks用来处理内部的一些逻辑 需要手动调用
           callback()
           // 这部分就是用户自己的逻辑
-          window.useRecord.start() // 开始播放录制的视频
+          window.useRecord.show() // 展示窗口
           recorder.endRecording()
           const blobList = recorder.getBlobList()
           playUrl.value = URL.createObjectURL(new Blob(blobList, { type: 'video/webm' }))
@@ -45,7 +49,7 @@ onMounted(() => {
     },
   )
   start()
-})
+}
 
 function close() {
   recorder.clearBlobList()
@@ -59,6 +63,7 @@ function del() {
   window.useRecord.hide()
 }
 
+// 下载还存在问题
 function download() {
   const url = playUrl.value
   const a = document.createElement('a')
@@ -68,14 +73,21 @@ function download() {
   URL.revokeObjectURL(url)
   a.remove()
 }
+
+window.useRecord.onRecordShow(async () => {
+
+})
+window.useRecord.onRecordHide(async () => {
+
+})
 </script>
 
 <template>
   <NDialogProvider>
-    <div v-if="!playUrl" id="the_mask_wrapper" w-full h-full flex-center class="mask">
+    <div v-show="!playUrl" id="the_mask_wrapper" w-full h-full flex-center class="mask">
       <!-- svg -->
     </div>
-    <div v-else flex-center class="video-container">
+    <div v-show="playUrl" flex-center class="video-container">
       <Player v-if="playUrl" :url="playUrl" @close="close" @del="del" @download="download" />
     </div>
   </NDialogProvider>
@@ -91,6 +103,7 @@ function download() {
   width: 100%;
   height: 100%;
 }
+
 .video-container {
   position: absolute;
   top: 0;
