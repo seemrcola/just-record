@@ -1,7 +1,7 @@
 import { dirname, join } from 'node:path'
 import * as process from 'node:process'
 import { fileURLToPath } from 'node:url'
-import { BrowserWindow, screen, shell} from 'electron'
+import { BrowserWindow, screen, shell } from 'electron'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -78,8 +78,7 @@ export async function useRecordWindow() {
     childWindow.webContents.openDevTools({ mode: 'detach' })
   }
 
-  else
-    await childWindow.loadFile(recordHtml)
+  else { await childWindow.loadFile(recordHtml) }
 
   return childWindow
 }

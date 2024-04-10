@@ -94,8 +94,7 @@ async function createWindow() {
     win.webContents.openDevTools({ mode: 'detach' })
   }
 
-  else
-    await win.loadFile(indexHtml)
+  else { await win.loadFile(indexHtml) }
 
   win.webContents.on('did-finish-load', () => {
     win?.webContents.send('main-process-message', new Date().toLocaleString())

@@ -1,4 +1,4 @@
-import { BrowserWindow, ipcMain, desktopCapturer } from 'electron'
+import { BrowserWindow, desktopCapturer, ipcMain } from 'electron'
 
 export async function useRecord(recordWin: BrowserWindow) {
   ipcMain.handle('start', () => {

@@ -6,7 +6,7 @@ const props = defineProps({
   url: {
     type: String,
     required: true,
-  }
+  },
 })
 
 const emits = defineEmits(['close', 'del', 'download'])

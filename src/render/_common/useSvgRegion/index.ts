@@ -32,7 +32,7 @@ export function useSvgRegion(wrapper: string, regionLifeCycle: RegionLifeCycle) 
   let recordBoxDom: HTMLElement // 录制的提示盒子的dom
   let recordBox: App<Element> // 录制的提示盒子 即recordTipTemp.vue组件createApp的返回值
 
-  const wrapperElement = ( document.querySelector(wrapper) || document.body) as HTMLElement
+  const wrapperElement = (document.querySelector(wrapper) || document.body) as HTMLElement
 
   // ⚠️ 这里的宽高是屏幕的宽高 因为是全屏的 如果不是全屏 则需要除以缩放比例
   const WINDOW_WIDTH = window.innerWidth // 窗口宽度
@@ -381,6 +381,6 @@ export function useSvgRegion(wrapper: string, regionLifeCycle: RegionLifeCycle) 
 
   return {
     start,
-    clearSvg
+    clearSvg,
   }
 }

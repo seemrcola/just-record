@@ -3,5 +3,5 @@
 </script>
 
 <template>
-  <div i-material-symbols:settings-outline text-light></div>
+  <div i-material-symbols:settings-outline text-light />
 </template>
