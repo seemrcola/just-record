@@ -1,4 +1,6 @@
-import { BrowserWindow, desktopCapturer, ipcMain } from 'electron'
+import fs from 'node:fs'
+import { promisify } from 'node:util'
+import { BrowserWindow, desktopCapturer, dialog, ipcMain } from 'electron'
 
 export async function useRecord(recordWin: BrowserWindow) {
   ipcMain.handle('show', (event, flag: boolean) => {
@@ -30,10 +32,10 @@ export async function useRecord(recordWin: BrowserWindow) {
   ipcMain.handle('stop', async () => {
     // 将窗口不再设置成可穿透
     recordWin.setIgnoreMouseEvents(false)
-    // 获取所有窗口
-    const allWindows = BrowserWindow.getAllWindows()
     // 录制结束事件发送
     recordWin.webContents.send('stop-record')
+    // 获取所有窗口
+    const allWindows = BrowserWindow.getAllWindows()
     // 状态改变事件发送 这里将状态改变和结束录制分成了两个事件
     allWindows.forEach((win) => {
       win.webContents.send('change-icon', false) // change-icon 的 msg 是 boolean
@@ -43,6 +45,27 @@ export async function useRecord(recordWin: BrowserWindow) {
   ipcMain.handle('transparentClipWin', () => {
     // 设置窗口为可穿透
     recordWin.setIgnoreMouseEvents(true)
+  })
+
+  ipcMain.handle('saveFile', () => {
+    // 弹出保存文件对话框
+    const result = dialog.showSaveDialog(recordWin, {
+      title: '保存文件',
+      defaultPath: 'record.webm',
+    })
+    return result
+  })
+
+  ipcMain.handle('downloadFile', async (event, { path, file }) => {
+    const writeFile = promisify(fs.writeFile)
+    try {
+      await writeFile(path, file)
+      return true
+    }
+    catch (error) {
+      console.error(error)
+      return false
+    }
   })
 
   ipcMain.on('message', (event, { type, msg }) => {

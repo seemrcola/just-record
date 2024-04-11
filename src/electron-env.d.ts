@@ -40,6 +40,9 @@ interface Window {
     'transparentClipWin': () => Promise<any>
     'getCaptureResource': () => Promise<any>
 
+    'saveFile': () => Promise<any>
+    'downloadFile': (path: string, file: Uint8Array) => Promise<any>
+
     'onChangeIcon': (cb: (msg: any) => void) => void
     'onStopRecord': (cb: (msg: any) => void) => void
     'onRecordShow': (cb: (msg: any) => void) => void

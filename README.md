@@ -28,3 +28,6 @@ mac上录制不到音频
 ### 灵感来自
 https://github.com/027xiguapi/pear-rec
 仅实现这个项目的其中一个小功能，即录制功能。
+
+### 重构
+使用webrtc api重写中，旧版代码在release里

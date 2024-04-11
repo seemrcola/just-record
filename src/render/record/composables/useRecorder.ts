@@ -1,5 +1,4 @@
 import { db } from './db'
-import { saveAs } from 'file-saver'
 
 // 这个文件是用来实现录屏的功能的，主要是使用 MediaRecorder API 来实现录屏的功能。
 const Kbps = 1000
@@ -112,20 +111,8 @@ export function useRecorder(sliceTime = 1000) {
     clearRecorder()
   }
 
-  async function saveFile() {
-    const recordData = await getBlobList()
-    const blob: Blob[] = []
-    recordData.forEach((item: any) => {
-      blob.push(item.data)
-    })
-    const blobData = new Blob(blob, { type: 'video/webm' })
-    const fileName = `${'video'}.webm`
-    saveAs(blobData, fileName)
-  }
-
   return {
     mediaRecorder,
-    saveFile,
     startRecording,
     endRecording,
     clear,

@@ -24,6 +24,16 @@ export function useRecord() {
       return ipcRenderer.invoke('getCaptureResource')
     },
 
+    saveFile: () => {
+      return ipcRenderer.invoke('saveFile')
+    },
+    downloadFile: (path: string, file: Uint8Array) => {
+      return ipcRenderer.invoke('downloadFile', {
+        path,
+        file,
+      })
+    },
+
     // 主进程给渲染进程发送消息
     onChangeIcon: (cb: (msg: any) => void) => {
       ipcRenderer.on('change-icon', (event, msg) => {
