@@ -1,7 +1,7 @@
 import { dirname, join } from 'node:path'
 import * as process from 'node:process'
 import { fileURLToPath } from 'node:url'
-import { BrowserWindow, screen } from 'electron'
+import { BrowserWindow, screen, shell } from 'electron'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -23,22 +23,21 @@ process.env.VITE_PUBLIC = process.env.VITE_DEV_SERVER_URL
   : process.env.DIST
 
 const preload = join(__dirname, '../preload/index.mjs')
-console.log('preload:', preload)
 const url = process.env.VITE_DEV_SERVER_URL
-const replayHtml = join(process.env.DIST, 'replay.html')
+const recordHtml = join(process.env.DIST, 'record.html')
 
 function getSize() {
   const { size, scaleFactor } = screen.getPrimaryDisplay()
   return [size.width * scaleFactor, size.height * scaleFactor]
 }
 
-export async function useReplayWindow() {
+export async function useRecordWindow() {
   const [width, height] = getSize()
 
   const childWindow = new BrowserWindow({
     width,
     height,
-    title: 'Replay',
+    title: 'Record',
     show: false,
 
     // movable: false,
@@ -66,15 +65,20 @@ export async function useReplayWindow() {
   // 设置窗口在所有工作区都可见
   childWindow.setVisibleOnAllWorkspaces(true)
   // 最上层
-  // childWindow.setAlwaysOnTop(true, 'screen-saver')
+  childWindow.setAlwaysOnTop(true, 'screen-saver')
+
+  childWindow.webContents.setWindowOpenHandler(({ url }) => {
+    if (url.startsWith('https:'))
+      shell.openExternal(url)
+    return { action: 'deny' }
+  })
 
   if (process.env.VITE_DEV_SERVER_URL) {
-    await childWindow.loadURL(`${url}replay.html`)
+    await childWindow.loadURL(`${url}record.html`)
     childWindow.webContents.openDevTools({ mode: 'detach' })
   }
-  else {
-    await childWindow.loadFile(replayHtml)
-  }
+
+  else { await childWindow.loadFile(recordHtml) }
 
   return childWindow
 }

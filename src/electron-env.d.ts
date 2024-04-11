@@ -32,22 +32,17 @@ interface Window {
 
   // expose in the `electron/preload/useRecord.ts`
   useRecord: {
-    'start': () => Promise<any> // 类似于 show
-    'startRecord': (recordOptions: RecordOptions) => Promise<any>
-    'stop': () => Promise<any>
+    'show': (flag: boolean = true) => Promise<any>
     'hide': () => Promise<any>
+    'start': (recordOptions: RecordOptions) => Promise<any>
+    'stop': () => Promise<any>
     'message': ({ type: string, msg: any }) => Promise<void>
     'transparentClipWin': () => Promise<any>
+    'getCaptureResource': () => Promise<any>
+
     'onChangeIcon': (cb: (msg: any) => void) => void
-    'onCloseWin': (cb: (msg: any) => void) => void
-
-    'del': (filePath?: string) => Promise<any>
-  }
-
-  // expose in the `electron/preload/useReplay.ts`
-  useReplay: {
-    'open': () => Promise<any>
-    'close': () => Promise<any>
-    'onReplayFile': (cb: (filePath: any) => void) => void
+    'onStopRecord': (cb: (msg: any) => void) => void
+    'onRecordShow': (cb: (msg: any) => void) => void
+    'onRecordHide': (cb: (msg: any) => void) => void
   }
 }

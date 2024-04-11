@@ -2,17 +2,17 @@ import { contextBridge, ipcRenderer } from 'electron'
 
 export function useRecord() {
   const api = {
-    start: () => {
-      return ipcRenderer.invoke('start')
-    },
-    startRecord: (recordOptions: RecordOptions) => {
-      return ipcRenderer.invoke('startRecord', recordOptions)
-    },
-    stop: () => {
-      return ipcRenderer.invoke('stop')
+    show: (flag: boolean = true) => {
+      return ipcRenderer.invoke('show', flag)
     },
     hide: () => {
       return ipcRenderer.invoke('hide')
+    },
+    start: (recordOptions: RecordOptions) => {
+      return ipcRenderer.invoke('start', recordOptions)
+    },
+    stop: () => {
+      return ipcRenderer.invoke('stop')
     },
     transparentClipWin: () => {
       return ipcRenderer.invoke('transparentClipWin')
@@ -20,8 +20,8 @@ export function useRecord() {
     message: ({ type, msg }: { type: string, msg: any }) => {
       ipcRenderer.send('message', { type, msg })
     },
-    del: () => {
-      return ipcRenderer.invoke('del')
+    getCaptureResource: () => {
+      return ipcRenderer.invoke('getCaptureResource')
     },
 
     // 主进程给渲染进程发送消息
@@ -30,8 +30,18 @@ export function useRecord() {
         cb(msg)
       })
     },
-    onCloseWin: (cb: (msg: any) => void) => {
-      ipcRenderer.on('close-win', (event, msg) => {
+    onStopRecord: (cb: (msg: any) => void) => {
+      ipcRenderer.on('stop-record', (event, msg) => {
+        cb(msg)
+      })
+    },
+    onRecordShow: (cb: (msg: any) => void) => {
+      ipcRenderer.on('record-show', (event, msg) => {
+        cb(msg)
+      })
+    },
+    onRecordHide: (cb: (msg: any) => void) => {
+      ipcRenderer.on('record-hide', (event, msg) => {
         cb(msg)
       })
     },

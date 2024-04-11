@@ -1,54 +1,52 @@
-import fs from 'node:fs'
-import { BrowserWindow, ipcMain } from 'electron'
-import { useFFMPEG } from './utils/useFFMPEG'
+import { BrowserWindow, desktopCapturer, ipcMain } from 'electron'
 
-const ffmpeg = useFFMPEG()
-
-// use ffmpeg to start recording
-export async function useRecord(userClipWin: BrowserWindow) {
-  let currentfilePath: string | null = null
-
-  ipcMain.handle('start', () => {
-    userClipWin.show()
-  })
-
-  ipcMain.handle('startRecord', (e, recordOptions: RecordOptions) => {
-    currentfilePath = ffmpeg.startRecord(recordOptions)
-  })
-
-  ipcMain.handle('stop', async () => {
-    // 停止录制
-    await ffmpeg.stopRecord()
-    // 关闭窗口发送事件
-    userClipWin.webContents.send('close-win')
-    // 将窗口不再设置成可穿透
-    userClipWin.setIgnoreMouseEvents(false)
-    // 关闭窗口
-    userClipWin.hide()
-    // 获取所有窗口
+export async function useRecord(recordWin: BrowserWindow) {
+  ipcMain.handle('show', (event, flag: boolean) => {
+    recordWin.show()
+    // 通知给渲染进程 窗口已显示
     const allWindows = BrowserWindow.getAllWindows()
-    // fixme： 这里用来告诉其他窗口录制状态关闭 但是这个名字取得不好
     allWindows.forEach((win) => {
-      win.webContents.send('change-icon', false) // change-icon 的 msg 是 boolean
-      // 如果是replay窗口 则发送file-path消息
-      if (win.title === 'Replay')
-        win.webContents.send('replay-file', currentfilePath)
+      if (win.title === 'Record')
+        win.webContents.send('record-show')
     })
   })
 
   ipcMain.handle('hide', () => {
     // 开始录制前可隐藏窗口
-    userClipWin.hide()
+    recordWin.hide()
+    // 通知给渲染进程 窗口已隐藏
+    const allWindows = BrowserWindow.getAllWindows()
+    allWindows.forEach((win) => {
+      if (win.title === 'Record')
+        win.webContents.send('record-hide')
+    })
+  })
+
+  ipcMain.handle('start', (e, recordOptions: RecordOptions) => {
+    // todo 可能有一些别的事要做
+    console.log('recordOptions', recordOptions)
+  })
+
+  ipcMain.handle('stop', async () => {
+    // 将窗口不再设置成可穿透
+    recordWin.setIgnoreMouseEvents(false)
+    // 获取所有窗口
+    const allWindows = BrowserWindow.getAllWindows()
+    // 录制结束事件发送
+    recordWin.webContents.send('stop-record')
+    // 状态改变事件发送 这里将状态改变和结束录制分成了两个事件
+    allWindows.forEach((win) => {
+      win.webContents.send('change-icon', false) // change-icon 的 msg 是 boolean
+    })
   })
 
   ipcMain.handle('transparentClipWin', () => {
     // 设置窗口为可穿透
-    userClipWin.setIgnoreMouseEvents(true)
+    recordWin.setIgnoreMouseEvents(true)
   })
 
   ipcMain.on('message', (event, { type, msg }) => {
     // 发送给 摄像头的渲染进程 改变icon状态
-    console.log('message', type, msg)
     if (type === 'change-icon') {
       // 遍历所有窗口发送状态改变的消息
       const allWindows = BrowserWindow.getAllWindows()
@@ -58,14 +56,18 @@ export async function useRecord(userClipWin: BrowserWindow) {
     }
   })
 
-  ipcMain.handle('del', (event) => {
-    console.log('del', currentfilePath)
-    // 删除文件
-    try {
-      fs.unlinkSync(currentfilePath as string)
+  ipcMain.handle('getCaptureResource', async (event) => {
+    const sources = await desktopCapturer.getSources({ types: ['screen', 'window'] })
+    for (const source of sources) {
+      if (source.id === 'screen:1:0') {
+        return {
+          id: source.id,
+          name: source.name,
+          thumbnail: source.thumbnail.toDataURL(),
+          display_id: source.display_id,
+        }
+      }
     }
-    catch (error) {
-      console.log(error)
-    }
+    return {}
   })
 }

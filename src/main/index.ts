@@ -3,14 +3,12 @@ import * as process from 'node:process'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { BrowserWindow, app, ipcMain, screen, shell } from 'electron'
-import { useClipWindow } from './windows/useClipWindow'
-import { useReplayWindow } from './windows/useReplayWindow'
+import { useRecordWindow } from './windows/useRecordWindow'
 
 import { shim } from './utils/platform'
 import { protocolHandle } from './utils/protocol'
 import { useDrag } from './useDrag'
 import { useRecord } from './useRecord'
-import { useReplay } from './useReplay'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -62,8 +60,8 @@ async function createWindow() {
   // 主页面window创建
   const [width, _] = getSize()
   win = new BrowserWindow({
-    width: 240,
-    height: 240,
+    width: 300,
+    height: 48,
     x: width - 240,
     y: 100,
     title: 'User Recorder',
@@ -75,32 +73,28 @@ async function createWindow() {
     hasShadow: false,
     transparent: true,
     resizable: false, // 禁止缩放
-    backgroundColor: '#00000000',
+    backgroundColor: '#000000',
     webPreferences: {
       preload,
     },
   })
 
-  // clipWindow
-  const clipWindow = await useClipWindow()
-  // replayWindow
-  const replayWindow = await useReplayWindow()
+  // recordWindow
+  const recordWindow = await useRecordWindow()
 
   // keep ratio
   win.setAspectRatio(1)
   // drag
   useDrag(win)
   // record
-  useRecord(clipWindow)
-  // replay
-  useReplay(replayWindow)
+  useRecord(recordWindow)
 
-  if (process.env.VITE_DEV_SERVER_URL)
+  if (process.env.VITE_DEV_SERVER_URL) {
     await win.loadURL(url)
-    // win.webContents.openDevTools({ mode: 'detach' })
+    win.webContents.openDevTools({ mode: 'detach' })
+  }
 
-  else
-    await win.loadFile(indexHtml)
+  else { await win.loadFile(indexHtml) }
 
   win.webContents.on('did-finish-load', () => {
     win?.webContents.send('main-process-message', new Date().toLocaleString())

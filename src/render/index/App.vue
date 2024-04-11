@@ -1,17 +1,15 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { useDrag } from '../_common/useDrag'
-import UserMedia from './components/UserMedia.vue'
+import { onMounted } from 'vue'
 import RecordBar from './components/RecordBar.vue'
+import Camera from './components/Camera.vue'
+import Settings from './components/Settings.vue'
+import { Timer, useDrag } from './composables'
 
 const { run } = useDrag({
   afterDrag: (opt: { x: number, y: number }) => {
     window.useDrag.drag({ x: opt.x, y: opt.y })
   },
 })
-
-const type = ref<'video' | 'settings'>('video')
-const showFooter = ref(false)
 
 onMounted(() => {
   run()
@@ -20,13 +18,11 @@ onMounted(() => {
 
 <template>
   <Suspense>
-    <div
-      w-full h-full relative
-      @mouseenter="showFooter = true"
-      @mouseleave="showFooter = false"
-    >
-      <UserMedia v-if="type === 'video'" />
-      <RecordBar v-show="showFooter" />
+    <div h-full flex items-center px-2>
+      <RecordBar />
+      <Timer h-28px w-160px mx-2 />
+      <Camera h-6 w-6 mx-4 />
+      <Settings h-6 w-6 />
     </div>
   </Suspense>
 </template>
