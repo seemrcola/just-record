@@ -3,11 +3,8 @@ import { onMounted, ref } from 'vue'
 import { NDialogProvider } from 'naive-ui'
 import { useSvgRegion } from './composables/useSvgRegion'
 import { useRecorder } from './composables/useRecorder'
-import Player from './components/Player.vue'
 
 const recorder = useRecorder()
-
-const playUrl = ref('')
 
 onMounted(() => {
   init()
@@ -32,10 +29,8 @@ function init() {
           // 这个callback是这个hooks用来处理内部的一些逻辑 需要手动调用
           callback()
           // 这部分就是用户自己的逻辑
-          window.useRecord.show() // 展示窗口
-          recorder.endRecording()
-          const blobList = recorder.getBlobList()
-          playUrl.value = URL.createObjectURL(new Blob(blobList, { type: 'video/webm' }))
+          recorder.saveFile() // 保存文件
+          window.useRecord.hide() // 隐藏录屏窗口
         })
       },
       // 当成功开始录制之后 我们需要更新图标 需要通知给圆形摄像头窗口和工具箱窗口
@@ -51,29 +46,6 @@ function init() {
   start()
 }
 
-function close() {
-  recorder.clearBlobList()
-  playUrl.value = ''
-  window.useRecord.hide()
-}
-
-function del() {
-  recorder.clearBlobList()
-  playUrl.value = ''
-  window.useRecord.hide()
-}
-
-// 下载还存在问题
-function download() {
-  const url = playUrl.value
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'video.webm'
-  a.click()
-  URL.revokeObjectURL(url)
-  a.remove()
-}
-
 window.useRecord.onRecordShow(async () => {
 
 })
@@ -84,11 +56,8 @@ window.useRecord.onRecordHide(async () => {
 
 <template>
   <NDialogProvider>
-    <div v-show="!playUrl" id="the_mask_wrapper" w-full h-full flex-center class="mask">
+    <div id="the_mask_wrapper" w-full h-full flex-center class="mask">
       <!-- svg -->
-    </div>
-    <div v-show="playUrl" flex-center class="video-container">
-      <Player v-if="playUrl" :url="playUrl" @close="close" @del="del" @download="download" />
     </div>
   </NDialogProvider>
 </template>
@@ -102,15 +71,5 @@ window.useRecord.onRecordHide(async () => {
   left: 0;
   width: 100%;
   height: 100%;
-}
-
-.video-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  background-color: rgba(0, 0, 0, 0.3);
 }
 </style>

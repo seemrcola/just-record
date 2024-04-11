@@ -1,9 +1,11 @@
+import { db } from './db'
+import { saveAs } from 'file-saver'
+
 // 这个文件是用来实现录屏的功能的，主要是使用 MediaRecorder API 来实现录屏的功能。
 const Kbps = 1000
 
 export function useRecorder(sliceTime = 1000) {
   let mediaRecorder: MediaRecorder | null = null
-  let blobList: Blob[] = []
   let displayStream: MediaStream | null = null
   let audioStream: MediaStream | null = null
 
@@ -50,8 +52,8 @@ export function useRecorder(sliceTime = 1000) {
     videoBitsPerSecond: 3000 * Kbps,
     audioBitsPerSecond: 128 * Kbps,
   }) {
-    // 先清空之前的记录
-    blobList = []
+    // 先清空之前的流
+    clearBlobList()
     // 将音频流合进来
     const source = await getScreenSource()
     displayStream = await getDisplayMedia(source.id)
@@ -72,11 +74,13 @@ export function useRecorder(sliceTime = 1000) {
   }
 
   function mediaRecorderListeners() {
+    if (!mediaRecorder)
+      return console.warn('mediaRecorder is not defined')
     // 数据可用监听
     mediaRecorder?.addEventListener('dataavailable', (e) => {
       if (e.data.size > 0)
-        blobList.push(e.data)
-      console.log('data available', e.data)
+        db.recordData.add({ name: 'recordData', data: e.data })
+      console.log('data available ========>', e.data)
     })
     // 结束录屏监听
     mediaRecorder?.addEventListener('stop', () => {
@@ -90,23 +94,12 @@ export function useRecorder(sliceTime = 1000) {
     audioStream?.getTracks().forEach(track => track.stop())
   }
 
-  function download(blobList: Blob[]) {
-    const blob = new Blob(blobList, { type: 'video/webm' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'video.webm'
-    a.click()
-    URL.revokeObjectURL(url)
-    a.remove()
-  }
-
   function getBlobList() {
-    return blobList
+    return db.recordData.toArray()
   }
 
   function clearBlobList() {
-    blobList = []
+    db.recordData.clear()
   }
 
   function clearRecorder() {
@@ -119,11 +112,22 @@ export function useRecorder(sliceTime = 1000) {
     clearRecorder()
   }
 
+  async function saveFile() {
+    const recordData = await getBlobList()
+    const blob: Blob[] = []
+    recordData.forEach((item: any) => {
+      blob.push(item.data)
+    })
+    const blobData = new Blob(blob, { type: 'video/webm' })
+    const fileName = `${'video'}.webm`
+    saveAs(blobData, fileName)
+  }
+
   return {
     mediaRecorder,
+    saveFile,
     startRecording,
     endRecording,
-    download,
     clear,
     getBlobList,
     clearBlobList,
