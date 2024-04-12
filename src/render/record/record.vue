@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useDialog } from 'naive-ui'
-import { useRecorder, useSvgRegion } from './composables'
+import { useRecorder, useSvgRegion, utils } from './composables'
 
 const dialog = useDialog()
 const recorder = useRecorder()
@@ -46,31 +46,13 @@ function init() {
 }
 
 async function saveFile() {
+  // 通知主进程保存文件
   const result = await window.useRecord.saveFile()
   if (result.filePath) {
     // 取出文件
     const recordData = await recorder.getBlobList()
-    const buffer: ArrayBuffer[] = []
-    const promiseList: Promise<void>[] = []
-    for (let i = 0; i < recordData.length; i++) {
-      const reader = new FileReader()
-      const blob = recordData[i]
-      const p = new Promise<void>((resolve) => {
-        reader.readAsArrayBuffer(blob.data)
-        reader.onload = () => {
-          buffer[i] = reader.result as ArrayBuffer
-          resolve()
-        }
-      })
-      promiseList.push(p)
-    }
-    await Promise.all(promiseList)
-    // 将buffer数组处理为一个buffer
-    const mergedBuffer = new Uint8Array(buffer.reduce((acc, cur) => acc + cur.byteLength, 0))
-    for (let i = 0, offset = 0; i < recordData.length; i++) {
-      mergedBuffer.set(new Uint8Array(buffer[i]), offset)
-      offset += buffer[i].byteLength
-    }
+    // 处理成一个buffer unit8array
+    const mergedBuffer = await utils.toUnit8Array(recordData)
     // 通知主进程进行下载
     const res = await window.useRecord.downloadFile(result.filePath, mergedBuffer)
     if (res) {
