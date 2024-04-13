@@ -71,17 +71,6 @@ export async function useRecord(recordWin: BrowserWindow) {
     }
   })
 
-  ipcMain.on('message', (event, { type, msg }) => {
-    // 发送给 摄像头的渲染进程 改变icon状态
-    if (type === 'change-icon') {
-      // 遍历所有窗口发送状态改变的消息
-      const allWindows = BrowserWindow.getAllWindows()
-      allWindows.forEach((win) => {
-        win.webContents.send('change-icon', msg) // change-icon 的 msg 是 boolean
-      })
-    }
-  })
-
   ipcMain.handle('getCaptureResource', async (event) => {
     const sources = await desktopCapturer.getSources({ types: ['screen', 'window'] })
     for (const source of sources) {

@@ -17,9 +17,6 @@ export function useRecord() {
     transparentClipWin: () => {
       return ipcRenderer.invoke('transparentClipWin')
     },
-    message: ({ type, msg }: { type: string, msg: any }) => {
-      ipcRenderer.send('message', { type, msg })
-    },
     getCaptureResource: () => {
       return ipcRenderer.invoke('getCaptureResource')
     },

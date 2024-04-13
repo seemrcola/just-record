@@ -32,13 +32,13 @@ function init() {
           saveFile()
         })
       },
-      // 当成功开始录制之后 我们需要更新图标 需要通知给圆形摄像头窗口和工具箱窗口
+      // 当成功开始录制之后 我们需要更新图标 需要通知给圆形摄像头窗口和工具箱窗口 这个相当于是成功之后的通用回调（可以做一些成功之后的公共逻辑）
       onStartRecordSuccess: () => {
-        return window.useRecord.message({ type: 'change-icon', msg: true })
+        // todo 可能会需要有什么操作
       },
-      // 当成功开始录制裁剪窗口之后 我们需要隐藏录屏窗口
+      // 当成功开始录制裁剪窗口之后 我们需要隐藏录屏窗口 这个相当于是裁剪录制的专属回调
       onStartClipRecordSuccess: () => window.useRecord.transparentClipWin(),
-      // 当成功开始录制全屏窗口之后 我们需要隐藏录屏窗口并显示透明的裁剪窗口
+      // 当成功开始录制全屏窗口之后 我们需要隐藏录屏窗口并显示透明的裁剪窗口 这个相当于是全屏录制的专属回调
       onStartFullRecordSuccess: () => window.useRecord.hide(),
     },
   )

@@ -36,7 +36,6 @@ interface Window {
     'hide': () => Promise<any>
     'start': (recordOptions: RecordOptions) => Promise<any>
     'stop': () => Promise<any>
-    'message': ({ type: string, msg: any }) => Promise<void>
     'transparentClipWin': () => Promise<any>
     'getCaptureResource': () => Promise<any>
 
