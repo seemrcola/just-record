@@ -65,13 +65,13 @@ async function saveFile() {
           // todo
           setTimeout(() => {
             window.useRecord.hide()
-          }, 1000)
+          }, 500)
         },
         onNegativeClick: () => {
           // todo
           setTimeout(() => {
             window.useRecord.hide()
-          }, 1000)
+          }, 500)
         },
       })
     }

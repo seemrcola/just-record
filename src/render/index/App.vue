@@ -17,10 +17,12 @@ onMounted(() => {
   run()
 })
 
-window.useDrag.onChangeIcon((msg: boolean) => {
-  if(msg) {
-    
-  }
+window.useRecord.onChangeIcon((msg: boolean) => {
+  console.log(msg, '-----------------')
+  if(msg) 
+    timer.value && timer.value.startTimer()
+  else 
+    timer.value && timer.value.stopTimer()
 })
 </script>
 

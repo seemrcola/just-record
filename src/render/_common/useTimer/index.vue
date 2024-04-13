@@ -10,6 +10,8 @@ const second = ref<string>('00')
 const interval = ref<NodeJS.Timeout | null>(null)
 
 function startTimer() {
+  stopTimer()
+  
   const startTime = dayjs()
   interval.value = setInterval(() => {
     const now = dayjs()
@@ -24,13 +26,21 @@ function startTimer() {
   }, 1000)
 }
 
-onBeforeUnmount(() => {
+function stopTimer() {
   if (interval.value)
     clearInterval(interval.value)
+  hour.value = '00'
+  minute.value = '00'
+  second.value = '00'
+}
+
+onBeforeUnmount(() => {
+  stopTimer()
 })
 
 defineExpose({
-  startTimer
+  startTimer,
+  stopTimer
 })
 </script>
 
