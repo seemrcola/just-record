@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { onBeforeUnmount, ref } from 'vue'
 import dayjs from 'dayjs'
 import Number from './useNumber.vue'
 
@@ -24,13 +24,13 @@ function startTimer() {
   }, 1000)
 }
 
-onMounted(() => {
-  startTimer()
-})
-
 onBeforeUnmount(() => {
   if (interval.value)
     clearInterval(interval.value)
+})
+
+defineExpose({
+  startTimer
 })
 </script>
 

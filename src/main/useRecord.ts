@@ -25,8 +25,11 @@ export async function useRecord(recordWin: BrowserWindow) {
   })
 
   ipcMain.handle('start', (e, recordOptions: RecordOptions) => {
-    // todo 可能有一些别的事要做
-    console.log('recordOptions', recordOptions)
+    // 获取所有窗口
+    const allWindows = BrowserWindow.getAllWindows()
+    allWindows.forEach((win) => {
+      win.webContents.send('change-icon', true) // change-icon 的 msg 是 boolean
+    })
   })
 
   ipcMain.handle('stop', async () => {
