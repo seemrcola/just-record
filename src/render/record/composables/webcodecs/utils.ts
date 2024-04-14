@@ -24,7 +24,7 @@ async function toUnit8Array(blobList: RecordData[]) {
 
   await Promise.all(promiseList)
 
-    // 将buffer数组处理为一个buffer
+  // 将buffer数组处理为一个buffer
   // 定一一个长度为所有buffer的总长度的buffer
   const mergedBuffer = new Uint8Array(buffer.reduce((acc, cur) => acc + cur.byteLength, 0))
   // 将buffer数组合并到一个buffer中
@@ -38,5 +38,5 @@ async function toUnit8Array(blobList: RecordData[]) {
 }
 
 export {
-  toUnit8Array
+  toUnit8Array,
 }

@@ -60,7 +60,7 @@ async function createWindow() {
   // 主页面window创建
   const [width, _] = getSize()
   win = new BrowserWindow({
-    width: 300,
+    width: 320,
     height: 48,
     x: width - 240,
     y: 100,

@@ -11,7 +11,7 @@ const interval = ref<NodeJS.Timeout | null>(null)
 
 function startTimer() {
   stopTimer()
-  
+
   const startTime = dayjs()
   interval.value = setInterval(() => {
     const now = dayjs()
@@ -40,7 +40,7 @@ onBeforeUnmount(() => {
 
 defineExpose({
   startTimer,
-  stopTimer
+  stopTimer,
 })
 </script>
 

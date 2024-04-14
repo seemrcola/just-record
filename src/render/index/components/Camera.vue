@@ -3,5 +3,5 @@
 </script>
 
 <template>
-  <div i-ic:outline-photo-camera text-light cursor-pointer />
+  <div i-material-symbols:screen-record-rounded text-light cursor-pointer />
 </template>
