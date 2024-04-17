@@ -5,13 +5,19 @@ import { NTooltip } from 'naive-ui'
 const recordingStatus = ref(false)
 
 function toggleRecording(status: 'show' | 'stop') {
+  console.log(status)
   window.useRecord[status]()
     .then(() => {})
     .catch(err => console.error(err))
 }
 
-window.useRecord.onChangeIcon((status: boolean) => {
-  recordingStatus.value = status
+window.useRecord.onStartRecord(() => {
+  console.log('ckhdvchjsdvc')
+  recordingStatus.value = true
+})
+window.useRecord.onStopRecord(() => {
+  console.log('ckhdvchjsdvc------------------')
+  recordingStatus.value = false
 })
 </script>
 

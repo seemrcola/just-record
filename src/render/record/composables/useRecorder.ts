@@ -35,7 +35,7 @@ export function useRecorder(sliceTime = 1000) {
         },
       },
       video: {
-      // @ts-expect-error
+        // @ts-expect-error
         mandatory: {
           chromeMediaSource: 'desktop',
           chromeMediaSourceId: sourceId,
@@ -48,7 +48,7 @@ export function useRecorder(sliceTime = 1000) {
   // 获取屏幕流
   async function startRecording(options: MediaRecorderOptions = {
     mimeType: 'video/webm; codecs=vp9',
-    videoBitsPerSecond: 3000 * Kbps,
+    videoBitsPerSecond: 2000 * Kbps,
     audioBitsPerSecond: 128 * Kbps,
   }) {
     // 先清空之前的流

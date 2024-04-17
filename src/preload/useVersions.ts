@@ -1,3 +1,4 @@
+import process from 'node:process'
 import { contextBridge } from 'electron'
 
 export function useVersions() {

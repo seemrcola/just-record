@@ -3,53 +3,53 @@ import { contextBridge, ipcRenderer } from 'electron'
 export function useRecord() {
   const api = {
     show: (flag: boolean = true) => {
-      return ipcRenderer.invoke('show', flag)
+      return ipcRenderer.invoke('recorder:show', flag)
     },
     hide: () => {
-      return ipcRenderer.invoke('hide')
+      return ipcRenderer.invoke('recorder:hide')
     },
     start: (recordOptions: RecordOptions) => {
-      return ipcRenderer.invoke('start', recordOptions)
+      return ipcRenderer.invoke('recorder:start', recordOptions)
     },
     stop: () => {
-      return ipcRenderer.invoke('stop')
+      return ipcRenderer.invoke('recorder:stop')
     },
     transparentClipWin: () => {
-      return ipcRenderer.invoke('transparentClipWin')
+      return ipcRenderer.invoke('recorder:transparentClipWin')
     },
     getCaptureResource: () => {
-      return ipcRenderer.invoke('getCaptureResource')
+      return ipcRenderer.invoke('recorder:getCaptureResource')
     },
 
     saveFile: () => {
-      return ipcRenderer.invoke('saveFile')
+      return ipcRenderer.invoke('recorder:saveFile')
     },
     downloadFile: (path: string, file: Uint8Array) => {
-      return ipcRenderer.invoke('downloadFile', {
+      return ipcRenderer.invoke('recorder:downloadFile', {
         path,
         file,
       })
     },
 
     // 主进程给渲染进程发送消息
-    onChangeIcon: (cb: (msg: any) => void) => {
-      ipcRenderer.on('change-icon', (event, msg) => {
-        cb(msg)
+    onStartRecord: (cb: () => void) => {
+      ipcRenderer.on('start-record', () => {
+        cb()
       })
     },
-    onStopRecord: (cb: (msg: any) => void) => {
-      ipcRenderer.on('stop-record', (event, msg) => {
-        cb(msg)
+    onStopRecord: (cb: () => void) => {
+      ipcRenderer.on('stop-record', () => {
+        cb()
       })
     },
-    onRecordShow: (cb: (msg: any) => void) => {
-      ipcRenderer.on('record-show', (event, msg) => {
-        cb(msg)
+    onRecordShow: (cb: () => void) => {
+      ipcRenderer.on('record-show', () => {
+        cb()
       })
     },
-    onRecordHide: (cb: (msg: any) => void) => {
-      ipcRenderer.on('record-hide', (event, msg) => {
-        cb(msg)
+    onRecordHide: (cb: () => void) => {
+      ipcRenderer.on('record-hide', () => {
+        cb()
       })
     },
   }

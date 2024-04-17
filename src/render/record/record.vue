@@ -25,7 +25,7 @@ function init() {
       },
       // 当点击停止录制的时候 调用 useRecord.stopRecord 方法
       onStopRecord: (callback: () => void) => {
-        window.useRecord.onStopRecord(async (msg) => {
+        window.useRecord.onStopRecord(async () => {
           // 这个callback是这个hooks用来处理内部的一些逻辑 需要手动调用
           callback()
           await recorder.endRecording() // 停止录制

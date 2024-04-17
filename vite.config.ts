@@ -68,6 +68,7 @@ export default defineConfig(({ command }) => {
           index: 'index.html',
           clip: 'clip.html',
           replay: 'replay.html',
+          camera: 'camera.html',
         },
       },
     },

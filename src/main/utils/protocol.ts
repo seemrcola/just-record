@@ -1,4 +1,5 @@
 import fs from 'node:fs'
+import process from 'node:process'
 import { protocol } from 'electron'
 
 // 注册协议

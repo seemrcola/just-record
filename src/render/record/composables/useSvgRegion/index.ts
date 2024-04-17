@@ -354,7 +354,7 @@ export function useSvgRegion(wrapper: string, regionLifeCycle: RegionLifeCycle) 
             // 其次需要通知index入口的页面来进行图标的改变
             regionLifeCycle.onStartRecordSuccess()
           })
-          .catch(err => alert(err))
+          .catch(err => console.error(err))
       },
     })
     recordBoxDom = document.createElement('div')

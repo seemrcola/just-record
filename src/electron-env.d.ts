@@ -24,10 +24,11 @@ interface Window {
     chrome: () => string
     electron: () => string
   }
+
   // expose in the `electron/preload/useDrag.ts`
   useDrag: {
     'drag': (opt: { x: number, y: number }) => void
-    'canvas:drag': (opt: { x: number, y: number }) => void
+    'camera:drag': (opt: { x: number, y: number }) => void
   }
 
   // expose in the `electron/preload/useRecord.ts`
@@ -42,9 +43,17 @@ interface Window {
     'saveFile': () => Promise<any>
     'downloadFile': (path: string, file: Uint8Array) => Promise<any>
 
-    'onChangeIcon': (cb: (msg: any) => void) => void
-    'onStopRecord': (cb: (msg: any) => void) => void
-    'onRecordShow': (cb: (msg: any) => void) => void
-    'onRecordHide': (cb: (msg: any) => void) => void
+    'onStartRecord': (cb: () => void) => void
+    'onStopRecord': (cb: () => void) => void
+    'onRecordShow': (cb: () => void) => void
+    'onRecordHide': (cb: () => void) => void
+  }
+
+  // expose in the `electron/preload/useCamera.ts`
+  useCamera: {
+    'open': () => Promise<any>
+    'close': () => Promise<any>
+    'onCameraOpened': (cb: () => void) => void
+    'onCameraClosed': (cb: () => void) => void
   }
 }

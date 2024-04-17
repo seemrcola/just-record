@@ -18,8 +18,12 @@ onMounted(() => {
   run()
 })
 
-window.useRecord.onChangeIcon((msg: boolean) => {
-  startTimer(msg)
+window.useRecord.onStartRecord(() => {
+  startTimer(true)
+})
+
+window.useRecord.onStopRecord(() => {
+  startTimer(false)
 })
 
 function startTimer(status: boolean) {

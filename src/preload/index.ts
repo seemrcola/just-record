@@ -2,6 +2,7 @@ import { useLoading } from './useLoading'
 import { useDrag } from './useDrag'
 import { useRecord } from './useRecord'
 import { useVersions } from './useVersions'
+import { useCamera } from './useCamera'
 import './ipcRender'
 
 // --------- Preload scripts loading ---------
@@ -34,3 +35,5 @@ useVersions()
 useDrag()
 // record------------
 useRecord()
+// camera-----------
+useCamera()
