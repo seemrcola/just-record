@@ -12,11 +12,9 @@ function toggleRecording(status: 'show' | 'stop') {
 }
 
 window.useRecord.onStartRecord(() => {
-  console.log('ckhdvchjsdvc')
   recordingStatus.value = true
 })
 window.useRecord.onStopRecord(() => {
-  console.log('ckhdvchjsdvc------------------')
   recordingStatus.value = false
 })
 </script>

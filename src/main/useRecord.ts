@@ -28,20 +28,19 @@ export async function useRecord(recordWin: BrowserWindow) {
     // 获取所有窗口
     const allWindows = BrowserWindow.getAllWindows()
     allWindows.forEach((win) => {
-      win.webContents.send('start-record', true) // change-icon 的 msg 是 boolean
+      win.webContents.send('start-record', true)
     })
   })
 
   ipcMain.handle('recorder:stop', async () => {
     // 将窗口不再设置成可穿透
     recordWin.setIgnoreMouseEvents(false)
-    // 录制结束事件发送
-    recordWin.webContents.send('stop-record')
+
     // 获取所有窗口
     const allWindows = BrowserWindow.getAllWindows()
-    // 状态改变事件发送 这里将状态改变和结束录制分成了两个事件
+    // 录制结束事件发送
     allWindows.forEach((win) => {
-      win.webContents.send('change-icon', false) // change-icon 的 msg 是 boolean
+      win.webContents.send('stop-record')
     })
   })
 
