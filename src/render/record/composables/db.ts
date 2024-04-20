@@ -15,6 +15,14 @@ class RecordDatabase extends Dexie {
       recordData: '++id, name, data',
     })
   }
+
+  public async addRecord(name: string, data: any) {
+    await this.recordData.add({ name, data })
+  }
+
+  public async getAllRecord(name: string) {
+    return await this.recordData.where('name').equals(name).toArray()
+  }
 }
 
 // 创建一个数据库，用于存储视频录制数据

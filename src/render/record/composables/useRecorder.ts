@@ -1,24 +1,21 @@
-import { db } from './db'
+const KBPS = 1_000
 
-// 这个文件是用来实现录屏的功能的，主要是使用 MediaRecorder API 来实现录屏的功能。
-const Kbps = 1000
+interface MediaRecorderCallbacks {
+  dataavailableCallback?: (data: Blob) => void
+  stopCallback?: () => void
+  startCallback?: () => void
+}
 
-export function useRecorder(sliceTime = 1000) {
+export function useRecorder(
+  sliceTime = 1000,
+  {
+    dataavailableCallback,
+    stopCallback,
+    startCallback,
+  }: MediaRecorderCallbacks) {
   let mediaRecorder: MediaRecorder | null = null
   let displayStream: MediaStream | null = null
   let audioStream: MediaStream | null = null
-
-  // 获取音频流
-  async function getAudioStream() {
-    // mac 系统下，录制音频需要额外使用别的工具 （但是在chrome插件里是可以做到录制麦克风音频的）
-    try {
-      const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-      return audioStream
-    }
-    catch (error) {
-      return new MediaStream()
-    }
-  }
 
   // 获取屏幕流id
   async function getScreenSource() {
@@ -45,22 +42,49 @@ export function useRecorder(sliceTime = 1000) {
     return stream
   }
 
-  // 获取屏幕流
-  async function startRecording(options: MediaRecorderOptions = {
-    mimeType: 'video/webm; codecs=vp9',
-    videoBitsPerSecond: 2000 * Kbps,
-    audioBitsPerSecond: 128 * Kbps,
-  }) {
-    // 先清空之前的流
-    clearBlobList()
-    // 将音频流合进来
+  async function getAudioStream() {
+    // mac 系统下，录制音频需要额外使用别的工具
+    try {
+      const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+      return audioStream
+    }
+    catch (error) {
+      return new MediaStream()
+    }
+  }
+
+  async function getDisplayStream() {
     const source = await getScreenSource()
-    displayStream = await getDisplayMedia(source.id)
-    audioStream = await getAudioStream()
-    // 合并音视频流
-    const combinedStream = new MediaStream([...displayStream.getTracks(), ...audioStream.getTracks()])
+    const stream = await getDisplayMedia(source.id)
+
+    /**************************** test  ****************************/
+    // 创建一个video播放 用于测试流是否正常
+    // const video = document.createElement('video')
+    // video.srcObject = stream
+    // video.autoplay = true
+    // document.body.appendChild(video)
+    // video.style.cssText = 'position: fixed; width: 400px; height: 300px;'
+    /**************************** test *****************************/
+
+    return stream
+  }
+
+  function combinedStream(videoStream: MediaStream, audioStream: MediaStream) {
+    return new MediaStream([...videoStream.getTracks(), ...audioStream.getTracks()])
+  }
+
+  // 获取屏幕流
+  async function startRecording(
+    stream: MediaStream,
+    options: MediaRecorderOptions = {
+      mimeType: "video/webm;codecs=vp9,opus",
+      videoBitsPerSecond: 2000 * KBPS,
+      audioBitsPerSecond: 128 * KBPS,
+    }) {
+    // 先清空之前的资源
+    clear()
     // 创建 MediaRecorder
-    mediaRecorder = new MediaRecorder(combinedStream, options)
+    mediaRecorder = new MediaRecorder(stream, options)
     // 监听一些其它操作
     mediaRecorderListeners()
     // 开始录屏
@@ -77,13 +101,23 @@ export function useRecorder(sliceTime = 1000) {
       return console.warn('mediaRecorder is not defined')
     // 数据可用监听
     mediaRecorder?.addEventListener('dataavailable', (e) => {
-      if (e.data.size > 0)
-        db.recordData.add({ name: 'recordData', data: e.data })
+      if (e.data.size > 0) {
+        dataavailableCallback?.(e.data)
+      }
       console.log('data available ========>', e.data)
     })
     // 结束录屏监听
     mediaRecorder?.addEventListener('stop', () => {
+      stopCallback?.()
       clear()
+    })
+    // 开始录屏监听
+    mediaRecorder?.addEventListener('start', () => {
+      startCallback?.()
+    })
+    // 错误监听
+    mediaRecorder?.addEventListener('error', (e) => {
+      console.error('media recorder error', e)
     })
   }
 
@@ -93,32 +127,13 @@ export function useRecorder(sliceTime = 1000) {
     audioStream?.getTracks().forEach(track => track.stop())
   }
 
-  function getBlobList() {
-    return db.recordData.toArray()
-  }
-
-  function clearBlobList() {
-    db.recordData.clear()
-  }
-
-  function clearRecorder() {
-    mediaRecorder = null
-  }
-
-  function clearAll() {
-    clear()
-    clearBlobList()
-    clearRecorder()
-  }
-
   return {
     mediaRecorder,
     startRecording,
     endRecording,
+    getDisplayStream,
+    getAudioStream,
+    combinedStream,
     clear,
-    getBlobList,
-    clearBlobList,
-    clearRecorder,
-    clearAll,
   }
 }
