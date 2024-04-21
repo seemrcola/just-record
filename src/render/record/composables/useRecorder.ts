@@ -1,3 +1,7 @@
+/**
+ * 当前bug记录，当调用mediaRecorder的start方法的时候，onstart并不会执行，反而是stop的时候onstart会执行
+ */
+
 const KBPS = 1_000
 
 interface MediaRecorderCallbacks {
@@ -86,8 +90,10 @@ export function useRecorder(
     // 先清空之前的资源
     clear()
     // 创建新的资源
-    mediaRecorder =generateMediaRecoder(stream, options)
-    // 开始录屏`
+    mediaRecorder = generateMediaRecoder(stream, options)
+    // 开始录屏
+    // todo 倒计时页面
+    await sleep(3000)
     mediaRecorder.start(timeSlice)
   }
 
@@ -106,11 +112,13 @@ export function useRecorder(
     }
     // 结束录屏监听
     mediaRecorder.onstop = () => {
+      console.log('media recorder stop')
       stopCallback?.()
       clear()
     }
     // 开始录屏监听
     mediaRecorder.onstart = () => {
+      console.log('media recorder start')
       startCallback?.()
     }
     // 错误监听
@@ -125,6 +133,10 @@ export function useRecorder(
     mediaRecorder?.stream.getTracks().forEach(track => track.stop())
     displayStream?.getTracks().forEach(track => track.stop())
     audioStream?.getTracks().forEach(track => track.stop())
+  }
+
+  async function sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms))
   }
 
   return {

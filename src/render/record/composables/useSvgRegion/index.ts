@@ -337,13 +337,13 @@ export function useSvgRegion(wrapper: string, regionLifeCycle: RegionLifeCycle) 
 
         // 开始录制
         regionLifeCycle.onStartRecord(recordOptions)
-          .then(() => {
+          .then(async () => {
             // 通用success回调
-            regionLifeCycle.onStartRecordSuccess()
+            await regionLifeCycle.onStartRecordSuccess()
 
             // 首先根据全屏录制还是区域录制来判断是否需要隐藏窗口
             if (currentRecorderType.value === 'window') {
-              regionLifeCycle.onStartFullRecordSuccess()
+              await regionLifeCycle.onStartFullRecordSuccess()
             }
             if (currentRecorderType.value === 'select') {
               // 需要删掉各种提示框
@@ -352,7 +352,7 @@ export function useSvgRegion(wrapper: string, regionLifeCycle: RegionLifeCycle) 
               // 去掉esc按钮的监听
               document.removeEventListener('keydown', escCallback)
               // 一般情况下需要 告诉窗口让它变成可穿透窗口
-              regionLifeCycle.onStartClipRecordSuccess()
+              await regionLifeCycle.onStartClipRecordSuccess()
             }
           })
           .catch(err => console.error(err))
