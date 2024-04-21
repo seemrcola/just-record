@@ -338,11 +338,14 @@ export function useSvgRegion(wrapper: string, regionLifeCycle: RegionLifeCycle) 
         // 开始录制
         regionLifeCycle.onStartRecord(recordOptions)
           .then(() => {
+            // 通用success回调
+            regionLifeCycle.onStartRecordSuccess()
+
             // 首先根据全屏录制还是区域录制来判断是否需要隐藏窗口
             if (currentRecorderType.value === 'window') {
               regionLifeCycle.onStartFullRecordSuccess()
             }
-            else {
+            if (currentRecorderType.value === 'select') {
               // 需要删掉各种提示框
               resizeBoxDom?.remove()
               recordBoxDom?.remove()
@@ -351,8 +354,6 @@ export function useSvgRegion(wrapper: string, regionLifeCycle: RegionLifeCycle) 
               // 一般情况下需要 告诉窗口让它变成可穿透窗口
               regionLifeCycle.onStartClipRecordSuccess()
             }
-            // 其次需要通知index入口的页面来进行图标的改变
-            regionLifeCycle.onStartRecordSuccess()
           })
           .catch(err => console.error(err))
       },

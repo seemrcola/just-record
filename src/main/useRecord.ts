@@ -71,14 +71,12 @@ export async function useRecord(recordWin: BrowserWindow) {
   })
 
   ipcMain.handle('recorder:getCaptureResource', async () => {
-    const sources = await desktopCapturer.getSources({ types: ['screen', 'window'] })
+    const sources = await desktopCapturer.getSources({ types: ['screen'] })
     for (const source of sources) {
       if (source.id === 'screen:1:0') {
         return {
-          id: source.id,
-          name: source.name,
+          ...source,
           thumbnail: source.thumbnail.toDataURL(),
-          display_id: source.display_id,
         }
       }
     }

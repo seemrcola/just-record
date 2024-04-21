@@ -7,15 +7,15 @@ interface MediaRecorderCallbacks {
 }
 
 export function useRecorder(
-  sliceTime = 1000,
   {
     dataavailableCallback,
     stopCallback,
     startCallback,
-  }: MediaRecorderCallbacks) {
+  }: MediaRecorderCallbacks,
+) {
   let mediaRecorder: MediaRecorder | null = null
-  let displayStream: MediaStream | null = null
-  let audioStream: MediaStream | null = null
+  const displayStream: MediaStream | null = null
+  const audioStream: MediaStream | null = null
 
   // 获取屏幕流id
   async function getScreenSource() {
@@ -57,14 +57,14 @@ export function useRecorder(
     const source = await getScreenSource()
     const stream = await getDisplayMedia(source.id)
 
-    /**************************** test  ****************************/
+    /** ************************** test  */
     // 创建一个video播放 用于测试流是否正常
     // const video = document.createElement('video')
     // video.srcObject = stream
     // video.autoplay = true
     // document.body.appendChild(video)
-    // video.style.cssText = 'position: fixed; width: 400px; height: 300px;'
-    /**************************** test *****************************/
+    // video.style.cssText = 'position: fixed; left: 0; top: 0; width: 400px; height: 300px; z-index: 9999'
+    /** ************************** test */
 
     return stream
   }
@@ -76,49 +76,49 @@ export function useRecorder(
   // 获取屏幕流
   async function startRecording(
     stream: MediaStream,
+    timeSlice: number = 1000,
     options: MediaRecorderOptions = {
-      mimeType: "video/webm;codecs=vp9,opus",
+      mimeType: 'video/webm;codecs=vp9,opus',
       videoBitsPerSecond: 2000 * KBPS,
       audioBitsPerSecond: 128 * KBPS,
-    }) {
+    },
+  ) {
     // 先清空之前的资源
     clear()
-    // 创建 MediaRecorder
-    mediaRecorder = new MediaRecorder(stream, options)
-    // 监听一些其它操作
-    mediaRecorderListeners()
-    // 开始录屏
-    mediaRecorder.start(sliceTime)
+    // 创建新的资源
+    mediaRecorder =generateMediaRecoder(stream, options)
+    // 开始录屏`
+    mediaRecorder.start(timeSlice)
   }
 
   function endRecording() {
-    if (mediaRecorder?.state === 'recording')
-      mediaRecorder?.stop()
+    mediaRecorder?.stop()
   }
 
-  function mediaRecorderListeners() {
-    if (!mediaRecorder)
-      return console.warn('mediaRecorder is not defined')
+  function generateMediaRecoder(stream: MediaStream, options: MediaRecorderOptions) {
+    const mediaRecorder = new MediaRecorder(stream, options)
+    console.log('media recorder options', mediaRecorder)
     // 数据可用监听
-    mediaRecorder?.addEventListener('dataavailable', (e) => {
-      if (e.data.size > 0) {
-        dataavailableCallback?.(e.data)
-      }
-      console.log('data available ========>', e.data)
-    })
+    mediaRecorder.ondataavailable = (e) => {
+      console.log('media recorder data available', e.data) 
+      if (e.data.size === 0) return
+      dataavailableCallback?.(e.data)
+    }
     // 结束录屏监听
-    mediaRecorder?.addEventListener('stop', () => {
+    mediaRecorder.onstop = () => {
       stopCallback?.()
       clear()
-    })
+    }
     // 开始录屏监听
-    mediaRecorder?.addEventListener('start', () => {
+    mediaRecorder.onstart = () => {
       startCallback?.()
-    })
+    }
     // 错误监听
-    mediaRecorder?.addEventListener('error', (e) => {
-      console.error('media recorder error', e)
-    })
+    mediaRecorder.onerror = (e) => {
+      console.log('media recorder error', e)
+    }
+
+    return mediaRecorder
   }
 
   function clear() {

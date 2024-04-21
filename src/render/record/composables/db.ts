@@ -23,6 +23,10 @@ class RecordDatabase extends Dexie {
   public async getAllRecord(name: string) {
     return await this.recordData.where('name').equals(name).toArray()
   }
+
+  public async deleteRecord(name: string) {
+    await this.recordData.where('name').equals(name).delete()
+  }
 }
 
 // 创建一个数据库，用于存储视频录制数据

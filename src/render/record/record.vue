@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useDialog } from 'naive-ui'
-import { useRecorder, useSvgRegion, utils, db } from './composables'
+import { db, useRecorder, useSvgRegion, utils } from './composables'
 
 const dialog = useDialog()
-const recorder = useRecorder(1000, {
+let rectOptions: RecordOptions
+
+const recorder = useRecorder({
   startCallback: () => { },
   stopCallback: () => { },
-  dataavailableCallback: (data) => db.addRecord('reacord-data', data)
+  dataavailableCallback: data => db.addRecord('reacord-data', data),
 })
-let rectOptions: RecordOptions
 
 onMounted(() => {
   init()
@@ -20,14 +21,13 @@ function init() {
     '#the_mask_wrapper',
     {
       // 当窗口展示的时候
-      winOnShow: () => { },
+      winOnShow: () => { /** todo 可能会需要有什么操作 */ },
       // 当窗口隐藏的时候 我们需要隐藏录屏窗口
       winOnHide: () => window.useRecord.hide(),
       // 当点击按钮录制的时候 调用 useRecord.startRecord 方法
       onStartRecord: async (recordOptions: RecordOptions) => {
         rectOptions = recordOptions
-        const displayStream = await recorder.getDisplayStream()
-        await recorder.startRecording(displayStream)
+        await db.deleteRecord('reacord-data')
         return window.useRecord.start(recordOptions)
       },
       // 当点击停止录制的时候 调用 useRecord.stopRecord 方法
@@ -45,7 +45,10 @@ function init() {
         })
       },
       // 当成功开始录制之后 我们需要更新图标 需要通知给圆形摄像头窗口和工具箱窗口 这个相当于是成功之后的通用回调（可以做一些成功之后的公共逻辑）
-      onStartRecordSuccess: () => { /** todo 可能会需要有什么操作 **/ },
+      onStartRecordSuccess: async () => {
+        const displayStream = await recorder.getDisplayStream()
+        await recorder.startRecording(displayStream)
+      },
       // 当成功开始录制裁剪窗口之后 我们需要隐藏录屏窗口 这个相当于是裁剪录制的专属回调
       onStartClipRecordSuccess: () => window.useRecord.transparentClipWin(),
       // 当成功开始录制全屏窗口之后 我们需要隐藏录屏窗口并显示透明的裁剪窗口 这个相当于是全屏录制的专属回调
