@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useDialog } from 'naive-ui'
-import { db, useRecorder, useSvgRegion, utils } from './composables'
+import { db, useRecorder, useSvgRegion, utils, useEncodeVideo } from './composables'
 
 const dialog = useDialog()
 let rectOptions: RecordOptions
@@ -10,6 +10,11 @@ const recorder = useRecorder({
   startCallback: () => { },
   stopCallback: () => { },
   dataavailableCallback: data => db.addRecord('record-data', data),
+})
+
+const encoder = useEncodeVideo({
+  outputCallback: data => clip(data, rectOptions),
+  errorCallback: error => console.error(error),
 })
 
 onMounted(() => {
@@ -32,9 +37,7 @@ function init() {
       // 当点击停止录制的时候 调用 useRecord.stopRecord 方法
       onStopRecord: (callback: () => void) => {
         window.useRecord.onStopRecord(async () => {
-          // 停止录制
           await recorder.endRecording()
-          // 处理录制文件
           saveFile()
 
           callback()
@@ -72,6 +75,10 @@ async function getDisplayStream() {
       },
     },
   })
+}
+
+function clip(data: EncodedVideoChunk, options: RecordOptions) {
+  console.log('clip', data, options)
 }
 
 async function saveFile() {
