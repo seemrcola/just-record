@@ -1,19 +1,13 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useDialog } from 'naive-ui'
-import { db, useRecorder, useSvgRegion, utils, useEncodeVideo } from './composables'
+import { db, useEncodeVideo, useSvgRegion } from './composables'
 
 const dialog = useDialog()
 let rectOptions: RecordOptions
 
-const recorder = useRecorder({
-  startCallback: () => { },
-  stopCallback: () => { },
-  dataavailableCallback: data => db.addRecord('record-data', data),
-})
-
 const encoder = useEncodeVideo({
-  outputCallback: data => clip(data, rectOptions),
+  outputCallback: data => saveChunk(data, rectOptions),
   errorCallback: error => console.error(error),
 })
 
@@ -25,33 +19,33 @@ function init() {
   const { start } = useSvgRegion(
     '#the_mask_wrapper',
     {
-      // 当窗口展示的时候
       winOnShow: () => { /** todo 可能会需要有什么操作 */ },
-      // 当窗口隐藏的时候 我们需要隐藏录屏窗口
       winOnHide: () => window.useRecord.hide(),
-      // 当点击按钮录制的时候 调用 useRecord.startRecord 方法
       onStartRecord: async (recordOptions: RecordOptions) => {
-        rectOptions = recordOptions // 保存录制参数
-        await db.deleteRecord('record-data') // 清空之前的录制数据
+        rectOptions = recordOptions
+        await db.deleteRecord('record-data')
       },
-      // 当点击停止录制的时候 调用 useRecord.stopRecord 方法
       onStopRecord: (callback: () => void) => {
         window.useRecord.onStopRecord(async () => {
-          await recorder.endRecording()
+          encoder.stopEncoding()
           saveFile()
-
           callback()
         })
       },
-      // 当成功开始录制之后 我们需要更新图标 需要通知给圆形摄像头窗口和工具箱窗口 这个相当于是成功之后的通用回调（可以做一些成功之后的公共逻辑）
       onStartRecordSuccess: async () => {
         const displayStream = await getDisplayStream()
-        await recorder.startRecording(displayStream) // 开始录制
-        await window.useRecord.start(rectOptions) // 通知主进程 让主进程通知所有窗口更新状态
+        if (rectOptions.fullScreen) {
+          const height = window.screen.height
+          const width = window.screen.width
+          encoder.encodeVideo(displayStream, {
+            width,
+            height,
+            codec: 'vp8',
+          })
+        }
+        window.useRecord.start(rectOptions) // 通知主进程 让主进程通知所有窗口更新状态
       },
-      // 当成功开始录制裁剪窗口之后 我们需要隐藏录屏窗口 这个相当于是裁剪录制的专属回调
       onStartClipRecordSuccess: () => window.useRecord.transparentClipWin(),
-      // 当成功开始录制全屏窗口之后 我们需要隐藏录屏窗口并显示透明的裁剪窗口 这个相当于是全屏录制的专属回调
       onStartFullRecordSuccess: () => window.useRecord.hide(),
     },
   )
@@ -77,45 +71,54 @@ async function getDisplayStream() {
   })
 }
 
-function clip(data: EncodedVideoChunk, options: RecordOptions) {
-  console.log('clip', data, options)
+async function saveChunk(chunk: EncodedVideoChunk, options: RecordOptions) {
+  const chunkData = new Uint8Array(chunk.byteLength)
+  chunk.copyTo(chunkData)
+  await db.addRecord('record-data', chunkData)
+}
+
+async function getChunkData() {
+  const recordData = await db.getAllRecord('record-data')
+  const uint8Arrays = recordData.map(item => new Uint8Array(item.data))
+  // 合并uint8Arrays
+  const mergedUint8Array = new Uint8Array(uint8Arrays.reduce((acc, cur) => acc + cur.length, 0))
+  let offset = 0
+  for (const uint8Array of uint8Arrays) {
+    mergedUint8Array.set(uint8Array, offset)
+    offset += uint8Array.length
+  }
+  return mergedUint8Array
 }
 
 async function saveFile() {
   // 通知主进程保存文件(主进程弹框)
   const result = await window.useRecord.saveFile()
-  if (result.filePath) {
-    // 取出文件
-    const recordData = await db.getAllRecord('record-data')
-    // 处理成一个buffer unit8array
-    const mergedBuffer = await utils.toUnit8Array(recordData)
-    // 通知主进程进行下载
-    const res = await window.useRecord.downloadFile(result.filePath, mergedBuffer)
-    if (res) {
-      dialog.warning({
-        title: '🔔提示',
-        content: '录屏文件已保',
-        positiveText: '预览',
-        negativeText: '关闭',
-        onPositiveClick: () => {
-          setTimeout(() => {
-            window.useRecord.hide()
-          }, 500)
-        },
-        onNegativeClick: () => {
-          setTimeout(() => {
-            window.useRecord.hide()
-          }, 500)
-        },
-      })
-    }
-    else {
-      window.useRecord.hide()
-    }
-  }
-  else {
+
+  if (!result.filePath)
     window.useRecord.hide()
-  }
+  // 合并保存文件
+  const mergedUint8Array = await getChunkData()
+  const res = await window.useRecord.downloadFile(result.filePath, mergedUint8Array)
+  // 下载文件失败
+  if (!res)
+    window.useRecord.hide()
+
+  dialog.warning({
+    title: '🔔提示',
+    content: '录屏文件已保',
+    positiveText: '预览',
+    negativeText: '关闭',
+    onPositiveClick: () => {
+      setTimeout(() => {
+        window.useRecord.hide()
+      }, 500)
+    },
+    onNegativeClick: () => {
+      setTimeout(() => {
+        window.useRecord.hide()
+      }, 500)
+    },
+  })
 }
 
 window.useRecord.onRecordShow(async () => {})

@@ -1,5 +1,4 @@
-import { createApp } from 'vue'
-import Countdown from '../components/Countdown.vue'
+import { useCountdown } from './useCountdown'
 
 const KBPS = 1_000
 
@@ -44,9 +43,8 @@ export function useRecorder(
     clear()
     // 创建新的资源
     mediaRecorder = generateMediaRecoder(stream, options)
-    // !! bug:这里记一个bug 必须要延迟一段时间才能够成功调用recorder.startRecording(displayStream)
     // 所以在这里做个倒计时
-    await countdonw()
+    await useCountdown()
     // 开始录屏
     mediaRecorder.start(timeSlice)
   }
@@ -78,20 +76,6 @@ export function useRecorder(
     }
 
     return mediaRecorder
-  }
-
-  async function countdonw() {
-    return new Promise((resolve) => {
-      const app = createApp(Countdown)
-      const fragment = document.createDocumentFragment()
-      app.mount(fragment as any)
-      document.body.appendChild(fragment)
-
-      setTimeout(() => {
-        resolve(true)
-        app.unmount()
-      }, 5000)
-    })
   }
 
   function clear() {
