@@ -3,6 +3,10 @@ import { onMounted } from 'vue'
 import { useDialog } from 'naive-ui'
 import { db, useEncodeVideo, useSvgRegion } from './composables'
 
+// 这里需要大改，将大部分功能迁移到web侧 
+// 逻辑需要改为先进行文件选择，在进行录制以及写入文件
+// 录制结束之后 文件就已经生成并处理好 此时可以选择预览文件
+
 const dialog = useDialog()
 let rectOptions: RecordOptions
 
