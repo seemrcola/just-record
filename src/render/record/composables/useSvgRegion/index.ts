@@ -34,7 +34,6 @@ export function useSvgRegion(wrapper: string, regionLifeCycle: RegionLifeCycle) 
 
   const wrapperElement = (document.querySelector(wrapper) || document.body) as HTMLElement
 
-  // ⚠️ 这里的宽高是屏幕的宽高 因为是全屏的 如果不是全屏 则需要除以缩放比例
   const WINDOW_WIDTH = window.innerWidth // 窗口宽度
   const WINDOW_HEIGHT = window.innerHeight // 窗口高度
   // 屏幕当前缩放比例
@@ -342,9 +341,9 @@ export function useSvgRegion(wrapper: string, regionLifeCycle: RegionLifeCycle) 
             await regionLifeCycle.onStartRecordSuccess()
 
             // 首先根据全屏录制还是区域录制来判断是否需要隐藏窗口
-            if (currentRecorderType.value === 'window') {
+            if (currentRecorderType.value === 'window')
               await regionLifeCycle.onStartFullRecordSuccess()
-            }
+
             if (currentRecorderType.value === 'select') {
               // 需要删掉各种提示框
               resizeBoxDom?.remove()

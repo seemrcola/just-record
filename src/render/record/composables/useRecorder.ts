@@ -1,6 +1,5 @@
-/**
- * 当前bug记录，当调用mediaRecorder的start方法的时候，onstart并不会执行，反而是stop的时候onstart会执行
- */
+import Countdown from '../components/Countdown.vue'
+import { createApp } from 'vue' 
 
 const KBPS = 1_000
 
@@ -21,60 +20,14 @@ export function useRecorder(
   const displayStream: MediaStream | null = null
   const audioStream: MediaStream | null = null
 
-  // 获取屏幕流id
-  async function getScreenSource() {
-    const source = await window.useRecord.getCaptureResource()
-    return source
-  }
-
-  async function getDisplayMedia(sourceId: string) {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      audio: {
-        // @ts-expect-error
-        mandatory: {
-          chromeMediaSource: 'desktop',
-        },
-      },
-      video: {
-        // @ts-expect-error
-        mandatory: {
-          chromeMediaSource: 'desktop',
-          chromeMediaSourceId: sourceId,
-        },
-      },
+  function combinedStream(...streams: MediaStream[]) {
+    const combined = new MediaStream()
+    streams.forEach((stream) => {
+      stream.getTracks().forEach((track) => {
+        combined.addTrack(track)
+      })
     })
-    return stream
-  }
-
-  async function getAudioStream() {
-    // mac 系统下，录制音频需要额外使用别的工具
-    try {
-      const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-      return audioStream
-    }
-    catch (error) {
-      return new MediaStream()
-    }
-  }
-
-  async function getDisplayStream() {
-    const source = await getScreenSource()
-    const stream = await getDisplayMedia(source.id)
-
-    /** ************************** test  */
-    // 创建一个video播放 用于测试流是否正常
-    // const video = document.createElement('video')
-    // video.srcObject = stream
-    // video.autoplay = true
-    // document.body.appendChild(video)
-    // video.style.cssText = 'position: fixed; left: 0; top: 0; width: 400px; height: 300px; z-index: 9999'
-    /** ************************** test */
-
-    return stream
-  }
-
-  function combinedStream(videoStream: MediaStream, audioStream: MediaStream) {
-    return new MediaStream([...videoStream.getTracks(), ...audioStream.getTracks()])
+    return combined
   }
 
   // 获取屏幕流
@@ -91,9 +44,9 @@ export function useRecorder(
     clear()
     // 创建新的资源
     mediaRecorder = generateMediaRecoder(stream, options)
+    // 倒计时
+    await countdonw()
     // 开始录屏
-    // todo 倒计时页面
-    await sleep(3000)
     mediaRecorder.start(timeSlice)
   }
 
@@ -103,22 +56,19 @@ export function useRecorder(
 
   function generateMediaRecoder(stream: MediaStream, options: MediaRecorderOptions) {
     const mediaRecorder = new MediaRecorder(stream, options)
-    console.log('media recorder options', mediaRecorder)
     // 数据可用监听
     mediaRecorder.ondataavailable = (e) => {
-      console.log('media recorder data available', e.data) 
-      if (e.data.size === 0) return
+      if (e.data.size === 0)
+        return
       dataavailableCallback?.(e.data)
     }
     // 结束录屏监听
     mediaRecorder.onstop = () => {
-      console.log('media recorder stop')
       stopCallback?.()
       clear()
     }
     // 开始录屏监听
     mediaRecorder.onstart = () => {
-      console.log('media recorder start')
       startCallback?.()
     }
     // 错误监听
@@ -129,22 +79,30 @@ export function useRecorder(
     return mediaRecorder
   }
 
+  async function countdonw() {
+    return new Promise((resolve) => {
+      const app = createApp(Countdown)
+      const fragment = document.createDocumentFragment()
+      app.mount(fragment as any)
+      document.body.appendChild(fragment)
+  
+      setTimeout(() => {
+        resolve(true)
+        app.unmount()
+      }, 5000)
+    })
+  }
+
   function clear() {
     mediaRecorder?.stream.getTracks().forEach(track => track.stop())
     displayStream?.getTracks().forEach(track => track.stop())
     audioStream?.getTracks().forEach(track => track.stop())
   }
 
-  async function sleep(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms))
-  }
-
   return {
     mediaRecorder,
     startRecording,
     endRecording,
-    getDisplayStream,
-    getAudioStream,
     combinedStream,
     clear,
   }

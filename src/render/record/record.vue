@@ -9,7 +9,7 @@ let rectOptions: RecordOptions
 const recorder = useRecorder({
   startCallback: () => { },
   stopCallback: () => { },
-  dataavailableCallback: data => db.addRecord('reacord-data', data),
+  dataavailableCallback: data => db.addRecord('record-data', data),
 })
 
 onMounted(() => {
@@ -26,9 +26,8 @@ function init() {
       winOnHide: () => window.useRecord.hide(),
       // 当点击按钮录制的时候 调用 useRecord.startRecord 方法
       onStartRecord: async (recordOptions: RecordOptions) => {
-        rectOptions = recordOptions
-        await db.deleteRecord('reacord-data')
-        return window.useRecord.start(recordOptions)
+        rectOptions = recordOptions          // 保存录制参数
+        await db.deleteRecord('record-data') // 清空之前的录制数据
       },
       // 当点击停止录制的时候 调用 useRecord.stopRecord 方法
       onStopRecord: (callback: () => void) => {
@@ -46,8 +45,9 @@ function init() {
       },
       // 当成功开始录制之后 我们需要更新图标 需要通知给圆形摄像头窗口和工具箱窗口 这个相当于是成功之后的通用回调（可以做一些成功之后的公共逻辑）
       onStartRecordSuccess: async () => {
-        const displayStream = await recorder.getDisplayStream()
-        await recorder.startRecording(displayStream)
+        const displayStream = await getDisplayStream()
+        await recorder.startRecording(displayStream) // 开始录制
+        await window.useRecord.start(rectOptions)    // 通知主进程 让主进程通知所有窗口更新状态
       },
       // 当成功开始录制裁剪窗口之后 我们需要隐藏录屏窗口 这个相当于是裁剪录制的专属回调
       onStartClipRecordSuccess: () => window.useRecord.transparentClipWin(),
@@ -58,12 +58,32 @@ function init() {
   start()
 }
 
+// !! bug:这里记一个bug 必须要延迟一段时间才能够成功调用recorder.startRecording(displayStream)
+async function getDisplayStream() {
+  const source = await window.useRecord.getCaptureResource()
+  return await navigator.mediaDevices.getUserMedia({
+    audio: {
+      // @ts-expect-error
+      mandatory: {
+        chromeMediaSource: 'desktop',
+      },
+    },
+    video: {
+      // @ts-expect-error
+      mandatory: {
+        chromeMediaSource: 'desktop',
+        chromeMediaSourceId: source.id,
+      },
+    },
+  })
+}
+
 async function saveFile() {
   // 通知主进程保存文件(主进程弹框)
   const result = await window.useRecord.saveFile()
   if (result.filePath) {
     // 取出文件
-    const recordData = await db.getAllRecord('reacord-data')
+    const recordData = await db.getAllRecord('record-data')
     // 处理成一个buffer unit8array
     const mergedBuffer = await utils.toUnit8Array(recordData)
     // 通知主进程进行下载
@@ -96,17 +116,11 @@ async function saveFile() {
 }
 
 async function clipFile() {
-  // 取出文件
-  const recordData = await db.getAllRecord('reacord-data')
-  console.log(recordData)
+
 }
 
-window.useRecord.onRecordShow(async () => {
-
-})
-window.useRecord.onRecordHide(async () => {
-
-})
+window.useRecord.onRecordShow(async () => {})
+window.useRecord.onRecordHide(async () => {})
 </script>
 
 <template>
