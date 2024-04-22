@@ -44,7 +44,8 @@ export function useRecorder(
     clear()
     // 创建新的资源
     mediaRecorder = generateMediaRecoder(stream, options)
-    // 倒计时
+    // !! bug:这里记一个bug 必须要延迟一段时间才能够成功调用recorder.startRecording(displayStream)
+    // 所以在这里做个倒计时
     await countdonw()
     // 开始录屏
     mediaRecorder.start(timeSlice)

@@ -55,7 +55,6 @@ function init() {
   start()
 }
 
-// !! bug:这里记一个bug 必须要延迟一段时间才能够成功调用recorder.startRecording(displayStream)
 async function getDisplayStream() {
   const source = await window.useRecord.getCaptureResource()
   return await navigator.mediaDevices.getUserMedia({
