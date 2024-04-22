@@ -1,5 +1,5 @@
+import { createApp } from 'vue'
 import Countdown from '../components/Countdown.vue'
-import { createApp } from 'vue' 
 
 const KBPS = 1_000
 
@@ -85,7 +85,7 @@ export function useRecorder(
       const fragment = document.createDocumentFragment()
       app.mount(fragment as any)
       document.body.appendChild(fragment)
-  
+
       setTimeout(() => {
         resolve(true)
         app.unmount()

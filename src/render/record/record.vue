@@ -26,28 +26,25 @@ function init() {
       winOnHide: () => window.useRecord.hide(),
       // 当点击按钮录制的时候 调用 useRecord.startRecord 方法
       onStartRecord: async (recordOptions: RecordOptions) => {
-        rectOptions = recordOptions          // 保存录制参数
+        rectOptions = recordOptions // 保存录制参数
         await db.deleteRecord('record-data') // 清空之前的录制数据
       },
       // 当点击停止录制的时候 调用 useRecord.stopRecord 方法
       onStopRecord: (callback: () => void) => {
         window.useRecord.onStopRecord(async () => {
-          // 这个callback是这个hooks用来处理内部的一些逻辑 需要手动调用
-          callback()
           // 停止录制
           await recorder.endRecording()
           // 处理录制文件
-          if (!rectOptions.fullScreen)
-            clipFile()
-          else
-            saveFile()
+          saveFile()
+
+          callback()
         })
       },
       // 当成功开始录制之后 我们需要更新图标 需要通知给圆形摄像头窗口和工具箱窗口 这个相当于是成功之后的通用回调（可以做一些成功之后的公共逻辑）
       onStartRecordSuccess: async () => {
         const displayStream = await getDisplayStream()
         await recorder.startRecording(displayStream) // 开始录制
-        await window.useRecord.start(rectOptions)    // 通知主进程 让主进程通知所有窗口更新状态
+        await window.useRecord.start(rectOptions) // 通知主进程 让主进程通知所有窗口更新状态
       },
       // 当成功开始录制裁剪窗口之后 我们需要隐藏录屏窗口 这个相当于是裁剪录制的专属回调
       onStartClipRecordSuccess: () => window.useRecord.transparentClipWin(),
@@ -91,7 +88,7 @@ async function saveFile() {
     if (res) {
       dialog.warning({
         title: '🔔提示',
-        content: '录屏文件已保 是否进行预览',
+        content: '录屏文件已保',
         positiveText: '预览',
         negativeText: '关闭',
         onPositiveClick: () => {
@@ -113,10 +110,6 @@ async function saveFile() {
   else {
     window.useRecord.hide()
   }
-}
-
-async function clipFile() {
-
 }
 
 window.useRecord.onRecordShow(async () => {})
