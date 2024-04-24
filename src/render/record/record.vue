@@ -30,7 +30,7 @@ function init() {
         window.useRecord.onStopRecord(async () => {
           callback()
           clear()
-          replay()
+          // replay()
         })
       },
       onStartRecordSuccess: async () => {
@@ -73,6 +73,7 @@ async function generateWebmFile(stream: MediaStream) {
   })
   // 获取到视频轨道
   const videoTrack = stream.getVideoTracks()[0]
+  console.log(videoTrack, 'videoTrack')
   // 获取到视频轨道的设置
   const trackSettings = videoTrack.getSettings()
   /**

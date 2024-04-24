@@ -681,9 +681,9 @@
       const seekPoints = {
         Cues: { id: new Uint8Array([0x1C, 0x53, 0xBB, 0x6B]), positionEBML: null },
         SegmentInfo:
-            { id: new Uint8Array([0x15, 0x49, 0xA9, 0x66]), positionEBML: null },
+          { id: new Uint8Array([0x15, 0x49, 0xA9, 0x66]), positionEBML: null },
         Tracks:
-            { id: new Uint8Array([0x16, 0x54, 0xAE, 0x6B]), positionEBML: null },
+          { id: new Uint8Array([0x16, 0x54, 0xAE, 0x6B]), positionEBML: null },
       }
 
       let ebmlSegment // Root element of the EBML document

@@ -15,7 +15,7 @@ async function startRecording(fileHandle, frameStream, trackSettings) {
   // 创建一个WebMWriter对象，用来写入WebM文件 这个文件后续再细看
   webmWriter = new WebMWriter({
     fileWriter: fileWritableStream,
-    codec: 'VP9',
+    codec: 'VP8',
     width: trackSettings.width,
     height: trackSettings.height
   });
@@ -35,7 +35,7 @@ async function startRecording(fileHandle, frameStream, trackSettings) {
   };
 
   const config = {
-    codec: "vp09.00.10.08",
+    codec: "vp08.00.10.08",
     width: trackSettings.width,
     height: trackSettings.height,
     bitrate: 30e6,
