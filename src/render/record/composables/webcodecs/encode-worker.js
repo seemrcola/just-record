@@ -13,6 +13,8 @@ async function startRecording(fileHandle, frameStream, trackSettings) {
   // https://developer.mozilla.org/zh-CN/docs/Web/API/FileSystemFileHandle
   fileWritableStream = await fileHandle.createWritable();
 
+  console.log('WebMWriter created', fileWritableStream)
+
   // 创建一个WebMWriter对象，用来写入WebM文件 这个文件后续再细看
   webmWriter = new WebMWriter({
     fileWriter: fileWritableStream,
