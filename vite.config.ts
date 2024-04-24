@@ -66,8 +66,7 @@ export default defineConfig(({ command }) => {
       rollupOptions: {
         input: {
           index: 'index.html',
-          clip: 'clip.html',
-          replay: 'replay.html',
+          record: 'record.html',
           camera: 'camera.html',
         },
       },

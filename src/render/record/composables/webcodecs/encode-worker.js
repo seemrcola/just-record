@@ -1,4 +1,14 @@
-import WebMWriter from './webm-writer2.js'
+import  './webm-writer2.js'
+
+// self.ArrayBufferDataStream = ExtendArrayBufferDataStream()
+// self.BlobBuffer = ExtendBlobBuffer()
+// self.WebMWriter = ExtendWebMWriter()
+
+console.log(self.ArrayBufferDataStream)
+console.log(self.BlobBuffer)
+console.log(self.WebMWriter)
+
+console.log('WebMWriter loaded')
 
 let webmWriter = null;
 let fileWritableStream = null;
@@ -6,6 +16,7 @@ let frameReader = null;
 
 async function startRecording(fileHandle, frameStream, trackSettings) {
   let frameCounter = 0;
+  console.log('Starting recording with settings:', trackSettings)
 
   // 来自window.showSaveFilePicker 返回一个句柄
   // 这个句柄可以用来写入文件
@@ -15,10 +26,12 @@ async function startRecording(fileHandle, frameStream, trackSettings) {
   // 创建一个WebMWriter对象，用来写入WebM文件 这个文件后续再细看
   webmWriter = new WebMWriter({
     fileWriter: fileWritableStream,
-    codec: 'VP8',
+    codec: 'VP9',
     width: trackSettings.width,
     height: trackSettings.height
   });
+
+  console.log('WebMWriter created', webmWriter)
 
   // 根据frameStream创建一个ReadableStreamReader对象，用来读取帧数据
   frameReader = frameStream.getReader();
@@ -35,7 +48,7 @@ async function startRecording(fileHandle, frameStream, trackSettings) {
   };
 
   const config = {
-    codec: "vp08.00.10.08",
+    codec: "vp09.00.10.08",
     width: trackSettings.width,
     height: trackSettings.height,
     bitrate: 30e6,
@@ -88,6 +101,7 @@ async function stopRecording() {
 }
 
 self.addEventListener('message', function (e) {
+  console.log('Worker received message:', e);
   switch (e.data.type) {
     case "start":
       startRecording(e.data.fileHandle, e.data.frameStream, e.data.trackSettings);
