@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted } from 'vue'
 import { useDialog } from 'naive-ui'
-import { useSvgRegion } from './composables'
+import { useCountdown, useSvgRegion } from './composables'
 
 let encodeWorker: Worker | undefined
-let stream = new MediaStream()
+let stream: MediaStream | undefined
+let videoTrack: MediaStreamTrack | undefined
 
 // 这里需要大改，将大部分功能迁移到web侧
 // 逻辑需要改为先进行文件选择，在进行录制以及写入文件
@@ -23,26 +24,21 @@ function init() {
     {
       winOnShow: () => { /** todo 可能会需要有什么操作 */ },
       winOnHide: () => window.useRecord.hide(),
+      // 点击开始按钮之后要做一些准备工作
       onStartRecord: async (recordOptions: RecordOptions) => {
         rectOptions = recordOptions
       },
       onStopRecord: (callback: () => void) => {
         window.useRecord.onStopRecord(async () => {
           callback()
-          clear()
-          // replay()
+          encodeWorker!.postMessage({ type: 'stop' })
         })
       },
       onStartRecordSuccess: async () => {
         stream = await getDisplayStream()
         if (rectOptions.fullScreen) {
-          // 创建一个文件 用于处理webm流
-          try {
-            await generateWebmFile(stream)
-          }
-          catch (error) {
-            return
-          }
+          try { await generateWebmFile(stream) }
+          catch (error) { return console.error(error) }
         }
         else {
           // todo
@@ -71,9 +67,11 @@ async function generateWebmFile(stream: MediaStream) {
       accept: { 'video/webm': ['.webm'] }, // 接受的类型
     }],
   })
+
+  await useCountdown()
+
   // 获取到视频轨道
-  const videoTrack = stream.getVideoTracks()[0]
-  console.log(videoTrack, 'videoTrack')
+  videoTrack = stream.getVideoTracks()[0]
   // 获取到视频轨道的设置
   const trackSettings = videoTrack.getSettings()
   /**
@@ -85,8 +83,11 @@ async function generateWebmFile(stream: MediaStream) {
   const trackProcessor = new MediaStreamTrackProcessor(videoTrack)
   // 获取到视频轨道的帧数据流 一个ReadableStream
   const frameStream = trackProcessor.readable
+
+  // Encoder I/O and file writing happens in a Worker to keep the UI
+  // responsive.
   const url = new URL('./composables/webcodecs/encode-worker.js', import.meta.url)
-  encodeWorker = new Worker(url, { type: 'module' })
+  encodeWorker = new Worker(url)
 
   // webworker 的 postMessage 方法可以传递多个参数，第二个参数是数组，表示这些参数是共享ArrayBuffer
   // https://developer.mozilla.org/zh-CN/docs/Web/API/Worker/postMessage
@@ -136,21 +137,8 @@ async function replay() {
   })
 }
 
-async function clear() {
-  if (encodeWorker) {
-    encodeWorker.terminate()
-    encodeWorker = undefined
-  }
-  if (stream)
-    stream.getTracks().forEach(track => track?.stop())
-}
-
 window.useRecord.onRecordShow(async () => {})
 window.useRecord.onRecordHide(async () => {})
-
-onUnmounted(() => {
-  clear()
-})
 </script>
 
 <template>

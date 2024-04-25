@@ -20,7 +20,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div w-full h-full>
+  <div w-full h-full bg-amber-500>
     <video ref="video" w-full h-full autoplay muted playsinline mirror />
   </div>
 </template>

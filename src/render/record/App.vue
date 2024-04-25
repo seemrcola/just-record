@@ -5,9 +5,11 @@ import Record from './Record.vue'
 </script>
 
 <template>
-  <NDialogProvider>
-    <div w-full h-full>
-      <Record />
-    </div>
-  </NDialogProvider>
+  <Suspense>
+    <NDialogProvider>
+      <div w-full h-full>
+        <Record />
+      </div>
+    </NDialogProvider>
+  </Suspense>
 </template>
