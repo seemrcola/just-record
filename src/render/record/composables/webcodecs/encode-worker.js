@@ -6,11 +6,6 @@ let frameReader = null
 
 async function startRecording(fileHandle, frameStream, trackSettings) {
   let frameCounter = 0
-  console.log(
-    fileHandle,
-    frameStream,
-    trackSettings,
-  )
 
   // 来自window.showSaveFilePicker 返回一个句柄
   // 这个句柄可以用来写入文件
@@ -27,11 +22,14 @@ async function startRecording(fileHandle, frameStream, trackSettings) {
 
   // 根据frameStream创建一个ReadableStreamReader对象，用来读取帧数据
   frameReader = frameStream.getReader()
-  console.log('WebMWriter created')
 
   const init = {
     // 当编码帧完成之后调用这个函数 用于写入WebM文件
     output: (chunk) => {
+      // todo
+      // 如果是区域录制 则需要额外做一次裁剪操作
+      crop(chunk)
+      // 将编码后的帧数据写入WebM文件
       webmWriter.addFrame(chunk)
     },
     error: (e) => {
@@ -43,7 +41,7 @@ async function startRecording(fileHandle, frameStream, trackSettings) {
     codec: 'vp09.00.10.08',
     width: trackSettings.width,
     height: trackSettings.height,
-    bitrate: 30e6,
+    bitrate: 60e6,
   }
 
   // 创建一个VideoEncoder对象，用来编码帧数据
@@ -57,7 +55,6 @@ async function startRecording(fileHandle, frameStream, trackSettings) {
   frameReader.read()
     .then(async function processFrame({ done, value }) {
       const frame = value
-      console.log(frame, 'frame')
 
       if (done) {
         await encoder.flush()
@@ -93,6 +90,10 @@ async function stopRecording() {
   frameReader = null
   webmWriter = null
   fileWritableStream = null
+}
+
+async function crop(chunk) {
+  console.log(chunk, '----------')
 }
 
 self.addEventListener('message', (e) => {

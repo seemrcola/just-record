@@ -267,8 +267,8 @@ export function useSvgRegion(wrapper: string, regionLifeCycle: RegionLifeCycle) 
     dragRect.setAttribute('fill', 'transparent')
     // 加个虚线边框
     dragRect.setAttribute('stroke', 'orange')
-    dragRect.setAttribute('stroke-width', '1')
-    dragRect.setAttribute('stroke-dasharray', '5 5')
+    dragRect.setAttribute('stroke-width', '2')
+    dragRect.setAttribute('stroke-dasharray', '10 5')
 
     return dragRect
   }
