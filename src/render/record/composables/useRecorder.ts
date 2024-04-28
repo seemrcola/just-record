@@ -16,8 +16,6 @@ export function useRecorder(
   }: MediaRecorderCallbacks,
 ) {
   let mediaRecorder: MediaRecorder | null = null
-  const displayStream: MediaStream | null = null
-  const audioStream: MediaStream | null = null
 
   function combinedStream(...streams: MediaStream[]) {
     const combined = new MediaStream()
@@ -80,8 +78,6 @@ export function useRecorder(
 
   function clear() {
     mediaRecorder?.stream.getTracks().forEach(track => track.stop())
-    displayStream?.getTracks().forEach(track => track.stop())
-    audioStream?.getTracks().forEach(track => track.stop())
   }
 
   return {
@@ -89,6 +85,5 @@ export function useRecorder(
     startRecording,
     endRecording,
     combinedStream,
-    clear,
   }
 }
