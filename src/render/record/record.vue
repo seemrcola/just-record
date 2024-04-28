@@ -1,11 +1,15 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted } from 'vue'
+import { nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { useDialog } from 'naive-ui'
-import { useSvgRegion, useRecorder, db } from './composables'
+import { db, useRecorder, useSvgRegion } from './composables'
+import Player from './components/Player.vue'
 
 let stream: MediaStream | null
 let fileWritableStream: any
 let rectOptions: RecordOptions
+
+const isReplay = ref(false)
+const playUrl = ref('')
 
 const dialog = useDialog()
 
@@ -17,9 +21,9 @@ const recorder = useRecorder({
   startCallback: () => {},
   stopCallback: () => {},
   dataavailableCallback: (recordData: Blob) => {
-    db.addRecord('record-data', recordData)
-    fileWritableStream.write(recordData)
-  }
+    db.addRecord('data-record', recordData)
+    fileWritableStream?.write(recordData)
+  },
 })
 
 function init() {
@@ -33,21 +37,22 @@ function init() {
       // 点击开始按钮之后要做一些准备工作
       onStartRecord: async (recordOptions: RecordOptions) => {
         rectOptions = recordOptions
-
-        await db.deleteRecord('record-data') // 清空db文件
-        stream = await getDisplayStream() // 重新获取屏幕流
-        const fileHandle = await generateWebmFile() // 生成webm文件
-        fileWritableStream = await fileHandle.createWritable(); // 创建可写流
-        await recorder.startRecording(stream) // 开始录屏
+        await db.deleteRecord('data-record')
+        if (rectOptions.fullScreen)
+          await recordFullScreen()
+        else await recordClip()
       },
       onStopRecord: (callback: () => void) => {
         window.useRecord.onStopRecord(async () => {
           callback()
+
           recorder.endRecording()
           fileWritableStream.close()
-          fileWritableStream = null
           stream?.getTracks().forEach(track => track.stop())
           stream = null
+          fileWritableStream = null
+
+          replay()
         })
       },
       onStartRecordSuccess: async () => {
@@ -58,6 +63,52 @@ function init() {
     },
   )
   start()
+}
+
+async function recordFullScreen() {
+  stream = await getDisplayStream() // 重新获取屏幕流
+  const fileHandle = await generateWebmFile() // 生成webm文件
+  fileWritableStream = await fileHandle.createWritable() // 创建可写流
+  await recorder.startRecording(stream) // 开始录屏
+}
+
+async function recordClip() {
+  stream = await getDisplayStream() // 重新获取屏幕流
+  const fileHandle = await generateWebmFile() // 生成webm文件
+  fileWritableStream = await fileHandle.createWritable() // 创建可写流
+
+  // 创建一个canvas
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')!
+  canvas.width = rectOptions.width
+  canvas.height = rectOptions.height
+
+  // 创建一个video
+  const videoElement = document.createElement('video')
+  videoElement.srcObject = stream
+  videoElement.play()
+
+  await nextTick() // 等待video加载完毕
+
+  // 绘制canvas画面
+  drawVideoToCanvas(videoElement)
+  // 录制canvas流
+  await recorder.startRecording(canvas.captureStream())
+
+  function drawVideoToCanvas(videoElement: HTMLVideoElement) {
+    ctx.drawImage(
+      videoElement,
+      rectOptions.x,
+      rectOptions.y,
+      rectOptions.width,
+      rectOptions.height,
+      0,
+      0,
+      rectOptions.width,
+      rectOptions.height,
+    )
+    requestAnimationFrame(() => drawVideoToCanvas(videoElement))
+  }
 }
 
 async function generateWebmFile() {
@@ -95,43 +146,70 @@ async function getDisplayStream() {
       },
     },
   })
-  const audioStream = await navigator.mediaDevices.getUserMedia({video: false, audio: true})
+  const audioStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true })
   const combinedStream = recorder.combinedStream(videoStream, audioStream)
   return combinedStream
 }
 
-async function replay() {
+function replay() {
+  // 重新打开窗口 确保窗口打开
+  window.useRecord.show()
   dialog.warning({
     title: '🔔提示',
     content: '录屏文件已保',
     positiveText: '预览',
     negativeText: '关闭',
     onPositiveClick: () => {
-      setTimeout(() => {
-        window.useRecord.hide()
-      }, 500)
+      setTimeout(async () => {
+        // 打开Player
+        isReplay.value = true
+
+        // 生成url
+        const allRecords = await db.getAllRecord('data-record')
+        const blob = new Blob(allRecords.map(record => record.data), { type: 'video/webm' })
+        const url = URL.createObjectURL(blob)
+        playUrl.value = url
+      }, 0)
     },
     onNegativeClick: () => {
       setTimeout(() => {
-        window.useRecord.hide()
-      }, 500)
+        closePlayer()
+      }, 200)
     },
   })
+}
+
+function closePlayer() {
+  isReplay.value = false
+  playUrl.value = ''
+  window.useRecord.hide()
 }
 
 window.useRecord.onRecordShow(async () => {})
 window.useRecord.onRecordHide(async () => {})
 
+let closeListener: (e: KeyboardEvent) => void
+window.addEventListener('keydown', closeListener = (e) => {
+  if (e.key === 'Escape')
+    closePlayer()
+})
+
 onUnmounted(() => {
   recorder?.endRecording()
   fileWritableStream?.close()
   fileWritableStream = null
+  window.removeEventListener('keydown', closeListener)
 })
 </script>
 
 <template>
-  <div id="the_mask_wrapper" w-full h-full flex-center class="mask">
+  <div w-full h-full>
+    <div v-show="!isReplay" id="the_mask_wrapper" w-full h-full flex-center bg-transparent class="mask">
     <!-- svg -->
+    </div>
+    <div v-show="isReplay" class="replay-mask mask" w-full h-full flex-center>
+      <Player v-if="playUrl" :url="playUrl" @close="closePlayer" />
+    </div>
   </div>
 </template>
 
@@ -139,10 +217,12 @@ onUnmounted(() => {
 .mask {
   position: fixed;
   overflow: hidden;
-  background: transparent;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+}
+.replay-mask {
+  background-color: rgba(0, 0, 0, 0.3);
 }
 </style>

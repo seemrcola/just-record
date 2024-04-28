@@ -324,10 +324,10 @@ export function useSvgRegion(wrapper: string, regionLifeCycle: RegionLifeCycle) 
         const y = Number(hole.getAttribute('y'))
         const recordOptions = {
           fullScreen: currentRecorderType.value === 'window',
-          x: x * scale,
-          y: y * scale,
-          width: Number(hole.getAttribute('width')) * scale + 2 * scale,
-          height: Number(hole.getAttribute('height')) * scale + 2 * scale,
+          x,
+          y,
+          width: Number(hole.getAttribute('width')),
+          height: Number(hole.getAttribute('height')),
         }
         // 去掉hole的边框颜色
         hole.setAttribute('stroke', 'transparent')
