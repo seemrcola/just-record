@@ -40,7 +40,8 @@ function init() {
         await db.deleteRecord('data-record')
         if (rectOptions.fullScreen)
           await recordFullScreen()
-        else await recordClip()
+        else 
+          await recordClip()
       },
       onStopRecord: (callback: () => void) => {
         window.useRecord.onStopRecord(async () => {
