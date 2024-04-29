@@ -22,13 +22,11 @@ ffmpeg -i input.jpg -vf "scale=512:512" output.jpg
 目前我将渲染进程的依赖写入了`package.json`的`devDependencies`字段。
 只有主进程的依赖才应该放在`dependencies`字段。
 
-### bug
-mac上录制不到音频
 
 ### 灵感来自
 https://github.com/027xiguapi/pear-rec
 仅实现这个项目的其中一个小功能，即录制功能。
 
 ### bug
-目前打包还存在问题  无法开启录制
-目前麦克风的音频轨道没有录制进去
+- 目前打包还存在问题  无法开启录制
+- 目前麦克风的音频轨道没有录制进去
