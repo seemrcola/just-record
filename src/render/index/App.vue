@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue'
 import RecordBar from './components/RecordBar.vue'
 import Camera from './components/Camera.vue'
-import Settings from './components/Settings.vue'
+import Screenshot from './components/Screenshot.vue'
 import Clock from './components/Clock.vue'
 import { Timer, useDrag } from './composables'
 
@@ -41,7 +41,7 @@ function startTimer(status: boolean) {
       <Timer ref="timer" h-28px w-160px mx-3 />
       <Clock h-6 w-6 mr-3 @start-timer="startTimer" />
       <Camera h-6 w-6 mr-3 />
-      <Settings h-6 w-6 />
+      <Screenshot h-5 w-5 />
     </div>
   </Suspense>
 </template>

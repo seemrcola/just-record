@@ -5,12 +5,14 @@ import { fileURLToPath } from 'node:url'
 import { BrowserWindow, app, ipcMain, screen, shell } from 'electron'
 import { useRecordWindow } from './windows/useRecordWindow'
 import { useCameraWindow } from './windows/useCameraWindow'
+import { useScreenshotWindow } from './windows/useScreenshotWindow'
 
 import { shim } from './utils/platform'
 import { protocolHandle } from './utils/protocol'
 import { useCameraDrag, useDrag } from './useDrag'
 import { useRecord } from './useRecord'
 import { useCamera } from './useCamera'
+import { useScreenshot } from './useScreenshot'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -85,6 +87,8 @@ async function createWindow() {
   const recordWindow = await useRecordWindow()
   // cameraWindow
   const cameraWindow = await useCameraWindow()
+  // screenshotWindow
+  const screenshotWindow = await useScreenshotWindow()
 
   // keep ratio
   win.setAspectRatio(1)
@@ -95,6 +99,8 @@ async function createWindow() {
   useRecord(recordWindow)
   // camera
   useCamera(cameraWindow)
+  // screenshot
+  useScreenshot(screenshotWindow)
 
   if (process.env.VITE_DEV_SERVER_URL) {
     await win.loadURL(url)

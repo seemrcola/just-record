@@ -56,4 +56,12 @@ interface Window {
     'onCameraOpened': (cb: () => void) => void
     'onCameraClosed': (cb: () => void) => void
   }
+
+  // expose in the `electron/preload/useScreenshot.ts`
+  useScreenshot: {
+    'open': () => Promise<any>
+    'close': () => Promise<any>
+    'onScreenshotOpened': (cb: () => void) => void
+    'onScreenshotClosed': (cb: () => void) => void
+  }
 }
