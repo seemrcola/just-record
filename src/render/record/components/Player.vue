@@ -49,6 +49,6 @@ onMounted(() => {
       hover="scale-110 bg-orange" i-mdi:close-box
       @click="close()"
     />
-    <video ref="video" controls playsinline autoplay muted b="2px solid orange" />
+    <video ref="video" controls playsinline autoplay b="2px solid orange" />
   </div>
 </template>
