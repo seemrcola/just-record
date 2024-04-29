@@ -29,4 +29,3 @@ https://github.com/027xiguapi/pear-rec
 
 ### bug
 - 目前打包还存在问题  无法开启录制
-- 目前麦克风的音频轨道没有录制进去

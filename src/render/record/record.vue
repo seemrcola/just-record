@@ -94,7 +94,10 @@ async function recordClip() {
   // 绘制canvas画面
   drawVideoToCanvas(videoElement)
   // 录制canvas流
-  await recorder.startRecording(canvas.captureStream())
+  const canvasStream = canvas.captureStream()
+  const audioStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true })
+  const combinedStream = recorder.combinedStream(canvasStream, audioStream)
+  await recorder.startRecording(combinedStream)
 
   function drawVideoToCanvas(videoElement: HTMLVideoElement) {
     ctx.drawImage(
@@ -133,12 +136,7 @@ async function generateWebmFile() {
 async function getDisplayStream() {
   const source = await window.useRecord.getCaptureResource()
   const videoStream = await navigator.mediaDevices.getUserMedia({
-    audio: {
-      // @ts-expect-error
-      mandatory: {
-        chromeMediaSource: 'desktop',
-      },
-    },
+    audio: false,
     video: {
       // @ts-expect-error
       mandatory: {
