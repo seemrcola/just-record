@@ -1,6 +1,9 @@
 <script setup lang='ts'>
 import { useDrawRect } from '../composables/drawRect'
-import { onMounted } from 'vue'
+import { useDragRect } from '../composables/dragRect';
+import { onMounted , ref} from 'vue'
+
+const mode = ref<'draw' | 'drag'>('draw')
 
 function handleClick(event: MouseEvent) {
   const pos = (event.target as HTMLElement).dataset.pos;
@@ -9,13 +12,16 @@ function handleClick(event: MouseEvent) {
 
 onMounted(() => {
   const box = document.querySelector('.rect') as HTMLElement;
-  const { startDraw } = useDrawRect(box);
+  const { startDraw } = useDrawRect(box, mode);
+  const { startDrag } = useDragRect(box, mode);
   startDraw();
+  startDrag();
 })
 </script>
 
 <template>
   <div class="rect">
+    <!-- 这里是缩放区域 -->
     <div @click="handleClick" class="box">
       <div class="l" data-pos="left"></div>
       <div class="r" data-pos="right"></div>

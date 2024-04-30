@@ -75,7 +75,7 @@ export async function useRecordWindow() {
 
   if (process.env.VITE_DEV_SERVER_URL) {
     await childWindow.loadURL(`${url}record.html`)
-    childWindow.webContents.openDevTools({ mode: 'detach' })
+    0 && childWindow.webContents.openDevTools({ mode: 'detach' })
   }
 
   else { await childWindow.loadFile(recordHtml) }

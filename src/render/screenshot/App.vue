@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, createApp, App, ref } from 'vue';
+import { onMounted, onUnmounted, createApp, App, ref, nextTick } from 'vue';
 import { NDialogProvider } from 'naive-ui'
 import Rect from './components/Rect.vue'
 
@@ -16,9 +16,11 @@ function escHandler(event: KeyboardEvent) {
 }
 
 function backgroundImage(thumbnail: string) {
+  img?.remove()
   img = document.createElement('img');
   img.src = thumbnail;
   img.style.cssText = `
+    pointer-events: none;
     position: fixed;
     top: 0;
     left: 0;
@@ -28,20 +30,21 @@ function backgroundImage(thumbnail: string) {
   document.body.appendChild(img);
 }
 
-function drawRect() {
+async function drawRect() {
+  rect?.unmount()
   const app = createApp(Rect);
-  app.mount(wrapper.value!);
+  app.mount(wrapper.value!)
   rect = app
 }
 
 window.useScreenshot.onScreenshotOpened(async (thumbnail: string) => {
   backgroundImage(thumbnail)
-  drawRect()
+  await drawRect()
 })
 
 window.useScreenshot.onScreenshotClosed(() => {
-  document.body.removeChild(img);
-  rect.unmount();
+  img?.remove()
+  rect?.unmount()
 })
 
 onMounted(() => window.addEventListener('keydown', escHandler));
@@ -59,5 +62,11 @@ onUnmounted(() => window.removeEventListener('keydown', escHandler));
 <style scoped>
 .bg {
   background: rgba(0, 0, 0, 0.3);
+  z-index: 1;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 </style>

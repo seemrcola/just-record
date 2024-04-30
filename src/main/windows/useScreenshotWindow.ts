@@ -40,13 +40,6 @@ export async function useScreenshotWindow() {
     title: 'ScreenShot',
     show: false,
 
-    // movable: false,
-    // frame: false,
-    // resizable: false,
-    // fullscreen: platform === 'win',
-    // transparent: true,
-    // simpleFullscreen: true,
-
     movable: false, // 是否可移动
     frame: false, // 无边框窗口
     resizable: false, // 窗口大小是否可调整

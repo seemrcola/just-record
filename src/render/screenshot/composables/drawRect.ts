@@ -1,4 +1,5 @@
-export function useDrawRect(dom: HTMLElement) {
+import { Ref } from 'vue';
+export function useDrawRect(dom: HTMLElement, mode: Ref<'draw' | 'drag'>) {
   let startflag = false;
   let start = {
     x: 0,
@@ -25,6 +26,8 @@ export function useDrawRect(dom: HTMLElement) {
 
   function mousemoveHanlder(e: MouseEvent) {
     if(!startflag) return;
+    if(mode.value !== 'draw') return 
+
     e.preventDefault();
 
     const {pageX, pageY} = e;
@@ -45,6 +48,7 @@ export function useDrawRect(dom: HTMLElement) {
 
   function stopDraw() {
     document.removeEventListener('mousedown', mousedownHanlder);
+    mode.value = 'drag';
   }
 
   return {

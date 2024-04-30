@@ -26,7 +26,7 @@ export function useScreenshot(win: BrowserWindow) {
     const allWindows = BrowserWindow.getAllWindows()
     // 遍历窗口通知所有窗口已经打开摄像头
     allWindows.forEach((window) => {
-      if(window.title === 'ScreenShot') {
+      if(true) {
         window.webContents.send('shot-opened', { thumbnail })
       }
     })

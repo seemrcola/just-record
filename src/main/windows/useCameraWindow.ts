@@ -58,7 +58,7 @@ export async function useCameraWindow() {
 
   if (process.env.VITE_DEV_SERVER_URL) {
     await childWindow.loadURL(`${url}camera.html`)
-    childWindow.webContents.openDevTools({ mode: 'detach' })
+    0 && childWindow.webContents.openDevTools({ mode: 'detach' })
   }
 
   else { await childWindow.loadFile(cameraHtml) }
