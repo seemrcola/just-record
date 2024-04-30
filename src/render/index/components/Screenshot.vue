@@ -20,6 +20,8 @@ window.useScreenshot.onScreenshotClosed(() => {
 </script>
 
 <template>
-  <div i-icon-park-twotone:screenshot-two text-light cursor-pointer :class="{ 'bg-red': isScreenshot }"
-    @click="handleClick" />
+  <div
+    i-icon-park-twotone:screenshot-two text-light cursor-pointer :class="{ 'bg-red': isScreenshot }"
+    @click="handleClick"
+  />
 </template>

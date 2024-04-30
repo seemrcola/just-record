@@ -11,7 +11,7 @@ export function useScreenshot() {
     },
 
     onScreenshotOpened: (cb: (thumbnail: string) => void) => {
-      ipcRenderer.on('shot-opened', (e, {thumbnail}) => {
+      ipcRenderer.on('shot-opened', (e, { thumbnail }) => {
         cb(thumbnail)
       })
     },

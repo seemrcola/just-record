@@ -1,4 +1,4 @@
-import { BrowserWindow, desktopCapturer,ipcMain, screen } from 'electron'
+import { BrowserWindow, desktopCapturer, ipcMain, screen } from 'electron'
 
 function getSize() {
   const { size, scaleFactor } = screen.getPrimaryDisplay()
@@ -8,13 +8,13 @@ function getSize() {
 export function useScreenshot(win: BrowserWindow) {
   ipcMain.handle('shot:open', async () => {
     win.show()
-  
+
     // 获取全屏截图
     let thumbnail: string | null = null
     const [width, height] = getSize()
     const sources = await desktopCapturer.getSources({
-       types: ['screen'] , 
-       thumbnailSize: { width, height }
+      types: ['screen'],
+      thumbnailSize: { width, height },
     })
     for (const source of sources) {
       if (source.id === 'screen:1:0') {
@@ -26,9 +26,8 @@ export function useScreenshot(win: BrowserWindow) {
     const allWindows = BrowserWindow.getAllWindows()
     // 遍历窗口通知所有窗口已经打开摄像头
     allWindows.forEach((window) => {
-      if(true) {
+      if (true)
         window.webContents.send('shot-opened', { thumbnail })
-      }
     })
   })
 

@@ -1,36 +1,41 @@
 <script setup lang='ts'>
+import { onMounted, ref } from 'vue'
 import { useDrawRect } from '../composables/drawRect'
-import { useDragRect } from '../composables/dragRect';
-import { onMounted , ref} from 'vue'
+import { useDragRect } from '../composables/dragRect'
 
 const mode = ref<'draw' | 'drag'>('draw')
+let drag: ReturnType<typeof useDragRect>
+let draw: ReturnType<typeof useDrawRect>
 
 function handleClick(event: MouseEvent) {
-  const pos = (event.target as HTMLElement).dataset.pos;
-  console.log(pos);
+  const pos = (event.target as HTMLElement).dataset.pos
+  console.log(pos)
 }
 
 onMounted(() => {
-  const box = document.querySelector('.rect') as HTMLElement;
-  const { startDraw } = useDrawRect(box, mode);
-  const { startDrag } = useDragRect(box, mode);
-  startDraw();
-  startDrag();
+  const box = document.querySelector('.rect') as HTMLElement
+  const screenshot = document.querySelector('.screenshot') as HTMLCanvasElement
+  draw = useDrawRect(box, screenshot, mode)
+  drag = useDragRect(box, screenshot, mode)
+  draw.startDraw()
+  drag.startDrag()
 })
 </script>
 
 <template>
   <div class="rect">
+    <!-- 这里是截图区域 -->
+    <canvas class="screenshot" fixed z-99 />
     <!-- 这里是缩放区域 -->
-    <div @click="handleClick" class="box">
-      <div class="l" data-pos="left"></div>
-      <div class="r" data-pos="right"></div>
-      <div class="t" data-pos="top"></div>
-      <div class="b" data-pos="bottom"></div>
-      <div class="lt" data-pos="left-top"></div>
-      <div class="lb" data-pos="left-bottom"></div>
-      <div class="rt" data-pos="right-top"></div>
-      <div class="rb" data-pos="right-bottom"></div>
+    <div class="box" @click="handleClick">
+      <div class="l" data-pos="left" />
+      <div class="r" data-pos="right" />
+      <div class="t" data-pos="top" />
+      <div class="b" data-pos="bottom" />
+      <div class="lt" data-pos="left-top" />
+      <div class="lb" data-pos="left-bottom" />
+      <div class="rt" data-pos="right-top" />
+      <div class="rb" data-pos="right-bottom" />
     </div>
   </div>
 </template>
@@ -40,8 +45,7 @@ onMounted(() => {
   box-sizing: border-box;
   border: 2px dashed orange;
   position: fixed;
-  z-index: 9999;
-  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9;
 }
 
 .box>div {

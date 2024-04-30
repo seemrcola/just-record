@@ -22,7 +22,6 @@ ffmpeg -i input.jpg -vf "scale=512:512" output.jpg
 目前我将渲染进程的依赖写入了`package.json`的`devDependencies`字段。
 只有主进程的依赖才应该放在`dependencies`字段。
 
-
 ### 灵感来自
 https://github.com/027xiguapi/pear-rec
 仅实现这个项目的其中一个小功能，即录制功能。

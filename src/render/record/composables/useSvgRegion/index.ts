@@ -329,7 +329,7 @@ export function useSvgRegion(wrapper: string, regionLifeCycle: RegionLifeCycle) 
           width: Number(hole.getAttribute('width')),
           height: Number(hole.getAttribute('height')),
         }
-        
+
         // 去掉hole的边框颜色
         hole.setAttribute('stroke', 'transparent')
         // 去掉drag的虚线
@@ -355,7 +355,7 @@ export function useSvgRegion(wrapper: string, regionLifeCycle: RegionLifeCycle) 
               await regionLifeCycle.onStartClipRecordSuccess()
             }
           })
-          .catch(err => {
+          .catch((err) => {
             console.error(err)
 
             // 失败了还原颜色

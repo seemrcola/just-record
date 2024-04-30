@@ -1,24 +1,27 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, createApp, App, ref, nextTick } from 'vue';
+import type { App } from 'vue'
+import { createApp, onMounted, onUnmounted, ref } from 'vue'
 import { NDialogProvider } from 'naive-ui'
 import Rect from './components/Rect.vue'
 
 let img: HTMLImageElement
 let rect: App<Element>
 const wrapper = ref<HTMLDivElement>()
+const imgID = 'background-image-screenshot'
 
 function escHandler(event: KeyboardEvent) {
   if (event.key === 'Escape') {
-    event.preventDefault();
-    event.stopPropagation();
-    window.useScreenshot.close();
+    event.preventDefault()
+    event.stopPropagation()
+    window.useScreenshot.close()
   }
 }
 
 function backgroundImage(thumbnail: string) {
   img?.remove()
-  img = document.createElement('img');
-  img.src = thumbnail;
+  img = document.createElement('img')
+  img.src = thumbnail
+  img.id = imgID
   img.style.cssText = `
     pointer-events: none;
     position: fixed;
@@ -27,12 +30,12 @@ function backgroundImage(thumbnail: string) {
     width: 100%;
     height: 100%;
     z-index: 0;`
-  document.body.appendChild(img);
+  document.body.appendChild(img)
 }
 
 async function drawRect() {
   rect?.unmount()
-  const app = createApp(Rect);
+  const app = createApp(Rect)
   app.mount(wrapper.value!)
   rect = app
 }
@@ -47,14 +50,14 @@ window.useScreenshot.onScreenshotClosed(() => {
   rect?.unmount()
 })
 
-onMounted(() => window.addEventListener('keydown', escHandler));
-onUnmounted(() => window.removeEventListener('keydown', escHandler));
+onMounted(() => window.addEventListener('keydown', escHandler))
+onUnmounted(() => window.removeEventListener('keydown', escHandler))
 </script>
 
 <template>
   <Suspense>
     <NDialogProvider>
-      <div w-full h-full class="bg" ref="wrapper" />
+      <div ref="wrapper" w-full h-full class="bg" />
     </NDialogProvider>
   </Suspense>
 </template>
