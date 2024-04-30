@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { NDialogProvider } from 'naive-ui'
 
-import Record from './Record.vue'
+import Record from './Interface.vue'
 </script>
 
 <template>

@@ -61,7 +61,7 @@ interface Window {
   useScreenshot: {
     'open': () => Promise<any>
     'close': () => Promise<any>
-    'onScreenshotOpened': (cb: () => void) => void
+    'onScreenshotOpened': (cb: (any) => void) => void
     'onScreenshotClosed': (cb: () => void) => void
   }
 }
