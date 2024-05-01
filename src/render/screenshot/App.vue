@@ -64,7 +64,7 @@ onUnmounted(() => window.removeEventListener('keydown', escHandler))
 
 <style scoped>
 .bg {
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.4);
   z-index: 1;
   position: fixed;
   top: 0;

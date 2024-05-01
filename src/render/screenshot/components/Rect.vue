@@ -43,7 +43,6 @@ onMounted(() => {
 <style scoped lang="scss">
 .rect {
   box-sizing: border-box;
-  border: 2px dashed orange;
   position: fixed;
   z-index: 9;
 }

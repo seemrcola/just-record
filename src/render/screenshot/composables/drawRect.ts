@@ -1,5 +1,6 @@
 import type { Ref } from 'vue'
-import { nextTick, ref } from 'vue'
+import { ref } from 'vue'
+import { useCanvas } from './utils'
 
 export function useDrawRect(dom: HTMLElement, screenshot: HTMLCanvasElement, mode: Ref<'draw' | 'drag'>) {
   const img = ref('')
@@ -42,7 +43,7 @@ export function useDrawRect(dom: HTMLElement, screenshot: HTMLCanvasElement, mod
     dom.style.width = `${width}px`
     dom.style.height = `${height}px`
 
-    useCanvas({ x: start.x, y: start.y, height, width })
+    useCanvas(screenshot,{ x: start.x, y: start.y, height, width })
   }
 
   function mouseupHanlder(e: MouseEvent) {
@@ -51,21 +52,6 @@ export function useDrawRect(dom: HTMLElement, screenshot: HTMLCanvasElement, mod
     document.removeEventListener('mousemove', mousemoveHanlder)
     document.removeEventListener('mouseup', mouseupHanlder)
     stopDraw()
-  }
-
-  async function useCanvas({ x, y, height, width }: { x: number, y: number, height: number, width: number }) {
-    // 将画布的这部分绘制到canvas
-    const scale = window.devicePixelRatio
-    const ctx = screenshot.getContext('2d')!
-    screenshot.width = width * scale
-    screenshot.height = height * scale
-    await nextTick()
-    // 获取图片
-    const img = document.querySelector('#background-image-screenshot') as HTMLImageElement
-    ctx.drawImage(img, x * scale, y * scale, width * scale, height * scale, 0, 0, width , height)
-    // 设置宽高位置
-    screenshot.style.left = `${x}px`
-    screenshot.style.top = `${y}px`
   }
 
   function stopDraw() {
