@@ -2,7 +2,11 @@ import type { Ref } from 'vue'
 import { ref } from 'vue'
 import { useCanvas } from './utils'
 
-export function useDrawRect(dom: HTMLElement, screenshot: HTMLCanvasElement, mode: Ref<'draw' | 'drag'>) {
+export function useDrawRect(
+  dom: HTMLElement,
+  screenshot: HTMLCanvasElement,
+  mode: Ref<'draw' | 'drag' | 'transable'>
+) {
   const img = ref('')
   let startflag = false
   let start = {
@@ -43,7 +47,7 @@ export function useDrawRect(dom: HTMLElement, screenshot: HTMLCanvasElement, mod
     dom.style.width = `${width}px`
     dom.style.height = `${height}px`
 
-    useCanvas(screenshot,{ x: start.x, y: start.y, height, width })
+    useCanvas(screenshot, { x: start.x, y: start.y, height, width })
   }
 
   function mouseupHanlder(e: MouseEvent) {

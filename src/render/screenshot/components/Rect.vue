@@ -2,14 +2,20 @@
 import { onMounted, ref } from 'vue'
 import { useDrawRect } from '../composables/drawRect'
 import { useDragRect } from '../composables/dragRect'
+import { useTransable } from '../composables/transable'
+import { Position } from '../composables/types'
 
-const mode = ref<'draw' | 'drag'>('draw')
+const mode = ref<'draw' | 'drag' | 'transable'>('draw')
 let drag: ReturnType<typeof useDragRect>
 let draw: ReturnType<typeof useDrawRect>
+  let transable: ReturnType<typeof useTransable>
+  let position = ref<Position>('left')
 
-function handleClick(event: MouseEvent) {
+function handleMousedown(event: MouseEvent) {
+  event.preventDefault()
+  mode.value = 'transable'
   const pos = (event.target as HTMLElement).dataset.pos
-  console.log(pos)
+  position.value = pos as Position
 }
 
 onMounted(() => {
@@ -17,8 +23,10 @@ onMounted(() => {
   const screenshot = document.querySelector('.screenshot') as HTMLCanvasElement
   draw = useDrawRect(box, screenshot, mode)
   drag = useDragRect(box, screenshot, mode)
+  transable = useTransable(box, screenshot, mode, position)
   draw.startDraw()
   drag.startDrag()
+  transable.startTransable()
 })
 </script>
 
@@ -27,7 +35,7 @@ onMounted(() => {
     <!-- 这里是截图区域 -->
     <canvas class="screenshot" fixed z-99 />
     <!-- 这里是缩放区域 -->
-    <div class="box" @click="handleClick">
+    <div class="box" @mousedown="handleMousedown">
       <div class="l" data-pos="left" />
       <div class="r" data-pos="right" />
       <div class="t" data-pos="top" />
