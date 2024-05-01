@@ -2,31 +2,35 @@
 import { onMounted, ref } from 'vue'
 import { useDrawRect } from '../composables/drawRect'
 import { useDragRect } from '../composables/dragRect'
-import { useTransable } from '../composables/transable'
+import { useTransable } from '../composables/transableRect'
 import { Position } from '../composables/types'
 
 const mode = ref<'draw' | 'drag' | 'transable'>('draw')
 let drag: ReturnType<typeof useDragRect>
 let draw: ReturnType<typeof useDrawRect>
-  let transable: ReturnType<typeof useTransable>
-  let position = ref<Position>('left')
+let transable: ReturnType<typeof useTransable>
+let position = ref<Position>('left')
 
 function handleMousedown(event: MouseEvent) {
   event.preventDefault()
+  event.stopPropagation()
   mode.value = 'transable'
-  const pos = (event.target as HTMLElement).dataset.pos
-  position.value = pos as Position
+  const posDOM = event.target as HTMLElement
+  position.value = posDOM.dataset.pos as Position
+
+  const rectDOM = document.querySelector('.rect') as HTMLElement
+  const screenshot = document.querySelector('.screenshot') as HTMLCanvasElement
+  transable = useTransable(rectDOM, screenshot, mode, position)
+  transable.startTransable(event)
 }
 
 onMounted(() => {
-  const box = document.querySelector('.rect') as HTMLElement
+  const rectDOM = document.querySelector('.rect') as HTMLElement
   const screenshot = document.querySelector('.screenshot') as HTMLCanvasElement
-  draw = useDrawRect(box, screenshot, mode)
-  drag = useDragRect(box, screenshot, mode)
-  transable = useTransable(box, screenshot, mode, position)
+  draw = useDrawRect(rectDOM, screenshot, mode)
+  drag = useDragRect(rectDOM, screenshot, mode)
   draw.startDraw()
   drag.startDrag()
-  transable.startTransable()
 })
 </script>
 
@@ -35,16 +39,20 @@ onMounted(() => {
     <!-- 这里是截图区域 -->
     <canvas class="screenshot" fixed z-99 />
     <!-- 这里是缩放区域 -->
-    <div class="box" @mousedown="handleMousedown">
-      <div class="l" data-pos="left" />
-      <div class="r" data-pos="right" />
-      <div class="t" data-pos="top" />
-      <div class="b" data-pos="bottom" />
-      <div class="lt" data-pos="left-top" />
-      <div class="lb" data-pos="left-bottom" />
-      <div class="rt" data-pos="right-top" />
-      <div class="rb" data-pos="right-bottom" />
+    <div class="box">
+      <div class="l" data-pos="left" @mousedown="handleMousedown" />
+      <div class="r" data-pos="right" @mousedown="handleMousedown" />
+      <div class="t" data-pos="top" @mousedown="handleMousedown" />
+      <div class="b" data-pos="bottom" @mousedown="handleMousedown" />
+      <div class="lt" data-pos="left-top" @mousedown="handleMousedown" />
+      <div class="lb" data-pos="left-bottom" @mousedown="handleMousedown" />
+      <div class="rt" data-pos="right-top" @mousedown="handleMousedown" />
+      <div class="rb" data-pos="right-bottom" @mousedown="handleMousedown" />
     </div>
+    <!-- 这里是功能区域 -->
+    <!-- <div bg-dark shadow-md class="tools">
+      <div i-lets-icons:done-all-alt-round></div>
+    </div> -->
   </div>
 </template>
 
@@ -53,6 +61,12 @@ onMounted(() => {
   box-sizing: border-box;
   position: fixed;
   z-index: 9;
+}
+
+.tools {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
 }
 
 .box>div {

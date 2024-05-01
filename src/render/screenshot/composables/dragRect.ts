@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useCanvas } from './utils'
 
 export function useDragRect(
-  dom: HTMLElement,
+  rectDOM: HTMLElement,
   screenshot: HTMLCanvasElement,
   mode: Ref<'draw' | 'drag' | 'transable'>
 ) {
@@ -12,7 +12,7 @@ export function useDragRect(
   let start = { x: 0, y: 0 }
 
   function startDrag() {
-    document.addEventListener('mousedown', mousedownHandler)
+    rectDOM.addEventListener('mousedown', mousedownHandler)
   }
 
   function mousedownHandler(e: MouseEvent) {
@@ -34,21 +34,21 @@ export function useDragRect(
     const deltaX = pageX - x
     const deltaY = pageY - y
 
-    const rect = dom.getBoundingClientRect()
+    const rect = rectDOM.getBoundingClientRect()
     const newX = rect.x + deltaX
     const newY = rect.y + deltaY
-    dom.style.left = `${newX}px`
-    dom.style.top = `${newY}px`
+    rectDOM.style.left = `${newX}px`
+    rectDOM.style.top = `${newY}px`
 
     // 控制边界
     // 上边界
-    if (newY < 0) dom.style.top = '0px'
+    if (newY < 0) rectDOM.style.top = '0px'
     // 下边界
-    if (newY + rect.height > window.innerHeight) dom.style.top = `${window.innerHeight - rect.height}px`
+    if (newY + rect.height > window.innerHeight) rectDOM.style.top = `${window.innerHeight - rect.height}px`
     // 左边界
-    if (newX < 0) dom.style.left = '0px'
+    if (newX < 0) rectDOM.style.left = '0px'
     // 右边界
-    if (newX + rect.width > window.innerWidth) dom.style.left = `${window.innerWidth - rect.width}px`
+    if (newX + rect.width > window.innerWidth) rectDOM.style.left = `${window.innerWidth - rect.width}px`
 
     start = { x: pageX, y: pageY }
 
@@ -62,7 +62,7 @@ export function useDragRect(
   }
 
   function endDrag() {
-    document.removeEventListener('mousedown', mousedownHandler)
+    rectDOM.removeEventListener('mousedown', mousedownHandler)
     mode.value = 'draw'
   }
 

@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useCanvas } from './utils'
 
 export function useDrawRect(
-  dom: HTMLElement,
+  rectDOM: HTMLElement,
   screenshot: HTMLCanvasElement,
   mode: Ref<'draw' | 'drag' | 'transable'>
 ) {
@@ -25,9 +25,8 @@ export function useDrawRect(
       x: e.pageX,
       y: e.pageY,
     }
-    console.log('start', start)
-    dom.style.left = `${start.x}px`
-    dom.style.top = `${start.y}px`
+    rectDOM.style.left = `${start.x}px`
+    rectDOM.style.top = `${start.y}px`
     document.addEventListener('mousemove', mousemoveHanlder)
     document.addEventListener('mouseup', mouseupHanlder)
   }
@@ -40,14 +39,20 @@ export function useDrawRect(
 
     e.preventDefault()
 
+    const {abs} = Math
     const { pageX, pageY } = e
-    const width = pageX - start.x
-    const height = pageY - start.y
 
-    dom.style.width = `${width}px`
-    dom.style.height = `${height}px`
+    const width = abs(pageX - start.x)
+    const height = abs(pageY - start.y)
+    const x = Math.min(start.x, pageX)
+    const y = Math.min(start.y, pageY)
 
-    useCanvas(screenshot, { x: start.x, y: start.y, height, width })
+    rectDOM.style.width = `${width}px`
+    rectDOM.style.height = `${height}px`
+    rectDOM.style.left = `${x}px`
+    rectDOM.style.top = `${y}px`
+
+    useCanvas(screenshot, { x, y, height, width })
   }
 
   function mouseupHanlder(e: MouseEvent) {
