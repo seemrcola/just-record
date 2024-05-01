@@ -3,7 +3,7 @@ import { nextTick } from 'vue'
 export async function useCanvas(
   screenshot: HTMLCanvasElement,
   { x, y, height, width }: { x: number, y: number, height: number, width: number }
-  ) {
+) {
   // 将画布的这部分绘制到canvas
   const scale = window.devicePixelRatio
   const ctx = screenshot.getContext('2d')!
