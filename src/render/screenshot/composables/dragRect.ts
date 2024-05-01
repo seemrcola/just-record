@@ -39,16 +39,16 @@ export function useDragRect(
     const newY = rect.y + deltaY
     dom.style.left = `${newX}px`
     dom.style.top = `${newY}px`
-        
+
     // 控制边界
     // 上边界
-    if (newY < 0)   dom.style.top = '0px'
+    if (newY < 0) dom.style.top = '0px'
     // 下边界
-    if (newY + rect.height > window.innerHeight)   dom.style.top = `${window.innerHeight - rect.height}px`
+    if (newY + rect.height > window.innerHeight) dom.style.top = `${window.innerHeight - rect.height}px`
     // 左边界
-    if (newX < 0)   dom.style.left = '0px'
+    if (newX < 0) dom.style.left = '0px'
     // 右边界
-    if (newX + rect.width > window.innerWidth)   dom.style.left = `${window.innerWidth - rect.width}px`
+    if (newX + rect.width > window.innerWidth) dom.style.left = `${window.innerWidth - rect.width}px`
 
     start = { x: pageX, y: pageY }
 
