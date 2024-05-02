@@ -69,30 +69,36 @@ export function useTransable(
 
   function handleSide(end: { x: number, y: number }) {
     const { x, y } = end
-    const { abs } = Math
+    const { abs, min, max } = Math
 
     const width = abs(x - peerPoint.x)
     const height = abs(y - peerPoint.y)
 
     // 左右只改变宽度
     if (pos.value === 'right') {
+      const newX = min(rect.left, x)
       rectDOM.style.width = `${width}px`
-      useCanvas(screenshot, { x: rect.left, y: rect.top, width, height: rect.height })
+      rectDOM.style.left = `${newX}px`
+      useCanvas(screenshot, { x: newX, y: rect.top, width, height: rect.height })
     }
     if (pos.value === 'left') {
-      rectDOM.style.left = `${x}px`
+      const newX = min(rect.left + rect.width, x)
+      rectDOM.style.left = `${newX}px`
       rectDOM.style.width = `${width}px`
-      useCanvas(screenshot, { x, y: rect.top, width, height: rect.height })
+      useCanvas(screenshot, { x: newX, y: rect.top, width, height: rect.height })
     }
     // 上下只改变高度
     if (pos.value === 'bottom') {
+      const newY = min(rect.top, y)
       rectDOM.style.height = `${height}px`
-      useCanvas(screenshot, { x: rect.left, y: rect.top, width: rect.width, height })
+      rectDOM.style.top = `${newY}px`
+      useCanvas(screenshot, { x: rect.left, y: newY, width: rect.width, height })
     }
     if (pos.value === 'top') {
-      rectDOM.style.top = `${y}px`
+      const newY = min(rect.top + rect.height, y)
+      rectDOM.style.top = `${newY}px`
       rectDOM.style.height = `${height}px`
-      useCanvas(screenshot, { x: rect.left, y, width: rect.width, height })
+      useCanvas(screenshot, { x: rect.left, y: newY, width: rect.width, height })
     }
   }
 

@@ -57,7 +57,6 @@ function getImageData() {
   if (ctx) {
     ctx.drawImage(img, 0, 0)
     const data = ctx.getImageData(0, 0, canvas.width, canvas.height)
-    console.log(data)
     const screenshotStore = useScreenshotStore()
     screenshotStore.imgData = data
   }
