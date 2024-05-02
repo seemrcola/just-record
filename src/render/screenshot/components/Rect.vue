@@ -24,7 +24,7 @@ function handleMousedown(event: MouseEvent) {
   transable.startTransable(event)
 }
 
-function save() {
+function download() {
   // 获取canvas的base64编码
   const canvas = document.querySelector('.screenshot') as HTMLCanvasElement
   const base64 = canvas.toDataURL()
@@ -34,6 +34,26 @@ function save() {
   link.href = base64
   link.click()
   link.remove()
+}
+
+function save() {
+  const canvas = document.querySelector('.screenshot') as HTMLCanvasElement
+  // 拿到图片的blob格式
+  // 将canvas转换为Blob
+  canvas.toBlob(function (blob) {
+    // 使用Clipboard API写入剪贴板
+    navigator.clipboard.write([
+      new ClipboardItem({
+        'image/png': blob
+      })
+    ])
+    .then(function () {
+      console.log('Image copied to clipboard');
+    })
+    .catch(function (error) {
+      console.error('Error copying image to clipboard', error);
+    });
+  }, 'image/png');
 }
 
 onMounted(() => {
@@ -62,8 +82,9 @@ onMounted(() => {
       <div class="rb" data-pos="right-bottom" @mousedown="handleMousedown" />
     </div>
     <!-- 这里是功能区域 -->
-    <div bg-dark shadow-light class="tools">
-      <div i-lets-icons:done-all-alt-round text-light @click="save" />
+    <div bg-dark shadow-light flex class="tools">
+      <div cursor-pointer px-2 py-1 i-material-symbols:download text-light @click="download" />
+      <div cursor-pointer px-2 py-1 i-lets-icons:done-all-alt-round text-light @click="save" />
     </div>
   </div>
 </template>
