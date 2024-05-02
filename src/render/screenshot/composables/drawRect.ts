@@ -1,11 +1,12 @@
 import type { Ref } from 'vue'
-import { ref } from 'vue'
+import { createApp, ref } from 'vue'
+import Coord from '../components/Coord.vue'
 import { useCanvas } from './utils'
 
 export function useDrawRect(
   rectDOM: HTMLElement,
   screenshot: HTMLCanvasElement,
-  mode: Ref<'draw' | 'drag' | 'transable'>
+  mode: Ref<'draw' | 'drag' | 'transable'>,
 ) {
   const img = ref('')
   let startflag = false
@@ -13,9 +14,12 @@ export function useDrawRect(
     x: 0,
     y: 0,
   }
+  let coordComponent: ReturnType<typeof createApp> | null = null
+  let coordBox: HTMLElement | null = null
 
   function startDraw() {
     document.addEventListener('mousedown', mousedownHanlder)
+    drawCoord()
   }
 
   function mousedownHanlder(e: MouseEvent) {
@@ -39,7 +43,7 @@ export function useDrawRect(
 
     e.preventDefault()
 
-    const {abs} = Math
+    const { abs } = Math
     const { pageX, pageY } = e
 
     const width = abs(pageX - start.x)
@@ -66,6 +70,23 @@ export function useDrawRect(
   function stopDraw() {
     document.removeEventListener('mousedown', mousedownHanlder)
     mode.value = 'drag'
+    clearComponent()
+  }
+
+  function drawCoord() {
+    clearComponent()
+
+    const app = createApp(Coord)
+    coordBox = document.createElement('div')
+    coordComponent = app
+    app.mount(coordBox)
+    document.body.appendChild(coordBox)
+  }
+
+  function clearComponent() {
+    coordComponent?.unmount()
+    coordComponent = null
+    coordBox?.remove()
   }
 
   return {

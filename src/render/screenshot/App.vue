@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import type { App } from 'vue'
-import { createApp, onMounted, onUnmounted, ref } from 'vue'
+import { createApp, nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { NDialogProvider } from 'naive-ui'
 import Rect from './components/Rect.vue'
+import { useScreenshotStore } from './store'
 
 let img: HTMLImageElement
 let rect: App<Element>
 const wrapper = ref<HTMLDivElement>()
-const imgID = 'background-image-screenshot'
 
 function escHandler(event: KeyboardEvent) {
   if (event.key === 'Escape') {
@@ -19,9 +19,10 @@ function escHandler(event: KeyboardEvent) {
 
 function backgroundImage(thumbnail: string) {
   img?.remove()
+  const screenshotStore = useScreenshotStore()
   img = document.createElement('img')
   img.src = thumbnail
-  img.id = imgID
+  img.id = screenshotStore.imgID
   img.style.cssText = `
     pointer-events: none;
     position: fixed;
@@ -43,11 +44,35 @@ async function drawRect() {
 window.useScreenshot.onScreenshotOpened(async (thumbnail: string) => {
   backgroundImage(thumbnail)
   await drawRect()
+  await nextTick()
+  getImageData()
 })
+
+function getImageData() {
+  const canvas = document.createElement('canvas')
+  // 设置canvas宽高为图片原始宽高
+  canvas.width = img.naturalWidth
+  canvas.height = img.naturalHeight
+  const ctx = canvas.getContext('2d')
+  if (ctx) {
+    ctx.drawImage(img, 0, 0)
+    const data = ctx.getImageData(0, 0, canvas.width, canvas.height)
+    console.log(data)
+    const screenshotStore = useScreenshotStore()
+    screenshotStore.imgData = data
+  }
+}
 
 window.useScreenshot.onScreenshotClosed(() => {
   img?.remove()
   rect?.unmount()
+  // 清除body上所有的dom
+  const body = document.body
+  let child = body.lastElementChild
+  while (child && child.id !== 'app') {
+    body.removeChild(child)
+    child = body.lastElementChild
+  }
 })
 
 onMounted(() => window.addEventListener('keydown', escHandler))
@@ -57,13 +82,13 @@ onUnmounted(() => window.removeEventListener('keydown', escHandler))
 <template>
   <Suspense>
     <NDialogProvider>
-      <div ref="wrapper" w-full h-full class="bg" />
+      <div ref="wrapper" w-full h-full class="screenshot-root" />
     </NDialogProvider>
   </Suspense>
 </template>
 
 <style scoped>
-.bg {
+.screenshot-root {
   background: rgba(0, 0, 0, 0.4);
   z-index: 1;
   position: fixed;

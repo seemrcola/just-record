@@ -1,9 +1,12 @@
 import { nextTick } from 'vue'
+import { useScreenshotStore } from '../store'
 
 export async function useCanvas(
   screenshot: HTMLCanvasElement,
-  { x, y, height, width }: { x: number, y: number, height: number, width: number }
+  { x, y, height, width }: { x: number, y: number, height: number, width: number },
 ) {
+  const screenshotStore = useScreenshotStore()
+  const imgID = screenshotStore.imgID
   // 将画布的这部分绘制到canvas
   const scale = window.devicePixelRatio
   const ctx = screenshot.getContext('2d')!
@@ -11,11 +14,17 @@ export async function useCanvas(
   screenshot.width = width * scale
   screenshot.height = height * scale
   // 获取图片
-  const img = document.querySelector('#background-image-screenshot') as HTMLImageElement
+  const img = document.querySelector(`#${imgID}`) as HTMLImageElement
   ctx.drawImage(
     img,
-    x * scale, y * scale, width * scale, height * scale,
-    0, 0, width * scale, height * scale
+    x * scale,
+    y * scale,
+    width * scale,
+    height * scale,
+    0,
+    0,
+    width * scale,
+    height * scale,
   )
   await nextTick()
   screenshot.style.height = `${height}px`

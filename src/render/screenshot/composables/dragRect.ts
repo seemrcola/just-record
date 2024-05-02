@@ -5,7 +5,7 @@ import { useCanvas } from './utils'
 export function useDragRect(
   rectDOM: HTMLElement,
   screenshot: HTMLCanvasElement,
-  mode: Ref<'draw' | 'drag' | 'transable'>
+  mode: Ref<'draw' | 'drag' | 'transable'>,
 ) {
   const img = ref('')
   let startFlag = false
@@ -42,13 +42,17 @@ export function useDragRect(
 
     // 控制边界
     // 上边界
-    if (newY < 0) rectDOM.style.top = '0px'
+    if (newY < 0)
+      rectDOM.style.top = '0px'
     // 下边界
-    if (newY + rect.height > window.innerHeight) rectDOM.style.top = `${window.innerHeight - rect.height}px`
+    if (newY + rect.height > window.innerHeight)
+      rectDOM.style.top = `${window.innerHeight - rect.height}px`
     // 左边界
-    if (newX < 0) rectDOM.style.left = '0px'
+    if (newX < 0)
+      rectDOM.style.left = '0px'
     // 右边界
-    if (newX + rect.width > window.innerWidth) rectDOM.style.left = `${window.innerWidth - rect.width}px`
+    if (newX + rect.width > window.innerWidth)
+      rectDOM.style.left = `${window.innerWidth - rect.width}px`
 
     start = { x: pageX, y: pageY }
 

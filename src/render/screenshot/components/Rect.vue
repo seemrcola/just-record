@@ -3,13 +3,13 @@ import { onMounted, ref } from 'vue'
 import { useDrawRect } from '../composables/drawRect'
 import { useDragRect } from '../composables/dragRect'
 import { useTransable } from '../composables/transableRect'
-import { Position } from '../composables/types'
+import type { Position } from '../composables/types'
 
 const mode = ref<'draw' | 'drag' | 'transable'>('draw')
 let drag: ReturnType<typeof useDragRect>
 let draw: ReturnType<typeof useDrawRect>
 let transable: ReturnType<typeof useTransable>
-let position = ref<Position>('left')
+const position = ref<Position>('left')
 
 function handleMousedown(event: MouseEvent) {
   event.preventDefault()
@@ -22,6 +22,18 @@ function handleMousedown(event: MouseEvent) {
   const screenshot = document.querySelector('.screenshot') as HTMLCanvasElement
   transable = useTransable(rectDOM, screenshot, mode, position)
   transable.startTransable(event)
+}
+
+function save() {
+  // 获取canvas的base64编码
+  const canvas = document.querySelector('.screenshot') as HTMLCanvasElement
+  const base64 = canvas.toDataURL()
+  // 保存到本地
+  const link = document.createElement('a')
+  link.download = 'just-record.png'
+  link.href = base64
+  link.click()
+  link.remove()
 }
 
 onMounted(() => {
@@ -50,9 +62,9 @@ onMounted(() => {
       <div class="rb" data-pos="right-bottom" @mousedown="handleMousedown" />
     </div>
     <!-- 这里是功能区域 -->
-    <!-- <div bg-dark shadow-md class="tools">
-      <div i-lets-icons:done-all-alt-round></div>
-    </div> -->
+    <div bg-dark shadow-light class="tools">
+      <div i-lets-icons:done-all-alt-round text-light @click="save" />
+    </div>
   </div>
 </template>
 
@@ -64,16 +76,19 @@ onMounted(() => {
 }
 
 .tools {
-  position: fixed;
-  bottom: 10px;
-  right: 10px;
+  padding: 4px 12px;
+  border-radius: 4px;
+  position: absolute;
+  bottom: -36px;
+  right: 0;
+  z-index: 999;
 }
 
 .box>div {
   width: 10px;
   height: 10px;
   position: absolute;
-  background-color: rgb(115, 171, 221);
+  background-color: rgb(40, 139, 226);
   cursor: pointer;
 }
 

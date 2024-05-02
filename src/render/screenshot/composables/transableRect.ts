@@ -1,18 +1,17 @@
-import { Ref } from 'vue'
-import { Position } from './types'
+import type { Ref } from 'vue'
+import type { Position } from './types'
 import { useCanvas } from './utils'
 
 export function useTransable(
   rectDOM: HTMLElement,
   screenshot: HTMLCanvasElement,
   mode: Ref<'drag' | 'draw' | 'transable'>,
-  pos: Ref<Position>
+  pos: Ref<Position>,
 ) {
-
   let startFlag = false
   let dragMode: 'corner' | 'side' = 'corner'
   let peerPoint = { x: 0, y: 0 }
-  let start = { x: 0, y: 0 }
+  const start = { x: 0, y: 0 }
   let rect: DOMRect
 
   const corner = ['top-left', 'top-right', 'bottom-left', 'bottom-right']
@@ -25,25 +24,31 @@ export function useTransable(
     document.addEventListener('mousemove', mousemoveHanlder)
     document.addEventListener('mouseup', mouseupHanlder)
 
-    if (corner.includes(pos.value)) dragMode = 'corner'
-    if (side.includes(pos.value)) dragMode = 'side'
+    if (corner.includes(pos.value))
+      dragMode = 'corner'
+    if (side.includes(pos.value))
+      dragMode = 'side'
 
     rect = rectDOM.getBoundingClientRect()
     const center = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
     // 计算对角点坐标
     peerPoint = {
       x: 2 * center.x - start.x,
-      y: 2 * center.y - start.y
+      y: 2 * center.y - start.y,
     }
   }
 
   function mousemoveHanlder(event: MouseEvent) {
-    if (!startFlag) return
-    if (mode.value !== 'transable') return
+    if (!startFlag)
+      return
+    if (mode.value !== 'transable')
+      return
     const { pageX, pageY } = event
 
-    if (dragMode === 'corner') handleConrer({ x: pageX, y: pageY })
-    if (dragMode === 'side') handleSide({ x: pageX, y: pageY })
+    if (dragMode === 'corner')
+      handleConrer({ x: pageX, y: pageY })
+    if (dragMode === 'side')
+      handleSide({ x: pageX, y: pageY })
   }
 
   function handleConrer(end: { x: number, y: number }) {
@@ -77,7 +82,7 @@ export function useTransable(
     if (pos.value === 'left') {
       rectDOM.style.left = `${x}px`
       rectDOM.style.width = `${width}px`
-      useCanvas(screenshot, { x: x, y: rect.top, width, height: rect.height })
+      useCanvas(screenshot, { x, y: rect.top, width, height: rect.height })
     }
     // 上下只改变高度
     if (pos.value === 'bottom') {
@@ -87,7 +92,7 @@ export function useTransable(
     if (pos.value === 'top') {
       rectDOM.style.top = `${y}px`
       rectDOM.style.height = `${height}px`
-      useCanvas(screenshot, { x: rect.left, y: y, width: rect.width, height })
+      useCanvas(screenshot, { x: rect.left, y, width: rect.width, height })
     }
   }
 
