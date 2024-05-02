@@ -41,13 +41,6 @@ async function drawRect() {
   rect = app
 }
 
-window.useScreenshot.onScreenshotOpened(async (thumbnail: string) => {
-  backgroundImage(thumbnail)
-  await drawRect()
-  await nextTick()
-  getImageData()
-})
-
 function getImageData() {
   const canvas = document.createElement('canvas')
   // 设置canvas宽高为图片原始宽高
@@ -62,6 +55,16 @@ function getImageData() {
   }
 }
 
+window.useScreenshot.onScreenshotOpened(async (thumbnail: string) => {
+  backgroundImage(thumbnail)
+  await drawRect()
+  await nextTick() 
+  getImageData()
+  
+  const screenshot = document.querySelector('.screenshot-root') as HTMLDivElement
+  screenshot.style.backgroundColor = 'rgba(0, 0, 0, 0.4)'
+})
+
 window.useScreenshot.onScreenshotClosed(() => {
   img?.remove()
   rect?.unmount()
@@ -72,6 +75,9 @@ window.useScreenshot.onScreenshotClosed(() => {
     body.removeChild(child)
     child = body.lastElementChild
   }
+
+  const screenshot = document.querySelector('.screenshot-root') as HTMLDivElement
+  screenshot.style.backgroundColor = 'rgba(0, 0, 0, 0)'
 })
 
 onMounted(() => window.addEventListener('keydown', escHandler))
@@ -88,7 +94,6 @@ onUnmounted(() => window.removeEventListener('keydown', escHandler))
 
 <style scoped>
 .screenshot-root {
-  background: rgba(0, 0, 0, 0.4);
   z-index: 1;
   position: fixed;
   top: 0;
