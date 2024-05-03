@@ -58,9 +58,9 @@ function getImageData() {
 window.useScreenshot.onScreenshotOpened(async (thumbnail: string) => {
   backgroundImage(thumbnail)
   await drawRect()
-  await nextTick() 
+  await nextTick()
   getImageData()
-  
+
   const screenshot = document.querySelector('.screenshot-root') as HTMLDivElement
   screenshot.style.backgroundColor = 'rgba(0, 0, 0, 0.4)'
 })

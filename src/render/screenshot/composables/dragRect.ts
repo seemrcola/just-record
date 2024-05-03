@@ -4,7 +4,8 @@ import { useCanvas } from './utils'
 export function useDragRect(
   rectDOM: HTMLElement,
   screenshot: HTMLCanvasElement,
-  mode: Ref<'draw' | 'drag' | 'transable'>) {
+  mode: Ref<'draw' | 'drag' | 'transable'>,
+) {
   let startFlag = false
   let start = { x: 0, y: 0 }
 
@@ -31,13 +32,20 @@ export function useDragRect(
     const deltaY = pageY - y
 
     const rect = rectDOM.getBoundingClientRect()
-    const newX = rect.x + deltaX
-    const newY = rect.y + deltaY
+    let newX = rect.x + deltaX
+    let newY = rect.y + deltaY
+
+    // 限制拖动范围
+    newX = newX < 0 ? 0 : newX
+    newY = newY < 0 ? 0 : newY
+    newX = newX + rect.width > window.innerWidth ? window.innerWidth - rect.width : newX
+    newY = newY + rect.height > window.innerHeight ? window.innerHeight - rect.height : newY
+
+    // 改变位置
     rectDOM.style.left = `${newX}px`
     rectDOM.style.top = `${newY}px`
 
     start = { x: pageX, y: pageY }
-
     useCanvas(screenshot, { x: newX, y: newY, height: rect.height, width: rect.width })
   }
 

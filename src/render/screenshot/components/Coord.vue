@@ -88,20 +88,20 @@ onUnmounted(() => {
 
     <div w-100px border="1px solid orange" box-border mt-1>
       <div bg-light text-dark flex px-1 w-full box-border>
-      <div flex-1 flex-center>
-        {{ coord.x }}
+        <div flex-1 flex-center>
+          {{ coord.x }}
+        </div>
+        <div flex-1 flex-center>
+          {{ coord.y }}
+        </div>
       </div>
-      <div flex-1 flex-center>
-        {{ coord.y }}
-      </div>
-    </div>
 
-    <div flex-center bg-light text-dark px-1 w-full box-border>
-      <div h-16px w-16px bg-dark :style="{ backgroundColor: color }" />
-      <div text-sm>
-        {{ color }}
+      <div flex-center bg-light text-dark px-1 w-full box-border>
+        <div h-16px w-16px bg-dark :style="{ backgroundColor: color }" />
+        <div text-sm>
+          {{ color }}
+        </div>
       </div>
-    </div>
     </div>
   </div>
 </template>

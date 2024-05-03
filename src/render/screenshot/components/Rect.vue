@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue'
 import { useDrawRect } from '../composables/drawRect'
 import { useDragRect } from '../composables/dragRect'
 import { useResizeRect } from '../composables/resizeRect'
-import { useSaveScreenshot, useDownload } from '../composables/tools'
+import { useDownload, useSaveScreenshot } from '../composables/tools'
 import type { Position } from '../composables/types'
 
 const mode = ref<'draw' | 'drag' | 'transable'>('draw')
@@ -41,9 +41,8 @@ function download() {
 async function save() {
   const canvas = document.querySelector('.screenshot') as HTMLCanvasElement
   const res = await useSaveScreenshot(canvas)
-  if (res) {
+  if (res)
     window.useScreenshot.close()
-  }
 }
 
 onMounted(() => {
@@ -73,8 +72,9 @@ onMounted(() => {
     </div>
     <!-- 这里是功能区域 -->
     <div bg-dark-2 shadow-light flex class="tools">
+      <div h-4 w-4 cursor-pointer px-2 py-1 i-mingcute:mosaic-line text-light />
       <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:download text-light @click="download" />
-      <div h-4 w-4 cursor-pointer px-2 py-1 i-lets-icons:done-all-alt-round text-light @click="save" />
+      <div h-4 w-4 cursor-pointer px-2 py-1 i-icon-park-outline:correct text-light @click="save" />
     </div>
   </div>
 </template>
