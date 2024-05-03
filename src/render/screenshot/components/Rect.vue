@@ -114,8 +114,8 @@ onMounted(() => {
       </div>
       <div flex b-l="3px solid dark-5" pl-2>
         <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:download text-light @click="download" />
-        <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:close text-light @click="close" />
-        <div h-4 w-4 cursor-pointer px-2 py-1 i-icon-park-outline:correct text-light @click="save" />
+        <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:close text-red @click="close" />
+        <div h-4 w-4 cursor-pointer px-2 py-1 i-icon-park-outline:correct text-blue @click="save" />
       </div>
     </div>
   </div>
