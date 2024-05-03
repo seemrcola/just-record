@@ -54,6 +54,8 @@ export function useMosaic(canvas: HTMLCanvasElement) {
 
   function stopMosaic() {
     canvas.removeEventListener('mousedown', mousedownhanlder)
+    canvas.removeEventListener('mousemove', mousemovehanlder)
+    canvas.removeEventListener('mouseup', mouseuphanlder)
   }
 
   function mousedownhanlder(event: MouseEvent) {
@@ -68,9 +70,7 @@ export function useMosaic(canvas: HTMLCanvasElement) {
     drawMosaic({ x, y }, mosaicRadius)
   }
 
-  function mouseuphanlder(event: MouseEvent) {
-    canvas.removeEventListener('mousemove', mousemovehanlder)
-    canvas.removeEventListener('mouseup', mouseuphanlder)
+  function mouseuphanlder() {
     stopMosaic()
   }
 

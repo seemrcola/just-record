@@ -50,6 +50,7 @@ async function mosaic(e: MouseEvent) {
   e.preventDefault()
   mosaicWorkStatus.value = true
   const mosaic = useMosaic(screenshot.value!)
+  mosaic.stopMosaic()
   mosaic.startMosaic()
 }
 
