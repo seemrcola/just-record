@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue'
 import { useDrawRect } from '../composables/drawRect'
 import { useDragRect } from '../composables/dragRect'
 import { useResizeRect } from '../composables/resizeRect'
-import { useDownload, useSaveScreenshot } from '../composables/tools'
+import { useDownload, useSaveScreenshot, useMosaic } from '../composables/tools'
 import type { Position } from '../composables/types'
 
 const mode = ref<'draw' | 'drag' | 'transable'>('draw')
@@ -11,10 +11,13 @@ let drag: ReturnType<typeof useDragRect>
 let draw: ReturnType<typeof useDrawRect>
 let resize: ReturnType<typeof useResizeRect>
 const position = ref<Position>('left')
+const screenshot = ref<HTMLCanvasElement>()
+const mosaicWorkStatus = ref(false)
 
 function handleRectMousedown(event: MouseEvent) {
   event.preventDefault()
   event.stopPropagation()
+  if(mosaicWorkStatus.value) return
   mode.value = 'drag'
 }
 
@@ -33,16 +36,21 @@ function handlePosMousedown(event: MouseEvent) {
 
 function download() {
   // 获取canvas的base64编码
-  const canvas = document.querySelector('.screenshot') as HTMLCanvasElement
-  useDownload(canvas)
+  useDownload(screenshot.value!)
   window.useScreenshot.close()
 }
 
 async function save() {
-  const canvas = document.querySelector('.screenshot') as HTMLCanvasElement
-  const res = await useSaveScreenshot(canvas)
+  const res = await useSaveScreenshot(screenshot.value!)
   if (res)
     window.useScreenshot.close()
+}
+
+async function mosaic(e: MouseEvent) {
+  e.preventDefault()
+  mosaicWorkStatus.value = true
+  const mosaic = useMosaic(screenshot.value!)
+  mosaic.startMosaic()
 }
 
 onMounted(() => {
@@ -58,7 +66,7 @@ onMounted(() => {
 <template>
   <div class="rect" @mousedown="handleRectMousedown">
     <!-- 这里是截图区域 -->
-    <canvas class="screenshot" fixed z-99 />
+    <canvas class="screenshot" ref="screenshot" fixed z-99 />
     <!-- 这里是缩放区域 -->
     <div class="box">
       <div class="l" data-pos="left" @mousedown="handlePosMousedown" />
@@ -72,9 +80,14 @@ onMounted(() => {
     </div>
     <!-- 这里是功能区域 -->
     <div bg-dark-2 shadow-light flex class="tools">
-      <div h-4 w-4 cursor-pointer px-2 py-1 i-mingcute:mosaic-line text-light />
-      <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:download text-light @click="download" />
-      <div h-4 w-4 cursor-pointer px-2 py-1 i-icon-park-outline:correct text-light @click="save" />
+      <div 
+        h-4 w-4 cursor-pointer px-2 py-1 i-mingcute:mosaic-line text-light
+        :class="{ 'text-light': !mosaicWorkStatus, 'text-red': mosaicWorkStatus }" 
+        @mousedown.stop
+        @click.stop="mosaic"
+      />
+      <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:download text-light @click.stop="download" />
+      <div h-4 w-4 cursor-pointer px-2 py-1 i-icon-park-outline:correct text-light @click.stop="save" />
     </div>
   </div>
 </template>
