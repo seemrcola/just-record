@@ -105,10 +105,3 @@ onUnmounted(() => {
     </div>
   </div>
 </template>
-
-<style scoped>
-.monospace {
-  font-family: 'Courier New', Courier, monospace;
-  font-weight: bold;
-}
-</style>

@@ -92,7 +92,7 @@ onUnmounted(() => window.removeEventListener('keydown', escHandler))
   </Suspense>
 </template>
 
-<style scoped>
+<style>
 .screenshot-root {
   z-index: 1;
   position: fixed;
@@ -100,5 +100,9 @@ onUnmounted(() => window.removeEventListener('keydown', escHandler))
   left: 0;
   width: 100%;
   height: 100%;
+}
+.monospace {
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
 }
 </style>

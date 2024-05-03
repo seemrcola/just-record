@@ -1,4 +1,4 @@
-import { nextTick } from 'vue'
+import { nextTick, ref, onMounted, onUnmounted, Ref } from 'vue'
 import { useScreenshotStore } from '../store'
 
 export async function useCanvas(
@@ -32,4 +32,46 @@ export async function useCanvas(
   // 设置canvas的位置
   screenshot.style.left = `${x}px`
   screenshot.style.top = `${y}px`
+}
+
+// 定义返回类型
+interface Size {
+  width: Ref<number>;
+  height: Ref<number>;
+}
+
+// 创建一个名为 useResizeObserver 的 hook
+export function useResizeObserver(target: Ref<Element | null>): Size {
+  const width = ref(0);
+  const height = ref(0);
+
+  let observer: ResizeObserver | null = null;
+
+  const startObserving = () => {
+    if (observer !== null) {
+      observer.disconnect();
+    }
+    observer = new ResizeObserver((entries) => {
+      if (entries.length === 0) return;
+      const entry = entries[0];
+      width.value = entry.contentRect.width;
+      height.value = entry.contentRect.height;
+    });
+
+    if (target.value) {
+      observer.observe(target.value);
+    }
+  };
+
+  onMounted(() => {
+    startObserving();
+  });
+
+  onUnmounted(() => {
+    if (observer) {
+      observer.disconnect();
+    }
+  });
+
+  return { width, height };
 }

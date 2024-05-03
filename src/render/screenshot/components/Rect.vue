@@ -4,6 +4,7 @@ import { useDrawRect } from '../composables/drawRect'
 import { useDragRect } from '../composables/dragRect'
 import { useResizeRect } from '../composables/resizeRect'
 import { useDownload, useSaveScreenshot, useMosaic } from '../composables/tools'
+import { useResizeObserver } from '../composables/utils'
 import type { Position, Mode } from '../types/index.d'
 
 const mode = ref<Mode>('draw')
@@ -15,17 +16,23 @@ const screenshot = ref<HTMLCanvasElement>()
 
 const mosaicWorkStatus = ref(false) // 马赛克工作状态 是否开启马赛克
 
+const observeSize = useResizeObserver(screenshot as any)
+
+// 切换到drag模式
 function handleRectMousedown(event: MouseEvent) {
   event.preventDefault()
   event.stopPropagation()
+  // 如果是编辑状态 则不进入drag模式
   if (mode.value === 'edit') return
   mode.value = 'drag'
 }
 
+// 切换到edit模式
 function changeToEditMode() {
   mode.value = 'edit'
 }
 
+// 切换到resize模式
 function handlePosMousedown(event: MouseEvent) {
   event.preventDefault()
   event.stopPropagation()
@@ -40,7 +47,6 @@ function handlePosMousedown(event: MouseEvent) {
 }
 
 function download() {
-  // 获取canvas的base64编码
   useDownload(screenshot.value!)
   window.useScreenshot.close()
 }
@@ -61,7 +67,7 @@ async function mosaic(e: MouseEvent) {
   const mosaic = useMosaic(screenshot.value!)
   mosaic.stopMosaic()
   mosaic.startMosaic()
-}
+} 
 
 onMounted(() => {
   const rectDOM = document.querySelector('.rect') as HTMLElement
@@ -75,6 +81,13 @@ onMounted(() => {
 
 <template>
   <div class="rect" @mousedown="handleRectMousedown">
+    <!-- 这里是大小展示区域 -->
+    <div 
+      min-w="80px" p-1 bg-dark-2 text-light text-sm rounded-sm absolute top--36px left-10px z-999 
+      class="monospace"
+    >
+      {{ observeSize.width }} * {{ observeSize.height }}
+    </div>
     <!-- 这里是截图区域 -->
     <canvas class="screenshot" ref="screenshot" fixed z-99 />
     <!-- 这里是缩放区域 -->
