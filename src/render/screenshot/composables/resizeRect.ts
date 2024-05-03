@@ -1,11 +1,11 @@
 import type { Ref } from 'vue'
-import type { Position } from './types'
+import type { Mode, Position } from '../types/index.d'
 import { useCanvas } from './utils'
 
 export function useResizeRect(
   rectDOM: HTMLElement,
   screenshot: HTMLCanvasElement,
-  mode: Ref<'drag' | 'draw' | 'transable'>,
+  mode: Ref<Mode>,
   pos: Ref<Position>,
 ) {
   let startFlag = false
@@ -41,7 +41,7 @@ export function useResizeRect(
   function mousemoveHanlder(event: MouseEvent) {
     if (!startFlag)
       return
-    if (mode.value !== 'transable')
+    if (mode.value !== 'resize')
       return
     const { pageX, pageY } = event
 

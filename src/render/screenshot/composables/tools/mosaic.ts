@@ -28,7 +28,7 @@ export function useMosaic(canvas: HTMLCanvasElement) {
     const data = imageData.data
 
     let r = 0; let g = 0; let b = 0; let a = 0
-    let pixelCount = size * size
+    const pixelCount = size * size
 
     // 遍历正方形区域内的所有像素
     for (let i = 0; i < data.length; i += 4) {

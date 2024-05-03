@@ -1,5 +1,10 @@
 ### 截图
 
+1. 产生一个全屏遮罩 => 截取屏幕当前帧 => 贴在遮罩上 => 得到一个不失真的当前帧截图
+2. 生成截图区域 normal/insert normal模式我们可以改变截图区域的形状和位置 insert模式下 我们只能操作截图区域的画面
+3. normal模式下 会产生一个放大镜
+4. insert模式下 会有几种不同的操作
+
 - 创建一个全屏的蒙板 electron - window
 - 截取屏幕的当前帧 贴在蒙板上 electron - capturer
    - draw

@@ -7,3 +7,5 @@ export type Position
   | 'right'
   | 'top'
   | 'bottom'
+
+export type Mode = 'drag' | 'draw' | 'resize' | 'edit'

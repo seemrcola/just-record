@@ -4,27 +4,32 @@ import { useDrawRect } from '../composables/drawRect'
 import { useDragRect } from '../composables/dragRect'
 import { useResizeRect } from '../composables/resizeRect'
 import { useDownload, useSaveScreenshot, useMosaic } from '../composables/tools'
-import type { Position } from '../composables/types'
+import type { Position, Mode } from '../types/index.d'
 
-const mode = ref<'draw' | 'drag' | 'transable'>('draw')
+const mode = ref<Mode>('draw')
 let drag: ReturnType<typeof useDragRect>
 let draw: ReturnType<typeof useDrawRect>
 let resize: ReturnType<typeof useResizeRect>
 const position = ref<Position>('left')
 const screenshot = ref<HTMLCanvasElement>()
-const mosaicWorkStatus = ref(false)
+
+const mosaicWorkStatus = ref(false) // 马赛克工作状态 是否开启马赛克
 
 function handleRectMousedown(event: MouseEvent) {
   event.preventDefault()
   event.stopPropagation()
-  if(mosaicWorkStatus.value) return
+  if (mode.value === 'edit') return
   mode.value = 'drag'
+}
+
+function changeToEditMode() {
+  mode.value = 'edit'
 }
 
 function handlePosMousedown(event: MouseEvent) {
   event.preventDefault()
   event.stopPropagation()
-  mode.value = 'transable'
+  mode.value = 'resize'
   const posDOM = event.target as HTMLElement
   position.value = posDOM.dataset.pos as Position
 
@@ -73,7 +78,7 @@ onMounted(() => {
     <!-- 这里是截图区域 -->
     <canvas class="screenshot" ref="screenshot" fixed z-99 />
     <!-- 这里是缩放区域 -->
-    <div class="box">
+    <div class="box" v-if="mode !== 'edit'">
       <div class="l" data-pos="left" @mousedown="handlePosMousedown" />
       <div class="r" data-pos="right" @mousedown="handlePosMousedown" />
       <div class="t" data-pos="top" @mousedown="handlePosMousedown" />
@@ -85,15 +90,19 @@ onMounted(() => {
     </div>
     <!-- 这里是功能区域 -->
     <div bg-dark-2 shadow-light flex class="tools">
-      <div 
-        h-4 w-4 cursor-pointer px-2 py-1 i-mingcute:mosaic-line text-light
-        :class="{ 'text-light': !mosaicWorkStatus, 'text-red': mosaicWorkStatus }" 
-        @mousedown.stop
-        @click.stop="mosaic"
-      />
-      <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:download text-light @click.stop="download" />
-      <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:close text-light @click.stop="close" />
-      <div h-4 w-4 cursor-pointer px-2 py-1 i-icon-park-outline:correct text-light @click.stop="save" />
+      <div pr-2 @click.stop="changeToEditMode">
+        <div
+          h-4 w-4 cursor-pointer px-2 py-1 i-mingcute:mosaic-line text-light
+          :class="{ 'text-light': !mosaicWorkStatus, 'text-red': mosaicWorkStatus }" 
+          @mousedown.stop
+          @click="mosaic" 
+        />
+      </div>
+      <div flex b-l="3px solid dark-5" pl-2>
+        <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:download text-light @click="download" />
+        <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:close text-light @click="close" />
+        <div h-4 w-4 cursor-pointer px-2 py-1 i-icon-park-outline:correct text-light @click="save" />
+      </div>
     </div>
   </div>
 </template>

@@ -1,10 +1,11 @@
 import type { Ref } from 'vue'
+import type { Mode } from '../types/index.d'
 import { useCanvas } from './utils'
 
 export function useDragRect(
   rectDOM: HTMLElement,
   screenshot: HTMLCanvasElement,
-  mode: Ref<'draw' | 'drag' | 'transable'>,
+  mode: Ref<Mode>,
 ) {
   let startFlag = false
   let start = { x: 0, y: 0 }
