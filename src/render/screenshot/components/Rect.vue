@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import { useDrawRect } from '../composables/drawRect'
 import { useDragRect } from '../composables/dragRect'
 import { useResizeRect } from '../composables/resizeRect'
+import { useSaveScreenshot, useDownload } from '../composables/tools'
 import type { Position } from '../composables/types'
 
 const mode = ref<'draw' | 'drag' | 'transable'>('draw')
@@ -33,34 +34,16 @@ function handlePosMousedown(event: MouseEvent) {
 function download() {
   // 获取canvas的base64编码
   const canvas = document.querySelector('.screenshot') as HTMLCanvasElement
-  const base64 = canvas.toDataURL()
-  // 保存到本地
-  const link = document.createElement('a')
-  link.download = 'just-record.png'
-  link.href = base64
-  link.click()
-  link.remove()
+  useDownload(canvas)
+  window.useScreenshot.close()
 }
 
-function save() {
+async function save() {
   const canvas = document.querySelector('.screenshot') as HTMLCanvasElement
-  // 拿到图片的blob格式
-  // 将canvas转换为Blob
-  canvas.toBlob(function (blob) {
-    // 使用Clipboard API写入剪贴板
-    navigator.clipboard.write([
-      new ClipboardItem({
-        'image/png': blob as Blob
-      })
-    ])
-    .then(function () {
-      console.log('Image copied to clipboard');
-      window.useScreenshot.close()
-    })
-    .catch(function (error) {
-      console.error('Error copying image to clipboard', error);
-    });
-  }, 'image/png');
+  const res = await useSaveScreenshot(canvas)
+  if (res) {
+    window.useScreenshot.close()
+  }
 }
 
 onMounted(() => {
