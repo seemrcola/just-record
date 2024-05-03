@@ -87,6 +87,7 @@ async function recordClip() {
   // 创建一个video
   const videoElement = document.createElement('video')
   videoElement.srcObject = stream
+  videoElement.muted = true
   videoElement.play()
 
   await nextTick() // 等待video加载完毕

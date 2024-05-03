@@ -89,7 +89,7 @@ onMounted(() => {
       <div class="rb" data-pos="right-bottom" @mousedown="handlePosMousedown" />
     </div>
     <!-- 这里是功能区域 -->
-    <div bg-dark shadow-light flex class="tools">
+    <div bg-dark-2 shadow-light flex class="tools">
       <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:download text-light @click="download" />
       <div h-4 w-4 cursor-pointer px-2 py-1 i-lets-icons:done-all-alt-round text-light @click="save" />
     </div>
