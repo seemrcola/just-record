@@ -34,14 +34,8 @@ export async function useCanvas(
   screenshot.style.top = `${y}px`
 }
 
-// 定义返回类型
-interface Size {
-  width: Ref<number>;
-  height: Ref<number>;
-}
-
 // 创建一个名为 useResizeObserver 的 hook
-export function useResizeObserver(target: Ref<Element | null>): Size {
+export function useResizeObserver(target: Ref<Element | null>) {
   const width = ref(0);
   const height = ref(0);
 

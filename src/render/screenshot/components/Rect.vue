@@ -16,6 +16,7 @@ const screenshot = ref<HTMLCanvasElement>()
 
 const mosaicWorkStatus = ref(false) // 马赛克工作状态 是否开启马赛克
 
+// 监听截图区域大小变化
 const observeSize = useResizeObserver(screenshot as any)
 
 // 切换到drag模式
