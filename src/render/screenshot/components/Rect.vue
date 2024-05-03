@@ -2,16 +2,23 @@
 import { onMounted, ref } from 'vue'
 import { useDrawRect } from '../composables/drawRect'
 import { useDragRect } from '../composables/dragRect'
-import { useTransable } from '../composables/transableRect'
+import { useResizeRect } from '../composables/resizeRect'
 import type { Position } from '../composables/types'
 
 const mode = ref<'draw' | 'drag' | 'transable'>('draw')
 let drag: ReturnType<typeof useDragRect>
 let draw: ReturnType<typeof useDrawRect>
-let transable: ReturnType<typeof useTransable>
+let resize: ReturnType<typeof useResizeRect>
 const position = ref<Position>('left')
 
-function handleMousedown(event: MouseEvent) {
+function handleRectMousedown(event: MouseEvent) {
+  console.log('handleRectMousedown')
+  event.preventDefault()
+  event.stopPropagation()
+  mode.value = 'drag'
+}
+
+function handlePosMousedown(event: MouseEvent) {
   event.preventDefault()
   event.stopPropagation()
   mode.value = 'transable'
@@ -20,8 +27,8 @@ function handleMousedown(event: MouseEvent) {
 
   const rectDOM = document.querySelector('.rect') as HTMLElement
   const screenshot = document.querySelector('.screenshot') as HTMLCanvasElement
-  transable = useTransable(rectDOM, screenshot, mode, position)
-  transable.startTransable(event)
+  resize = useResizeRect(rectDOM, screenshot, mode, position)
+  resize.startResize(event)
 }
 
 function download() {
@@ -44,7 +51,7 @@ function save() {
     // 使用Clipboard API写入剪贴板
     navigator.clipboard.write([
       new ClipboardItem({
-        'image/png': blob
+        'image/png': blob as Blob
       })
     ])
     .then(function () {
@@ -67,24 +74,24 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="rect">
+  <div class="rect" @mousedown="handleRectMousedown">
     <!-- 这里是截图区域 -->
     <canvas class="screenshot" fixed z-99 />
     <!-- 这里是缩放区域 -->
     <div class="box">
-      <div class="l" data-pos="left" @mousedown="handleMousedown" />
-      <div class="r" data-pos="right" @mousedown="handleMousedown" />
-      <div class="t" data-pos="top" @mousedown="handleMousedown" />
-      <div class="b" data-pos="bottom" @mousedown="handleMousedown" />
-      <div class="lt" data-pos="left-top" @mousedown="handleMousedown" />
-      <div class="lb" data-pos="left-bottom" @mousedown="handleMousedown" />
-      <div class="rt" data-pos="right-top" @mousedown="handleMousedown" />
-      <div class="rb" data-pos="right-bottom" @mousedown="handleMousedown" />
+      <div class="l" data-pos="left" @mousedown="handlePosMousedown" />
+      <div class="r" data-pos="right" @mousedown="handlePosMousedown" />
+      <div class="t" data-pos="top" @mousedown="handlePosMousedown" />
+      <div class="b" data-pos="bottom" @mousedown="handlePosMousedown" />
+      <div class="lt" data-pos="left-top" @mousedown="handlePosMousedown" />
+      <div class="lb" data-pos="left-bottom" @mousedown="handlePosMousedown" />
+      <div class="rt" data-pos="right-top" @mousedown="handlePosMousedown" />
+      <div class="rb" data-pos="right-bottom" @mousedown="handlePosMousedown" />
     </div>
     <!-- 这里是功能区域 -->
     <div bg-dark shadow-light flex class="tools">
-      <div cursor-pointer px-2 py-1 i-material-symbols:download text-light @click="download" />
-      <div cursor-pointer px-2 py-1 i-lets-icons:done-all-alt-round text-light @click="save" />
+      <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:download text-light @click="download" />
+      <div h-4 w-4 cursor-pointer px-2 py-1 i-lets-icons:done-all-alt-round text-light @click="save" />
     </div>
   </div>
 </template>

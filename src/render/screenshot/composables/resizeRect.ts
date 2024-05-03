@@ -2,7 +2,7 @@ import type { Ref } from 'vue'
 import type { Position } from './types'
 import { useCanvas } from './utils'
 
-export function useTransable(
+export function useResizeRect(
   rectDOM: HTMLElement,
   screenshot: HTMLCanvasElement,
   mode: Ref<'drag' | 'draw' | 'transable'>,
@@ -17,7 +17,7 @@ export function useTransable(
   const corner = ['top-left', 'top-right', 'bottom-left', 'bottom-right']
   const side = ['top', 'bottom', 'left', 'right']
 
-  function startTransable(event: MouseEvent) {
+  function startResize(event: MouseEvent) {
     startFlag = true
     start.x = event.pageX
     start.y = event.pageY
@@ -106,10 +106,9 @@ export function useTransable(
     startFlag = false
     document.removeEventListener('mousemove', mousemoveHanlder)
     document.removeEventListener('mouseup', mouseupHanlder)
-    mode.value = 'drag'
   }
 
   return {
-    startTransable,
+    startResize,
   }
 }

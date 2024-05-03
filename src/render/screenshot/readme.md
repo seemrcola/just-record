@@ -1,10 +1,10 @@
 ### 截图
 
 - 创建一个全屏的蒙板 electron - window
-- 截取屏幕的当前帧 贴在蒙板上 electron - capturePage
+- 截取屏幕的当前帧 贴在蒙板上 electron - capturer
    - draw
    - drag
-   - resize (transable)
+   - resize
 
 
 #### 蒙板
