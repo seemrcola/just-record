@@ -46,6 +46,10 @@ async function save() {
     window.useScreenshot.close()
 }
 
+function close() {
+  window.useScreenshot.close()
+}
+
 async function mosaic(e: MouseEvent) {
   e.preventDefault()
   mosaicWorkStatus.value = true
@@ -88,6 +92,7 @@ onMounted(() => {
         @click.stop="mosaic"
       />
       <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:download text-light @click.stop="download" />
+      <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:close text-light @click.stop="close" />
       <div h-4 w-4 cursor-pointer px-2 py-1 i-icon-park-outline:correct text-light @click.stop="save" />
     </div>
   </div>
