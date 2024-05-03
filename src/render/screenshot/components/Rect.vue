@@ -12,7 +12,6 @@ let resize: ReturnType<typeof useResizeRect>
 const position = ref<Position>('left')
 
 function handleRectMousedown(event: MouseEvent) {
-  console.log('handleRectMousedown')
   event.preventDefault()
   event.stopPropagation()
   mode.value = 'drag'
@@ -56,6 +55,7 @@ function save() {
     ])
     .then(function () {
       console.log('Image copied to clipboard');
+      window.useScreenshot.close()
     })
     .catch(function (error) {
       console.error('Error copying image to clipboard', error);
