@@ -1,12 +1,13 @@
-export function useMosaic(canvas: HTMLCanvasElement) {
+export function useMosaic(canvas: HTMLCanvasElement, type: 'light' | 'heavy' = 'light') {
   const ratio = window.devicePixelRatio
   const mosaicRadius = 24
   // 获取到画布的rect
   const rect = canvas.getBoundingClientRect()
   // 拿到画布的上下文
   const ctx = canvas.getContext('2d')!
-  // 定义一个函数，用于绘制马赛克
-  function drawMosaic(point: { x: number, y: number }, size: number) {
+
+  // 定义一个函数，用于绘制马赛克(可以重涂)
+  function drawMosaicHeavily(point: { x: number, y: number }, size: number) {
     // 取出当前点周围半径为size的矩形
     const area = {
       x: Math.floor(point.x - size / 2),
@@ -15,12 +16,32 @@ export function useMosaic(canvas: HTMLCanvasElement) {
       height: size,
     }
     // 填充颜色
-    const color = getMosaicColor(point, size)
+    const color = getMosaicColor({x: area.x, y: area.y}, size)
     ctx.fillStyle = color
     // 绘制矩形
     ctx.fillRect(area.x, area.y, size, size)
   }
 
+  function drawMosaicLightly(point: { x: number, y: number }, size: number) {
+    // 首先将整个画布的像素点按照size进行分割，分割成多个size * size的小方格
+    // 要算出当前point所处的小方格
+    const gridX = Math.floor(point.x / size)
+    const gridY = Math.floor(point.y / size)
+    // 算出这个所处小方格的左上角坐标
+    const gridLeft = gridX * size
+    const gridTop = gridY * size
+    // 计算颜色
+    const color = getMosaicColor({ x: gridLeft, y: gridTop }, size)
+    // 绘制矩形
+    ctx.fillStyle = color
+    ctx.fillRect(gridLeft, gridTop, size, size)
+  }
+
+  /**
+   * @param point  左上角坐标
+   * @param size   正方形区域大小
+   * @returns      马赛克颜色值
+   */
   function getMosaicColor(point: { x: number, y: number }, size: number) {
     // 计算出马赛克的颜色值
     // 获取正方形区域的像素数据
@@ -28,7 +49,7 @@ export function useMosaic(canvas: HTMLCanvasElement) {
     const data = imageData.data
 
     let r = 0; let g = 0; let b = 0; let a = 0
-    const pixelCount = size * size
+    let pixelCount = 0
 
     // 遍历正方形区域内的所有像素
     for (let i = 0; i < data.length; i += 4) {
@@ -36,6 +57,7 @@ export function useMosaic(canvas: HTMLCanvasElement) {
       g += data[i + 1] // 绿色值
       b += data[i + 2] // 蓝色值
       a += data[i + 3] // 透明度值
+      pixelCount++
     }
 
     // 计算平均颜色值
@@ -67,7 +89,10 @@ export function useMosaic(canvas: HTMLCanvasElement) {
     const { pageX, pageY } = event
     const x = (pageX - rect.left) * ratio
     const y = (pageY - rect.top) * ratio
-    drawMosaic({ x, y }, mosaicRadius)
+    if (type === 'heavy')
+      drawMosaicHeavily({ x, y }, mosaicRadius)
+    else
+      drawMosaicLightly({ x, y }, mosaicRadius)
   }
 
   function mouseuphanlder() {
