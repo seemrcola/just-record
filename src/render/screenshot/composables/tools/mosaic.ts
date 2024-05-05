@@ -1,4 +1,8 @@
-export function useMosaic(canvas: HTMLCanvasElement, type: 'light' | 'heavy' = 'light') {
+import { useMosaicStore } from '../../store'
+
+export function useMosaic(canvas: HTMLCanvasElement) {
+  const mosaicStore = useMosaicStore()
+
   const ratio = window.devicePixelRatio
   const mosaicRadius = 24
   // 获取到画布的rect
@@ -16,7 +20,7 @@ export function useMosaic(canvas: HTMLCanvasElement, type: 'light' | 'heavy' = '
       height: size,
     }
     // 填充颜色
-    const color = getMosaicColor({x: area.x, y: area.y}, size)
+    const color = getMosaicColor({ x: area.x, y: area.y }, size)
     ctx.fillStyle = color
     // 绘制矩形
     ctx.fillRect(area.x, area.y, size, size)
@@ -71,32 +75,32 @@ export function useMosaic(canvas: HTMLCanvasElement, type: 'light' | 'heavy' = '
   }
 
   function startMosaic() {
-    canvas.addEventListener('mousedown', mousedownhanlder)
+    canvas.addEventListener('mousedown', mousedownHanlder)
   }
 
   function stopMosaic() {
-    canvas.removeEventListener('mousedown', mousedownhanlder)
-    canvas.removeEventListener('mousemove', mousemovehanlder)
-    canvas.removeEventListener('mouseup', mouseuphanlder)
+    canvas.removeEventListener('mousedown', mousedownHanlder)
   }
 
-  function mousedownhanlder(event: MouseEvent) {
-    canvas.addEventListener('mousemove', mousemovehanlder)
-    canvas.addEventListener('mouseup', mouseuphanlder)
+  function mousedownHanlder(event: MouseEvent) {
+    document.addEventListener('mousemove', mousemoveHanlder)
+    document.addEventListener('mouseup', mouseupHanlder)
   }
 
-  function mousemovehanlder(event: MouseEvent) {
+  function mousemoveHanlder(event: MouseEvent) {
     const { pageX, pageY } = event
     const x = (pageX - rect.left) * ratio
     const y = (pageY - rect.top) * ratio
-    if (type === 'heavy')
+    console.log(mosaicStore.mosaicType)
+    if (mosaicStore.mosaicType === 'heavy')
       drawMosaicHeavily({ x, y }, mosaicRadius)
-    else
+    if (mosaicStore.mosaicType === 'light')
       drawMosaicLightly({ x, y }, mosaicRadius)
   }
 
-  function mouseuphanlder() {
-    stopMosaic()
+  function mouseupHanlder() {
+    document.removeEventListener('mousemove', mousemoveHanlder)
+    document.removeEventListener('mouseup', mouseupHanlder)
   }
 
   return {

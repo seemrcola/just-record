@@ -7,6 +7,8 @@ import { useDownload, useSaveScreenshot, useMosaic } from '../composables/tools'
 import { useResizeObserver } from '../composables/utils'
 import type { Position, Mode } from '../types/index.d'
 
+import Mosaic from './Mosaic.vue'
+
 const mode = ref<Mode>('draw')
 let drag: ReturnType<typeof useDragRect>
 let draw: ReturnType<typeof useDrawRect>
@@ -62,13 +64,12 @@ function close() {
   window.useScreenshot.close()
 }
 
-async function mosaic(e: MouseEvent) {
-  e.preventDefault()
+async function mosaic() {
   mosaicWorkStatus.value = true
   const mosaic = useMosaic(screenshot.value!)
   mosaic.stopMosaic()
   mosaic.startMosaic()
-} 
+}
 
 onMounted(() => {
   const rectDOM = document.querySelector('.rect') as HTMLElement
@@ -105,12 +106,7 @@ onMounted(() => {
     <!-- 这里是功能区域 -->
     <div bg-dark-2 shadow-light flex class="tools">
       <div pr-2 @click.stop="changeToEditMode">
-        <div
-          h-4 w-4 cursor-pointer px-2 py-1 i-mingcute:mosaic-line text-light
-          :class="{ 'text-light': !mosaicWorkStatus, 'text-red': mosaicWorkStatus }" 
-          @mousedown.stop
-          @click="mosaic" 
-        />
+        <Mosaic :mosaic-work-status="mosaicWorkStatus" @mosaic="mosaic"></Mosaic>
       </div>
       <div flex b-l="3px solid dark-5" pl-2>
         <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:download text-light @click="download" />

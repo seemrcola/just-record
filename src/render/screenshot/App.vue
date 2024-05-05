@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { App } from 'vue'
 import { createApp, nextTick, onMounted, onUnmounted, ref } from 'vue'
-import { NDialogProvider } from 'naive-ui'
 import Rect from './components/Rect.vue'
 import { useScreenshotStore } from './store'
 
@@ -86,9 +85,7 @@ onUnmounted(() => window.removeEventListener('keydown', escHandler))
 
 <template>
   <Suspense>
-    <NDialogProvider>
-      <div ref="wrapper" w-full h-full class="screenshot-root" />
-    </NDialogProvider>
+    <div ref="wrapper" w-full h-full class="screenshot-root" />
   </Suspense>
 </template>
 
