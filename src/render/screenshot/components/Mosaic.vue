@@ -1,28 +1,18 @@
 <script setup lang='ts'>
-import { ref } from 'vue'
-import { useMosaicStore } from '../store'
-
-const store = useMosaicStore()
-
-const props = defineProps({
-  mosaicWorkStatus: {
-    type: Boolean,
-    default: false,
-  },
-})
+import { useToolsStore } from '../store'
 
 const emits = defineEmits<{
   (e: 'mosaic'): void
 }>()
 
-const showChoose = ref(false)
+const store = useToolsStore()
 
 function changeType(type: 'light' | 'heavy') {
   store.setMosaicType(type)
 }
 
 function mosaic() {
-  showChoose.value = true
+  store.changeShowChoose('Mosaic')
   emits('mosaic')
 }
 </script>
@@ -31,11 +21,11 @@ function mosaic() {
   <div relative>
     <div
       h-4 w-4 cursor-pointer px-2 py-1 i-mingcute:mosaic-line text-light
-      :class="{ 'text-light': !props.mosaicWorkStatus, 'text-red': props.mosaicWorkStatus }"
+      :class="{ 'text-light': !store.showMosaicChoose, 'text-red': store.showMosaicChoose }"
       @mousedown.stop
       @click="mosaic"
     />
-    <div v-if="showChoose" class="choose">
+    <div v-if="store.showMosaicChoose" class="choose">
       <div
         :class="{ 'bg-orange': store.mosaicType === 'light' }"
         i-mingcute:mosaic-line mx-2 text-light text-1.15rem

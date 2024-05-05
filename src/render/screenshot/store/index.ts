@@ -1,2 +1,2 @@
 export { useScreenshotStore } from './rect'
-export { useMosaicStore } from './tools'
+export { useToolsStore } from './tools'

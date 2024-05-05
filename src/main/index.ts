@@ -64,8 +64,8 @@ async function createWindow() {
   // 主页面window创建
   const [width, _] = getSize()
   win = new BrowserWindow({
-    width: 320,
-    height: 48,
+    width: 340,
+    height: 42,
     x: width - 240,
     y: 100,
     title: 'User Recorder',

@@ -36,7 +36,7 @@ function startTimer(status: boolean) {
 
 <template>
   <Suspense>
-    <div h-full flex items-center px-2>
+    <div h-full flex items-center px-4>
       <RecordBar />
       <Timer ref="timer" h-28px w-160px mx-3 />
       <Clock h-6 w-6 mr-3 @start-timer="startTimer" />

@@ -1,7 +1,7 @@
-import { useMosaicStore } from '../../store'
+import { useToolsStore } from '../../store'
 
 export function useMosaic(canvas: HTMLCanvasElement) {
-  const mosaicStore = useMosaicStore()
+  const store = useToolsStore()
 
   const ratio = window.devicePixelRatio
   const mosaicRadius = 24
@@ -91,10 +91,10 @@ export function useMosaic(canvas: HTMLCanvasElement) {
     const { pageX, pageY } = event
     const x = (pageX - rect.left) * ratio
     const y = (pageY - rect.top) * ratio
-    console.log(mosaicStore.mosaicType)
-    if (mosaicStore.mosaicType === 'heavy')
+
+    if (store.mosaicType === 'heavy')
       drawMosaicHeavily({ x, y }, mosaicRadius)
-    if (mosaicStore.mosaicType === 'light')
+    if (store.mosaicType === 'light')
       drawMosaicLightly({ x, y }, mosaicRadius)
   }
 

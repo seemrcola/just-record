@@ -3,11 +3,12 @@ import { onMounted, ref } from 'vue'
 import { useDrawRect } from '../composables/drawRect'
 import { useDragRect } from '../composables/dragRect'
 import { useResizeRect } from '../composables/resizeRect'
-import { useDownload, useSaveScreenshot, useMosaic } from '../composables/tools'
+import { useDownload, useMosaic, useSaveScreenshot } from '../composables/tools'
 import { useResizeObserver } from '../composables/utils'
-import type { Position, Mode } from '../types/index.d'
+import type { Mode, Position } from '../types/index.d'
 
 import Mosaic from './Mosaic.vue'
+import Pen from './Pen.vue'
 
 const mode = ref<Mode>('draw')
 let drag: ReturnType<typeof useDragRect>
@@ -15,8 +16,6 @@ let draw: ReturnType<typeof useDrawRect>
 let resize: ReturnType<typeof useResizeRect>
 const position = ref<Position>('left')
 const screenshot = ref<HTMLCanvasElement>()
-
-const mosaicWorkStatus = ref(false) // 马赛克工作状态 是否开启马赛克
 
 // 监听截图区域大小变化
 const observeSize = useResizeObserver(screenshot as any)
@@ -26,7 +25,8 @@ function handleRectMousedown(event: MouseEvent) {
   event.preventDefault()
   event.stopPropagation()
   // 如果是编辑状态 则不进入drag模式
-  if (mode.value === 'edit') return
+  if (mode.value === 'edit')
+    return
   mode.value = 'drag'
 }
 
@@ -65,10 +65,13 @@ function close() {
 }
 
 async function mosaic() {
-  mosaicWorkStatus.value = true
   const mosaic = useMosaic(screenshot.value!)
   mosaic.stopMosaic()
   mosaic.startMosaic()
+}
+
+async function pen() {
+
 }
 
 onMounted(() => {
@@ -84,16 +87,16 @@ onMounted(() => {
 <template>
   <div class="rect" @mousedown="handleRectMousedown">
     <!-- 这里是大小展示区域 -->
-    <div 
-      min-w="80px" p-1 bg-dark-2 text-light text-sm rounded-sm absolute top--36px left-10px z-999 
+    <div
+      min-w="80px" p-1 bg-dark-2 text-light text-sm rounded-sm absolute top--36px left-10px z-999
       class="monospace"
     >
       {{ observeSize.width }} * {{ observeSize.height }}
     </div>
     <!-- 这里是截图区域 -->
-    <canvas class="screenshot" ref="screenshot" fixed z-99 />
+    <canvas ref="screenshot" class="screenshot" fixed z-99 />
     <!-- 这里是缩放区域 -->
-    <div class="box" v-if="mode !== 'edit'">
+    <div v-if="mode !== 'edit'" class="box">
       <div class="l" data-pos="left" @mousedown="handlePosMousedown" />
       <div class="r" data-pos="right" @mousedown="handlePosMousedown" />
       <div class="t" data-pos="top" @mousedown="handlePosMousedown" />
@@ -104,11 +107,13 @@ onMounted(() => {
       <div class="rb" data-pos="right-bottom" @mousedown="handlePosMousedown" />
     </div>
     <!-- 这里是功能区域 -->
-    <div bg-dark-2 shadow-light flex class="tools">
-      <div pr-2 @click.stop="changeToEditMode">
-        <Mosaic :mosaic-work-status="mosaicWorkStatus" @mosaic="mosaic"></Mosaic>
+    <div bg-dark-2 shadow-light flex items-center class="tools">
+      <div flex @click.stop="changeToEditMode">
+        <Mosaic @mosaic="mosaic" />
+        <Pen @pen="pen" />
       </div>
-      <div flex b-l="3px solid dark-5" pl-2>
+      <div h-5 w-2px bg-gray mx-3 />
+      <div flex>
         <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:download text-light @click="download" />
         <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:close text-red @click="close" />
         <div h-4 w-4 cursor-pointer px-2 py-1 i-icon-park-outline:correct text-blue @click="save" />
