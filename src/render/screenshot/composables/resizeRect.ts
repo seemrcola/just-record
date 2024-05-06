@@ -1,6 +1,9 @@
 import type { Ref } from 'vue'
 import type { Mode, Position } from '../types/index.d'
 import { useCanvas } from './utils'
+import { useScreenshotStore } from '../store'
+
+const store = useScreenshotStore()
 
 export function useResizeRect(
   rectDOM: HTMLElement,
@@ -64,7 +67,7 @@ export function useResizeRect(
     rectDOM.style.left = `${posx}px`
     rectDOM.style.top = `${posy}px`
 
-    useCanvas(screenshot, { x: posx, y: posy, width, height })
+    useCanvas(screenshot, { x: posx, y: posy, width, height }, store.imgID)
   }
 
   function handleSide(end: { x: number, y: number }) {
@@ -79,26 +82,26 @@ export function useResizeRect(
       const newX = min(rect.left, x)
       rectDOM.style.width = `${width}px`
       rectDOM.style.left = `${newX}px`
-      useCanvas(screenshot, { x: newX, y: rect.top, width, height: rect.height })
+      useCanvas(screenshot, { x: newX, y: rect.top, width, height: rect.height }, store.imgID)
     }
     if (pos.value === 'left') {
       const newX = min(rect.left + rect.width, x)
       rectDOM.style.left = `${newX}px`
       rectDOM.style.width = `${width}px`
-      useCanvas(screenshot, { x: newX, y: rect.top, width, height: rect.height })
+      useCanvas(screenshot, { x: newX, y: rect.top, width, height: rect.height }, store.imgID)
     }
     // 上下只改变高度
     if (pos.value === 'bottom') {
       const newY = min(rect.top, y)
       rectDOM.style.height = `${height}px`
       rectDOM.style.top = `${newY}px`
-      useCanvas(screenshot, { x: rect.left, y: newY, width: rect.width, height })
+      useCanvas(screenshot, { x: rect.left, y: newY, width: rect.width, height }, store.imgID)
     }
     if (pos.value === 'top') {
       const newY = min(rect.top + rect.height, y)
       rectDOM.style.top = `${newY}px`
       rectDOM.style.height = `${height}px`
-      useCanvas(screenshot, { x: rect.left, y: newY, width: rect.width, height })
+      useCanvas(screenshot, { x: rect.left, y: newY, width: rect.width, height }, store.imgID)
     }
   }
 

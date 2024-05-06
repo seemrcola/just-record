@@ -1,4 +1,4 @@
-import { useDrag } from '../../_common/useDrag'
+import { useDrag } from '../../_common_/useDrag'
 
 export {
   useDrag,

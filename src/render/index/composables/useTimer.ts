@@ -1,4 +1,4 @@
-import Timer from '../../_common/useTimer/index.vue'
+import Timer from '../../_common_/useTimer/index.vue'
 
 export {
   Timer,

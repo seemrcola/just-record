@@ -2,6 +2,14 @@ import type { App } from 'vue'
 import { createApp, ref } from 'vue'
 import useRecordTipTemp from './useRecordTipTemp.vue'
 import useSvgRegionTemp from './useSvgRegionTemp.vue'
+import { createholeRect, createDragRect, updateRect } from './hepler'
+
+type DragMode =
+  'move' |
+  'resize-top-left' |
+  'resize-top-right' |
+  'resize-bottom-left' |
+  'resize-bottom-right';
 
 interface RecordOptions {
   x: number
@@ -28,7 +36,6 @@ export function useSvgRegion(wrapper: string, regionLifeCycle: RegionLifeCycle) 
   let svg: SVGSVGElement // svg 获取到这个名称是useSvgRegionTemp中的svg-mask
   let drag: SVGRectElement // drag-rect 用于拖拽
   let hole: SVGRectElement // svg mask 挖出来的洞
-  let resizeBoxDom: HTMLElement // resize的提示盒子
   let recordBoxDom: HTMLElement // 录制的提示盒子的dom
   let recordBox: App<Element> // 录制的提示盒子 即recordTipTemp.vue组件createApp的返回值
 
@@ -41,7 +48,7 @@ export function useSvgRegion(wrapper: string, regionLifeCycle: RegionLifeCycle) 
 
   let __start = false
   let __start_drag = false
-  let __drag_mode: 'move' | 'resize' = 'move'
+  let __drag_mode: DragMode = 'move'
   let startPoint = { x: 0, y: 0 }
   let startDragPoint = { x: 0, y: 0 }
 
@@ -50,7 +57,6 @@ export function useSvgRegion(wrapper: string, regionLifeCycle: RegionLifeCycle) 
     const mask = svg.querySelector('#mask-svg') as SVGMaskElement
 
     mask?.remove()
-    resizeBoxDom?.remove()
     recordBoxDom?.remove()
     recordBox?.unmount()
   }
@@ -63,7 +69,6 @@ export function useSvgRegion(wrapper: string, regionLifeCycle: RegionLifeCycle) 
     // 将drag的虚线还原
     drag.setAttribute('stroke', 'orange')
     // 渲染提示框
-    resizeTip()
     recordTip()
     // 添加回来esc按钮的监听
     document.addEventListener('keydown', escCallback)
@@ -121,10 +126,10 @@ export function useSvgRegion(wrapper: string, regionLifeCycle: RegionLifeCycle) 
 
     // 给mask-rect添加监听
     drag = svg.querySelector('#drag-rect') as SVGRectElement
-    drag.addEventListener('mousedown', rectMouseDown)
+    drag.addEventListener('mousedown', mousedownHandler)
   }
 
-  function rectMouseDown(e: MouseEvent) {
+  function mousedownHandler(e: MouseEvent) {
     __start_drag = true
     drag.style.cursor = 'pointer'
 
@@ -133,91 +138,129 @@ export function useSvgRegion(wrapper: string, regionLifeCycle: RegionLifeCycle) 
       x: clientX,
       y: clientY,
     }
-    document.addEventListener('mousemove', rectMouseMove)
-    document.addEventListener('mouseup', rectMouseUp)
+    document.addEventListener('mousemove', mousemoveHandler)
+    document.addEventListener('mouseup', mouseupHanlder)
 
     // 当鼠标不在定点附近的时候视为move
     const { x, y, width, height } = hole.getBBox()
-    // 计算出鼠标到矩形右下角的距离
-    const dist = Math.sqrt((x + width - clientX) ** 2 + (y + height - clientY) ** 2) // 右下角
-    if (dist > 10) {
-      __drag_mode = 'move'
-      drag.style.cursor = 'move'
+    const distTopLeft = Math.sqrt((x - clientX) ** 2 + (y - clientY) ** 2);
+    const distTopRight = Math.sqrt((x + width - clientX) ** 2 + (y - clientY) ** 2);
+    const distBottomLeft = Math.sqrt((x - clientX) ** 2 + (y + height - clientY) ** 2);
+    const distBottomRight = Math.sqrt((x + width - clientX) ** 2 + (y + height - clientY) ** 2);
+    const threshold = 10; // 设定一个阈值，判断是否点击在角上
+
+    if (distTopLeft < threshold) {
+      __drag_mode = 'resize-top-left';
+      peerPoint = { x: x + width, y: y + height };
+    }
+    else if (distTopRight < threshold) {
+      __drag_mode = 'resize-top-right';
+      peerPoint = { x: x, y: y + height };
+    }
+    else if (distBottomLeft < threshold) {
+      __drag_mode = 'resize-bottom-left';
+      peerPoint = { x: x + width, y: y };
+    }
+    else if (distBottomRight < threshold) {
+      __drag_mode = 'resize-bottom-right';
+      peerPoint = { x: x, y: y };
     }
     else {
-      __drag_mode = 'resize'
-      // 记录对端点 由于目前只支持右下角拖拽 所以对端固定是左上角
-      peerPoint = { x, y }
+      __drag_mode = 'move';
+      drag.style.cursor = 'move';
     }
   }
 
-  function rectMouseMove(e: MouseEvent) {
-    if (!__start_drag)
-      return
+  function mousemoveHandler(e: MouseEvent) {
+    if (!__start_drag) return;
 
-    // 当前鼠标位置
-    const { clientX, clientY } = e
-    // 鼠标移动的距离
-    const dx = clientX - startDragPoint.x
-    const dy = clientY - startDragPoint.y
-    // 矩形的位置 和 大小
-    const x = Number(drag.getAttribute('x'))
-    const y = Number(drag.getAttribute('y'))
-    const rectWidth = Number(drag.getAttribute('width'))
-    const rectHeight = Number(drag.getAttribute('height'))
+    const { clientX, clientY } = e;
+    let dx = clientX - startDragPoint.x;
+    let dy = clientY - startDragPoint.y;
 
-    if (__drag_mode === 'move') {
-      // 移动之后的位置
-      let movex = x + dx
-      let movey = y + dy
+    let { x, y, width, height } = drag.getBBox();
 
-      movey = Math.max(0, movey) // 如果达到上边界
-      movex = Math.max(0, movex) // 如果达到左边界
-      movex = Math.min(movex, WINDOW_WIDTH - rectWidth)  // 如果达到右边界
-      movey = Math.min(movey, WINDOW_HEIGHT - rectHeight) // 如果达到下边界 下边界需要减去deltaY
-
-      updateRect(hole, movex, movey, rectWidth, rectHeight)
-      updateRect(drag, movex, movey, rectWidth, rectHeight)
+    switch (__drag_mode) {
+      case 'move':
+        x += dx;
+        y += dy;
+        break;
+      case 'resize-top-left':
+        x += dx;
+        y += dy;
+        width -= dx;
+        height -= dy;
+        break;
+      case 'resize-top-right':
+        y += dy;
+        width += dx;
+        height -= dy;
+        break;
+      case 'resize-bottom-left':
+        x += dx;
+        width -= dx;
+        height += dy;
+        break;
+      case 'resize-bottom-right':
+        width += dx;
+        height += dy;
+        break;
     }
-    if (__drag_mode === 'resize') {
-      let newWidth = clientX - peerPoint.x;
-      let newHeight = clientY - peerPoint.y;
-      let newX = peerPoint.x;
-      let newY = peerPoint.y;
 
-      // 如果宽度或高度为负值，则需要调整位置和大小
-      if (newWidth < 0) {
-        newX = clientX;
-        newWidth = -newWidth;
+    if (width < 0) {
+      switch (__drag_mode) {
+        case 'resize-top-left':
+          __drag_mode = 'resize-top-right';
+          break;
+        case 'resize-bottom-left':
+          __drag_mode = 'resize-bottom-right';
+          break;
+        case 'resize-top-right':
+          __drag_mode = 'resize-top-left';
+          break;
+        case 'resize-bottom-right':
+          __drag_mode = 'resize-bottom-left';
+          break;
       }
-      if (newHeight < 0) {
-        newY = clientY;
-        newHeight = -newHeight;
+      width = Math.abs(width);
+      x -= width;
+    }
+
+    if (height < 0) {
+      switch (__drag_mode) {
+        case 'resize-top-left':
+          __drag_mode = 'resize-bottom-left';
+          break;
+        case 'resize-top-right':
+          __drag_mode = 'resize-bottom-right';
+          break;
+        case 'resize-bottom-left':
+          __drag_mode = 'resize-top-left';
+          break;
+        case 'resize-bottom-right':
+          __drag_mode = 'resize-top-right';
+          break;
       }
-
-      // 确保矩形不会超出 SVG 的边界
-      newWidth = Math.min(newWidth, WINDOW_WIDTH - newX);
-      newHeight = Math.min(newHeight, WINDOW_HEIGHT - newY);
-
-      // 更新矩形和挖洞区域的属性
-      updateRect(hole, newX, newY, newWidth, newHeight);
-      updateRect(drag, newX, newY, newWidth, newHeight);
+      height = Math.abs(height);
+      y -= height;
     }
 
-    startDragPoint = {
-      x: clientX,
-      y: clientY,
-    }
+    x = Math.max(0, Math.min(x, WINDOW_WIDTH - width));
+    y = Math.max(0, Math.min(y, WINDOW_HEIGHT - height));
 
-    resizeTip()
-    recordTip()
+    updateRect(hole, x, y, width, height);
+    updateRect(drag, x, y, width, height);
+
+    startDragPoint = { x: clientX, y: clientY };
+
+    recordTip();
   }
 
-  function rectMouseUp() {
+  function mouseupHanlder() {
     __start_drag = false
     drag.style.cursor = 'default'
-    document.removeEventListener('mousemove', rectMouseMove)
-    document.removeEventListener('mouseup', rectMouseUp)
+    document.removeEventListener('mousemove', mousemoveHandler)
+    document.removeEventListener('mouseup', mouseupHanlder)
   }
 
   function createFullScreenSvg() {
@@ -239,7 +282,7 @@ export function useSvgRegion(wrapper: string, regionLifeCycle: RegionLifeCycle) 
     // 获取mask
     const mask = svg.querySelector('#mask') as SVGMaskElement
     if (!svg.querySelector('#mask-rect')) {
-      const rect = createHole(left, top, width, height)
+      const rect = createholeRect(left, top, width, height)
       mask.appendChild(rect)
       hole = rect // 保存hole
     }
@@ -258,72 +301,7 @@ export function useSvgRegion(wrapper: string, regionLifeCycle: RegionLifeCycle) 
       updateRect(drag, left, top, width, height)
     }
 
-    resizeTip()
     recordTip()
-  }
-
-  function createHole(left: number, top: number, width: number, height: number) {
-    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
-    rect.id = 'mask-rect'
-    rect.setAttribute('x', `${left}`)
-    rect.setAttribute('y', `${top}`)
-    rect.setAttribute('width', `${width}`)
-    rect.setAttribute('height', `${height}`)
-    rect.setAttribute('fill', 'black')
-
-    return rect
-  }
-
-  function createDragRect(left: number, top: number, width: number, height: number) {
-    const dragRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
-    dragRect.id = 'drag-rect'
-    dragRect.setAttribute('x', `${left}`)
-    dragRect.setAttribute('y', `${top}`)
-    dragRect.setAttribute('width', `${width}`)
-    dragRect.setAttribute('height', `${height}`)
-    dragRect.setAttribute('fill', 'transparent')
-    // 加个虚线边框
-    dragRect.setAttribute('stroke', 'orange')
-    dragRect.setAttribute('stroke-width', '2')
-    dragRect.setAttribute('stroke-dasharray', '10 5')
-
-    return dragRect
-  }
-
-  function updateRect(rect: SVGRectElement, left: number, top: number, width: number, height: number) {
-    rect.setAttribute('x', `${left}`)
-    rect.setAttribute('y', `${top}`)
-    rect.setAttribute('width', `${width}`)
-    rect.setAttribute('height', `${height}`)
-  }
-
-  // 在drag-rect的右下角加一个resize标识
-  function resizeTip() {
-    resizeBoxDom?.remove()
-    resizeBoxDom = document.createElement('div')
-    resizeBoxDom.style.cssText = `
-      transform: translate(0, 0);
-      position: absolute;
-      width: 150px;
-      height:20px;
-      padding: 2px 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      z-index: 9999;
-      font-size: 12px;
-      background-color: rgb(29, 29, 29);
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-      border-radius: 4px;
-      color: #fff;
-    `
-    resizeBoxDom.textContent = '↖️ 可拖拽该点改变大小'
-    // 找到drag的位置
-    const { x, y, width, height } = hole.getBBox()
-    resizeBoxDom.style.left = `${x + width}px`
-    resizeBoxDom.style.top = `${y + height}px`
-    wrapperElement.appendChild(resizeBoxDom)
   }
 
   function recordTip() {
@@ -364,7 +342,6 @@ export function useSvgRegion(wrapper: string, regionLifeCycle: RegionLifeCycle) 
 
             if (currentRecorderType.value === 'select') {
               // 需要删掉各种提示框
-              resizeBoxDom?.remove()
               recordBoxDom?.remove()
               // 去掉esc按钮的监听
               document.removeEventListener('keydown', escCallback)

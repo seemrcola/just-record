@@ -1,6 +1,9 @@
 import type { Ref } from 'vue'
 import type { Mode } from '../types/index.d'
 import { useCanvas } from './utils'
+import { useScreenshotStore } from '../store'
+
+const store = useScreenshotStore()
 
 export function useDragRect(
   rectDOM: HTMLElement,
@@ -47,7 +50,7 @@ export function useDragRect(
     rectDOM.style.top = `${newY}px`
 
     start = { x: pageX, y: pageY }
-    useCanvas(screenshot, { x: newX, y: newY, height: rect.height, width: rect.width })
+    useCanvas(screenshot, { x: newX, y: newY, height: rect.height, width: rect.width }, store.imgID)
   }
 
   function mouseupHandler(e: MouseEvent) {
