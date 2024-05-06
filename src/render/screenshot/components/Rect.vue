@@ -17,6 +17,9 @@ let resize: ReturnType<typeof useResizeRect>
 const position = ref<Position>('left')
 const screenshot = ref<HTMLCanvasElement>()
 
+let drawLine: ReturnType<typeof useDrawLine>
+let mosaic: ReturnType<typeof useMosaic>
+
 // 监听截图区域大小变化
 const observeSize = useResizeObserver(screenshot as any)
 
@@ -64,16 +67,21 @@ function close() {
   window.useScreenshot.close()
 }
 
-async function mosaic() {
-  const mosaic = useMosaic(screenshot.value!)
-  mosaic.stopMosaic()
+async function drawMosaic() {
+  mosaic = useMosaic(screenshot.value!)
+  stopAllTools()
   mosaic.startMosaic()
 }
 
 async function pen() {
-  const drawLine = useDrawLine(screenshot.value!)
-  drawLine.stopDrawLine()
+  drawLine = useDrawLine(screenshot.value!)
+  stopAllTools()
   drawLine.startDrawLine()
+}
+
+async function stopAllTools() {
+  mosaic?.stopMosaic()
+  drawLine?.stopDrawLine()
 }
 
 onMounted(() => {
@@ -111,7 +119,7 @@ onMounted(() => {
     <!-- 这里是功能区域 -->
     <div bg-dark-2 shadow-light flex items-center class="tools">
       <div flex @click.stop="changeToEditMode">
-        <Mosaic @mosaic="mosaic" />
+        <Mosaic @mosaic="drawMosaic" />
         <Pen @pen="pen" />
       </div>
       <div h-5 w-2px bg-gray mx-3 />
