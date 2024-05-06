@@ -39,6 +39,10 @@ export const useToolsStore = defineStore('tools', () => {
     }
   }
 
+  function clear() {
+    showList.forEach(show => show.value = false)
+  }
+
   return {
     mosaicType,
     setMosaicType,
@@ -50,5 +54,7 @@ export const useToolsStore = defineStore('tools', () => {
     showMosaicChoose,
     showPenChoose,
     changeShowChoose,
+
+    clear
   }
 })

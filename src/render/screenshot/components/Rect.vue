@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue'
 import { useDrawRect } from '../composables/drawRect'
 import { useDragRect } from '../composables/dragRect'
 import { useResizeRect } from '../composables/resizeRect'
-import { useDownload, useMosaic, useSaveScreenshot } from '../composables/tools'
+import { useDownload, useMosaic, useSaveScreenshot, useDrawLine } from '../composables/tools'
 import { useResizeObserver } from '../composables/utils'
 import type { Mode, Position } from '../types/index.d'
 
@@ -71,7 +71,9 @@ async function mosaic() {
 }
 
 async function pen() {
-
+  const drawLine = useDrawLine(screenshot.value!)
+  drawLine.stopDrawLine()
+  drawLine.startDrawLine()
 }
 
 onMounted(() => {

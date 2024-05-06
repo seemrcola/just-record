@@ -2,7 +2,7 @@
 import type { App } from 'vue'
 import { createApp, nextTick, onMounted, onUnmounted, ref } from 'vue'
 import Rect from './components/Rect.vue'
-import { useScreenshotStore } from './store'
+import { useScreenshotStore, useToolsStore } from './store'
 
 let img: HTMLImageElement
 let rect: App<Element>
@@ -77,6 +77,9 @@ window.useScreenshot.onScreenshotClosed(() => {
 
   const screenshot = document.querySelector('.screenshot-root') as HTMLDivElement
   screenshot.style.backgroundColor = 'rgba(0, 0, 0, 0)'
+
+  const toolsStore = useToolsStore()
+  toolsStore.clear()
 })
 
 onMounted(() => window.addEventListener('keydown', escHandler))

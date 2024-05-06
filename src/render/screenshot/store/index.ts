@@ -1,2 +1,2 @@
-export { useScreenshotStore } from './rect'
+export { useScreenshotStore } from './screen'
 export { useToolsStore } from './tools'
