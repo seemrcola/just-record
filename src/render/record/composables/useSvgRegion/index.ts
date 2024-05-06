@@ -36,8 +36,8 @@ export function useSvgRegion(wrapper: string, regionLifeCycle: RegionLifeCycle) 
 
   const WINDOW_WIDTH = window.innerWidth // 窗口宽度
   const WINDOW_HEIGHT = window.innerHeight // 窗口高度
-  // 屏幕当前缩放比例
-  const scale = window.devicePixelRatio
+
+  let peerPoint = { x: 0, y: 0 } // resize功能启用时的对端点
 
   let __start = false
   let __start_drag = false
@@ -140,51 +140,68 @@ export function useSvgRegion(wrapper: string, regionLifeCycle: RegionLifeCycle) 
     const { x, y, width, height } = hole.getBBox()
     // 计算出鼠标到矩形右下角的距离
     const dist = Math.sqrt((x + width - clientX) ** 2 + (y + height - clientY) ** 2) // 右下角
-    if (dist > 16)
+    if (dist > 10) {
       __drag_mode = 'move'
-    else
+      drag.style.cursor = 'move'
+    }
+    else {
       __drag_mode = 'resize'
+      // 记录对端点 由于目前只支持右下角拖拽 所以对端固定是左上角
+      peerPoint = { x, y }
+    }
   }
 
   function rectMouseMove(e: MouseEvent) {
     if (!__start_drag)
       return
 
+    // 当前鼠标位置
     const { clientX, clientY } = e
+    // 鼠标移动的距离
     const dx = clientX - startDragPoint.x
     const dy = clientY - startDragPoint.y
+    // 矩形的位置 和 大小
+    const x = Number(drag.getAttribute('x'))
+    const y = Number(drag.getAttribute('y'))
+    const rectWidth = Number(drag.getAttribute('width'))
+    const rectHeight = Number(drag.getAttribute('height'))
 
     if (__drag_mode === 'move') {
-      // 如果达到边界了就不再移动
-      const x = Number(drag.getAttribute('x'))
-      const y = Number(drag.getAttribute('y'))
-      const rectWidth = Number(drag.getAttribute('width'))
-      const rectHeight = Number(drag.getAttribute('height'))
+      // 移动之后的位置
       let movex = x + dx
       let movey = y + dy
 
-      // 如果达到上边界
-      movey = Math.max(0, movey)
-      // 如果达到左边界
-      movex = Math.max(0, movex)
-      // 如果达到右边界
-      movex = Math.min(movex, WINDOW_WIDTH - rectWidth)
-      // 如果达到下边界 下边界需要减去deltaY
-      movey = Math.min(movey, WINDOW_HEIGHT - rectHeight)
+      movey = Math.max(0, movey) // 如果达到上边界
+      movex = Math.max(0, movex) // 如果达到左边界
+      movex = Math.min(movex, WINDOW_WIDTH - rectWidth)  // 如果达到右边界
+      movey = Math.min(movey, WINDOW_HEIGHT - rectHeight) // 如果达到下边界 下边界需要减去deltaY
 
-      drag.setAttribute('x', `${movex}`)
-      drag.setAttribute('y', `${movey}`)
-      hole.setAttribute('x', `${movex}`)
-      hole.setAttribute('y', `${movey}`)
+      updateRect(hole, movex, movey, rectWidth, rectHeight)
+      updateRect(drag, movex, movey, rectWidth, rectHeight)
     }
     if (__drag_mode === 'resize') {
-      // 小于0的时候不变
-      if (Number(hole.getAttribute('width')) + dx < 0 || Number(hole.getAttribute('height')) + dy < 0)
-        return
-      hole.setAttribute('width', `${Number(hole.getAttribute('width')) + dx}`)
-      hole.setAttribute('height', `${Number(hole.getAttribute('height')) + dy}`)
-      drag.setAttribute('width', `${Number(drag.getAttribute('width')) + dx}`)
-      drag.setAttribute('height', `${Number(drag.getAttribute('height')) + dy}`)
+      let newWidth = clientX - peerPoint.x;
+      let newHeight = clientY - peerPoint.y;
+      let newX = peerPoint.x;
+      let newY = peerPoint.y;
+
+      // 如果宽度或高度为负值，则需要调整位置和大小
+      if (newWidth < 0) {
+        newX = clientX;
+        newWidth = -newWidth;
+      }
+      if (newHeight < 0) {
+        newY = clientY;
+        newHeight = -newHeight;
+      }
+
+      // 确保矩形不会超出 SVG 的边界
+      newWidth = Math.min(newWidth, WINDOW_WIDTH - newX);
+      newHeight = Math.min(newHeight, WINDOW_HEIGHT - newY);
+
+      // 更新矩形和挖洞区域的属性
+      updateRect(hole, newX, newY, newWidth, newHeight);
+      updateRect(drag, newX, newY, newWidth, newHeight);
     }
 
     startDragPoint = {
