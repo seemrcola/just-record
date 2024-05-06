@@ -2,14 +2,14 @@ import type { App } from 'vue'
 import { createApp, ref } from 'vue'
 import useRecordTipTemp from './useRecordTipTemp.vue'
 import useSvgRegionTemp from './useSvgRegionTemp.vue'
-import { createholeRect, createDragRect, updateRect } from './hepler'
+import { createDragRect, createholeRect, updateRect } from './hepler'
 
 type DragMode =
   'move' |
   'resize-top-left' |
   'resize-top-right' |
   'resize-bottom-left' |
-  'resize-bottom-right';
+  'resize-bottom-right'
 
 interface RecordOptions {
   x: number
@@ -143,117 +143,118 @@ export function useSvgRegion(wrapper: string, regionLifeCycle: RegionLifeCycle) 
 
     // 当鼠标不在定点附近的时候视为move
     const { x, y, width, height } = hole.getBBox()
-    const distTopLeft = Math.sqrt((x - clientX) ** 2 + (y - clientY) ** 2);
-    const distTopRight = Math.sqrt((x + width - clientX) ** 2 + (y - clientY) ** 2);
-    const distBottomLeft = Math.sqrt((x - clientX) ** 2 + (y + height - clientY) ** 2);
-    const distBottomRight = Math.sqrt((x + width - clientX) ** 2 + (y + height - clientY) ** 2);
-    const threshold = 10; // 设定一个阈值，判断是否点击在角上
+    const distTopLeft = Math.sqrt((x - clientX) ** 2 + (y - clientY) ** 2)
+    const distTopRight = Math.sqrt((x + width - clientX) ** 2 + (y - clientY) ** 2)
+    const distBottomLeft = Math.sqrt((x - clientX) ** 2 + (y + height - clientY) ** 2)
+    const distBottomRight = Math.sqrt((x + width - clientX) ** 2 + (y + height - clientY) ** 2)
+    const threshold = 10 // 设定一个阈值，判断是否点击在角上
 
     if (distTopLeft < threshold) {
-      __drag_mode = 'resize-top-left';
-      peerPoint = { x: x + width, y: y + height };
+      __drag_mode = 'resize-top-left'
+      peerPoint = { x: x + width, y: y + height }
     }
     else if (distTopRight < threshold) {
-      __drag_mode = 'resize-top-right';
-      peerPoint = { x: x, y: y + height };
+      __drag_mode = 'resize-top-right'
+      peerPoint = { x, y: y + height }
     }
     else if (distBottomLeft < threshold) {
-      __drag_mode = 'resize-bottom-left';
-      peerPoint = { x: x + width, y: y };
+      __drag_mode = 'resize-bottom-left'
+      peerPoint = { x: x + width, y }
     }
     else if (distBottomRight < threshold) {
-      __drag_mode = 'resize-bottom-right';
-      peerPoint = { x: x, y: y };
+      __drag_mode = 'resize-bottom-right'
+      peerPoint = { x, y }
     }
     else {
-      __drag_mode = 'move';
-      drag.style.cursor = 'move';
+      __drag_mode = 'move'
+      drag.style.cursor = 'move'
     }
   }
 
   function mousemoveHandler(e: MouseEvent) {
-    if (!__start_drag) return;
+    if (!__start_drag)
+      return
 
-    const { clientX, clientY } = e;
-    let dx = clientX - startDragPoint.x;
-    let dy = clientY - startDragPoint.y;
+    const { clientX, clientY } = e
+    const dx = clientX - startDragPoint.x
+    const dy = clientY - startDragPoint.y
 
-    let { x, y, width, height } = drag.getBBox();
+    let { x, y, width, height } = drag.getBBox()
 
     switch (__drag_mode) {
       case 'move':
-        x += dx;
-        y += dy;
-        break;
+        x += dx
+        y += dy
+        break
       case 'resize-top-left':
-        x += dx;
-        y += dy;
-        width -= dx;
-        height -= dy;
-        break;
+        x += dx
+        y += dy
+        width -= dx
+        height -= dy
+        break
       case 'resize-top-right':
-        y += dy;
-        width += dx;
-        height -= dy;
-        break;
+        y += dy
+        width += dx
+        height -= dy
+        break
       case 'resize-bottom-left':
-        x += dx;
-        width -= dx;
-        height += dy;
-        break;
+        x += dx
+        width -= dx
+        height += dy
+        break
       case 'resize-bottom-right':
-        width += dx;
-        height += dy;
-        break;
+        width += dx
+        height += dy
+        break
     }
 
     if (width < 0) {
       switch (__drag_mode) {
         case 'resize-top-left':
-          __drag_mode = 'resize-top-right';
-          break;
+          __drag_mode = 'resize-top-right'
+          break
         case 'resize-bottom-left':
-          __drag_mode = 'resize-bottom-right';
-          break;
+          __drag_mode = 'resize-bottom-right'
+          break
         case 'resize-top-right':
-          __drag_mode = 'resize-top-left';
-          break;
+          __drag_mode = 'resize-top-left'
+          break
         case 'resize-bottom-right':
-          __drag_mode = 'resize-bottom-left';
-          break;
+          __drag_mode = 'resize-bottom-left'
+          break
       }
-      width = Math.abs(width);
-      x -= width;
+      width = Math.abs(width)
+      x -= width
     }
 
     if (height < 0) {
       switch (__drag_mode) {
         case 'resize-top-left':
-          __drag_mode = 'resize-bottom-left';
-          break;
+          __drag_mode = 'resize-bottom-left'
+          break
         case 'resize-top-right':
-          __drag_mode = 'resize-bottom-right';
-          break;
+          __drag_mode = 'resize-bottom-right'
+          break
         case 'resize-bottom-left':
-          __drag_mode = 'resize-top-left';
-          break;
+          __drag_mode = 'resize-top-left'
+          break
         case 'resize-bottom-right':
-          __drag_mode = 'resize-top-right';
-          break;
+          __drag_mode = 'resize-top-right'
+          break
       }
-      height = Math.abs(height);
-      y -= height;
+      height = Math.abs(height)
+      y -= height
     }
 
-    x = Math.max(0, Math.min(x, WINDOW_WIDTH - width));
-    y = Math.max(0, Math.min(y, WINDOW_HEIGHT - height));
+    x = Math.max(0, Math.min(x, WINDOW_WIDTH - width))
+    y = Math.max(0, Math.min(y, WINDOW_HEIGHT - height))
 
-    updateRect(hole, x, y, width, height);
-    updateRect(drag, x, y, width, height);
+    updateRect(hole, x, y, width, height)
+    updateRect(drag, x, y, width, height)
 
-    startDragPoint = { x: clientX, y: clientY };
+    startDragPoint = { x: clientX, y: clientY }
 
-    recordTip();
+    recordTip()
   }
 
   function mouseupHanlder() {

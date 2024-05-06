@@ -1,7 +1,7 @@
 import type { Ref } from 'vue'
 import type { Mode, Position } from '../types/index.d'
-import { useCanvas } from './utils'
 import { useScreenshotStore } from '../store'
+import { useCanvas } from './utils'
 
 const store = useScreenshotStore()
 

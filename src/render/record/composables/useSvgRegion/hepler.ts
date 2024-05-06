@@ -36,5 +36,5 @@ function updateRect(rect: SVGRectElement, left: number, top: number, width: numb
 export {
   createholeRect,
   createDragRect,
-  updateRect
+  updateRect,
 }

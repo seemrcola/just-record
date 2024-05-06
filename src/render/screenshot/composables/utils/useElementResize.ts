@@ -1,4 +1,5 @@
-import { onMounted, onUnmounted, ref, Ref } from 'vue'
+import type { Ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 
 export function useResizeObserver(target: Ref<Element | null>) {
   const width = ref(0)
