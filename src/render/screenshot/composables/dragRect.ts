@@ -3,8 +3,6 @@ import type { Mode } from '../types/index.d'
 import { useScreenshotStore } from '../store'
 import { useCanvas } from './utils'
 
-const store = useScreenshotStore()
-
 export function useDragRect(
   rectDOM: HTMLElement,
   screenshot: HTMLCanvasElement,
@@ -12,6 +10,8 @@ export function useDragRect(
 ) {
   let startFlag = false
   let start = { x: 0, y: 0 }
+
+  const store = useScreenshotStore()
 
   function startDrag() {
     rectDOM.addEventListener('mousedown', mousedownHandler)

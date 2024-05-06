@@ -3,8 +3,6 @@ import type { Mode, Position } from '../types/index.d'
 import { useScreenshotStore } from '../store'
 import { useCanvas } from './utils'
 
-const store = useScreenshotStore()
-
 export function useResizeRect(
   rectDOM: HTMLElement,
   screenshot: HTMLCanvasElement,
@@ -16,6 +14,8 @@ export function useResizeRect(
   let peerPoint = { x: 0, y: 0 }
   const start = { x: 0, y: 0 }
   let rect: DOMRect
+
+  const store = useScreenshotStore()
 
   const corner = ['top-left', 'top-right', 'bottom-left', 'bottom-right']
   const side = ['top', 'bottom', 'left', 'right']

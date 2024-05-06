@@ -3,6 +3,7 @@ import { createApp } from 'vue'
 import Coord from '../components/Coord.vue'
 import type { Mode } from '../types'
 import { useCanvas } from './utils'
+import { useScreenshotStore } from '../store'
 
 export function useDrawRect(
   rectDOM: HTMLElement,
@@ -16,6 +17,8 @@ export function useDrawRect(
   }
   let coordComponent: ReturnType<typeof createApp> | null = null
   let coordBox: HTMLElement | null = null
+
+  const store = useScreenshotStore()
 
   function startDraw() {
     document.addEventListener('mousedown', mousedownHanlder)
@@ -56,7 +59,7 @@ export function useDrawRect(
     rectDOM.style.left = `${x}px`
     rectDOM.style.top = `${y}px`
 
-    useCanvas(screenshot, { x, y, height, width })
+    useCanvas(screenshot, { x, y, height, width }, store.imgID)
   }
 
   function mouseupHanlder(e: MouseEvent) {
