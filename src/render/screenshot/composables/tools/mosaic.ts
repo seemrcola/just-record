@@ -1,6 +1,6 @@
 import { useToolsStore } from '../../store'
 
-export function useMosaic(canvas: HTMLCanvasElement) {
+export function useMosaic(proxyDOM: HTMLDivElement, canvas: HTMLCanvasElement, svg?: SVGElement) {
   const store = useToolsStore()
 
   const ratio = window.devicePixelRatio
@@ -75,11 +75,11 @@ export function useMosaic(canvas: HTMLCanvasElement) {
   }
 
   function startMosaic() {
-    canvas.addEventListener('mousedown', mousedownHanlder)
+    proxyDOM.addEventListener('mousedown', mousedownHanlder)
   }
 
   function stopMosaic() {
-    canvas.removeEventListener('mousedown', mousedownHanlder)
+    proxyDOM.removeEventListener('mousedown', mousedownHanlder)
   }
 
   function mousedownHanlder(event: MouseEvent) {

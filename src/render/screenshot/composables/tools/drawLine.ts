@@ -1,6 +1,6 @@
 import { useToolsStore } from '../../store'
 
-export function useDrawLine(canvas: HTMLCanvasElement, svg: SVGElement) {
+export function useDrawLine(proxyDOM: HTMLElement, canvas: HTMLCanvasElement, svg: SVGElement) {
   let line = document.createElementNS('http://www.w3.org/2000/svg', 'polyline')
   let innerLine = document.createElementNS('http://www.w3.org/2000/svg', 'polyline')
 
@@ -8,21 +8,12 @@ export function useDrawLine(canvas: HTMLCanvasElement, svg: SVGElement) {
   const rect = canvas.getBoundingClientRect()!
   let points: string[] = []
 
-  function coverSvg() {
-    /* 将svg与canvas重叠 */
-    svg.setAttribute('width', `${rect.width}px`)
-    svg.setAttribute('height', `${rect.height}px`)
-    svg.style.top = `${rect.top}px`
-    svg.style.left = `${rect.left}px`
-  }
-
   function startDrawLine() {
-    svg.addEventListener('mousedown', mousedownHandler)
-    coverSvg()
+    proxyDOM.addEventListener('mousedown', mousedownHandler)
   }
 
   function stopDrawLine() {
-    svg.removeEventListener('mousedown', mousedownHandler)
+    proxyDOM.removeEventListener('mousedown', mousedownHandler)
   }
 
   function mousedownHandler(event: MouseEvent) {
@@ -53,6 +44,12 @@ export function useDrawLine(canvas: HTMLCanvasElement, svg: SVGElement) {
   function mousemoveHandler(event: MouseEvent) {
     const x = (event.clientX - rect.left)
     const y = (event.clientY - rect.top)
+
+    // 如果和最后一个点的绝对距离小于3，则不画线
+    const lastPoint = points[points.length - 1]
+    const [lx, ly] = lastPoint.split(',')
+    const distance = Math.sqrt(Math.pow(x - parseInt(lx), 2) + Math.pow(y - parseInt(ly), 2))
+    if (distance < 3) return
 
     points.push(`${x},${y}`)
     line.setAttribute('points', `${points.join(' ')}`)

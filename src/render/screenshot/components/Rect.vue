@@ -18,6 +18,7 @@ const position = ref<Position>('left')
 const screenshot = ref<HTMLCanvasElement>()
 const rect = ref<HTMLDivElement>()
 const editarea = ref<SVGSVGElement>()
+const proxyDOM = ref<HTMLDivElement>()
 
 let drawLine: ReturnType<typeof useDrawLine>
 let mosaic: ReturnType<typeof useMosaic>
@@ -38,6 +39,18 @@ function handleRectMousedown(event: MouseEvent) {
 // 切换到edit模式
 function changeToEditMode() {
   mode.value = 'edit'
+
+  const rect = screenshot.value!.getBoundingClientRect()!
+
+  editarea.value!.setAttribute('width', `${rect.width}px`)
+  editarea.value!.setAttribute('height', `${rect.height}px`)
+  editarea.value!.style.left = `${rect.left}px`
+  editarea.value!.style.top = `${rect.top}px`
+
+  proxyDOM.value!.style.width = `${rect.width}px`
+  proxyDOM.value!.style.height = `${rect.height}px`
+  proxyDOM.value!.style.left = `${rect.left}px`
+  proxyDOM.value!.style.top = `${rect.top}px`
 }
 
 // 切换到resize模式
@@ -52,15 +65,15 @@ function handlePosMousedown(event: MouseEvent) {
   resize.startResize(event)
 }
 
-function download() {
-  useDownload(screenshot.value!, editarea.value!)
-  window.useScreenshot.close()
+async function download() {
+  await useDownload(screenshot.value!, editarea.value!)
+  // window.useScreenshot.close()
 }
 
 async function save() {
   const saveHanlder = useSaveScreenshot(screenshot.value!, editarea.value!)
   const res = await saveHanlder.save()
-  if (res)
+  if (res) 
     window.useScreenshot.close()
 }
 
@@ -69,13 +82,13 @@ function close() {
 }
 
 async function drawMosaic() {
-  mosaic = useMosaic(screenshot.value!)
+  mosaic = useMosaic(proxyDOM.value!, screenshot.value!)
   stopAllTools()
   mosaic.startMosaic()
 }
 
 async function pen() {
-  drawLine = useDrawLine(screenshot.value!, editarea.value!)
+  drawLine = useDrawLine(proxyDOM.value!, screenshot.value!, editarea.value!)
   stopAllTools()
   drawLine.startDrawLine()
 }
@@ -96,16 +109,14 @@ onMounted(() => {
 <template>
   <div ref="rect" class="rect" @mousedown="handleRectMousedown">
     <!-- 这里是大小展示区域 -->
-    <div
-      min-w="80px" p-1 bg-dark-2 text-light text-sm rounded-sm absolute top--36px left-10px z-999
-      class="monospace"
-    >
+    <div min-w="80px" p-1 bg-dark-2 text-light text-sm rounded-sm absolute top--36px left-10px z-999 class="monospace">
       {{ observeSize.width }} * {{ observeSize.height }}
     </div>
     <!-- 这里是截图区域 -->
     <div>
+      <div ref="proxyDOM" fixed z-100></div>
       <canvas ref="screenshot" fixed z-99 />
-      <svg ref="editarea" fixed z-99 />
+      <svg ref="editarea" fixed z-99></svg>  
     </div>
     <!-- 这里是缩放区域 -->
     <div v-if="mode !== 'edit'" class="box">
