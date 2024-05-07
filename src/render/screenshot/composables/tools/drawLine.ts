@@ -72,11 +72,11 @@ export function useDrawLine(canvas: HTMLCanvasElement, svg: SVGElement) {
 
   function getLineWidth() {
     if(toolsStore.penSize === 'small')
-      return 5
+      return 3
     else if(toolsStore.penSize ==='medium')
-      return 7
+      return 5
     else if(toolsStore.penSize === 'large')
-      return 9
+      return 7
     return 1
   }
 

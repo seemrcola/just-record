@@ -1,4 +1,4 @@
-export function useSaveScreenshot(screenshot: HTMLCanvasElement) {
+export function useSaveScreenshot(screenshot: HTMLCanvasElement, svg: SVGElement) {
   // 拿到图片的blob格式
   // 将canvas转换为Blob
   return new Promise((resolve, reject) => {
