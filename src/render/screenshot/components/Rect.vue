@@ -16,6 +16,8 @@ let draw: ReturnType<typeof useDrawRect>
 let resize: ReturnType<typeof useResizeRect>
 const position = ref<Position>('left')
 const screenshot = ref<HTMLCanvasElement>()
+const rect = ref<HTMLDivElement>()
+const editarea = ref<SVGSVGElement>()
 
 let drawLine: ReturnType<typeof useDrawLine>
 let mosaic: ReturnType<typeof useMosaic>
@@ -46,9 +48,7 @@ function handlePosMousedown(event: MouseEvent) {
   const posDOM = event.target as HTMLElement
   position.value = posDOM.dataset.pos as Position
 
-  const rectDOM = document.querySelector('.rect') as HTMLElement
-  const screenshot = document.querySelector('.screenshot') as HTMLCanvasElement
-  resize = useResizeRect(rectDOM, screenshot, mode, position)
+  resize = useResizeRect(rect.value!, screenshot.value!, mode, position)
   resize.startResize(event)
 }
 
@@ -74,7 +74,7 @@ async function drawMosaic() {
 }
 
 async function pen() {
-  drawLine = useDrawLine(screenshot.value!)
+  drawLine = useDrawLine(screenshot.value!, editarea.value!)
   stopAllTools()
   drawLine.startDrawLine()
 }
@@ -85,17 +85,15 @@ async function stopAllTools() {
 }
 
 onMounted(() => {
-  const rectDOM = document.querySelector('.rect') as HTMLElement
-  const screenshot = document.querySelector('.screenshot') as HTMLCanvasElement
-  draw = useDrawRect(rectDOM, screenshot, mode)
-  drag = useDragRect(rectDOM, screenshot, mode)
+  draw = useDrawRect(rect.value!, screenshot.value!, mode)
+  drag = useDragRect(rect.value!, screenshot.value!, mode)
   draw.startDraw()
   drag.startDrag()
 })
 </script>
 
 <template>
-  <div class="rect" @mousedown="handleRectMousedown">
+  <div class="rect" ref="rect" @mousedown="handleRectMousedown">
     <!-- 这里是大小展示区域 -->
     <div
       min-w="80px" p-1 bg-dark-2 text-light text-sm rounded-sm absolute top--36px left-10px z-999
@@ -104,7 +102,10 @@ onMounted(() => {
       {{ observeSize.width }} * {{ observeSize.height }}
     </div>
     <!-- 这里是截图区域 -->
-    <canvas ref="screenshot" class="screenshot" fixed z-99 />
+    <div>
+      <canvas ref="screenshot" fixed z-99 />
+      <svg ref="editarea" fixed z-99 ></svg>
+    </div>
     <!-- 这里是缩放区域 -->
     <div v-if="mode !== 'edit'" class="box">
       <div class="l" data-pos="left" @mousedown="handlePosMousedown" />

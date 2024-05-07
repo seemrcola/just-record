@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SVG Drawing</title>
+    <style>
+        #drawingArea {
+            width: 800px;
+            height: 600px;
+            background-color: #ddd;
+            border: 2px solid #333;
+        }
+    </style>
+</head>
+<body>
+
+<svg id="drawingArea" xmlns="http://www.w3.org/2000/svg" version="1.1">
+    <!-- 线段将被动态添加到这里 -->
+</svg>
+
+<div style="height: 100px; width: 100px;">
+  <canvas style="width: 100%; height: 100%;"></canvas>
+</div>
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    const svg = document.getElementById('drawingArea');
+    let isDrawing = false;
+    let isNewLine = true;
+    let currentLine;
+
+    svg.addEventListener('mousedown', function(event) {
+        isDrawing = true;
+        if (isNewLine) {
+            const x = event.offsetX;
+            const y = event.offsetY;
+            currentLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            currentLine.setAttribute('x1', x);
+            currentLine.setAttribute('y1', y);
+            currentLine.setAttribute('x2', x);
+            currentLine.setAttribute('y2', y);
+            currentLine.setAttribute('stroke', 'black');
+            svg.appendChild(currentLine);
+            isNewLine = false;
+        }
+    });
+
+    svg.addEventListener('mousemove', function(event) {
+        if (isDrawing && !isNewLine) {
+            currentLine.setAttribute('x2', event.offsetX);
+            currentLine.setAttribute('y2', event.offsetY);
+        }
+    });
+
+    svg.addEventListener('mouseup', function() {
+        isDrawing = false;
+        isNewLine = true;
+    });
+
+    svg.addEventListener('mouseleave', function() {
+        isDrawing = false;
+        isNewLine = true;
+    });
+});
+</script>
+
+</body>
+</html>

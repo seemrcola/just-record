@@ -1,48 +1,69 @@
 import { useToolsStore } from "../../store"
 
-export function useDrawLine(canvas: HTMLCanvasElement) {
-  const ctx = canvas.getContext('2d')!
+export function useDrawLine(canvas: HTMLCanvasElement, svg: SVGElement) {
+  let line = document.createElementNS('http://www.w3.org/2000/svg', 'polyline')
+  let innerLine = document.createElementNS('http://www.w3.org/2000/svg', 'polyline')
 
   const toolsStore = useToolsStore()
   const rect = canvas.getBoundingClientRect()!
-  const ratio = window.devicePixelRatio || 1
-  let start = { x: 0, y: 0 }
+  let points: string[] = []
+
+  function coverSvg() {
+    /* 将svg与canvas重叠 */
+    svg.setAttribute('width', `${rect.width}px`)
+    svg.setAttribute('height', `${rect.height}px`)
+    svg.style.top = `${rect.top}px`
+    svg.style.left = `${rect.left}px`
+  }
 
   function startDrawLine() {
-    canvas.addEventListener('mousedown', mousedownHandler)
+    svg.addEventListener('mousedown', mousedownHandler)
+    coverSvg()
   } 
 
   function stopDrawLine() {
-    canvas.removeEventListener('mousedown', mousedownHandler)
+    svg.removeEventListener('mousedown', mousedownHandler)
   }
 
   function mousedownHandler(event: MouseEvent) {
     document.addEventListener('mousemove', mousemoveHandler)
     document.addEventListener('mouseup', mouseupHandler)
-    const x = (event.clientX - rect.left) * ratio
-    const y = (event.clientY - rect.top) * ratio
-    start = { x, y }
+    const x = (event.clientX - rect.left)
+    const y = (event.clientY - rect.top) 
+
+    // 一根我们想画的线
+    line = document.createElementNS('http://www.w3.org/2000/svg', 'polyline')
+    line.setAttribute('stroke', `${getColor()}`)
+    line.setAttribute('stroke-width', `${getLineWidth()}`)
+    line.setAttribute('fill', 'none')
+    points.push(`${x},${y}`)
+    line.setAttribute('points', `${points.join(' ')}`)
+    // 中间画一根黑色的线
+    innerLine = document.createElementNS('http://www.w3.org/2000/svg', 'polyline')
+    innerLine.setAttribute('stroke', 'white')
+    innerLine.setAttribute('stroke-width', '1')
+    innerLine.setAttribute('fill', 'none')
+    innerLine.setAttribute('points', `${points.join(' ')}`)
+    svg.appendChild(innerLine)
+
+    svg.appendChild(line)
+    svg.appendChild(innerLine)
   }
 
   function mousemoveHandler(event: MouseEvent) {
-    const x = (event.clientX - rect.left) * ratio
-    const y = (event.clientY - rect.top) * ratio
+    const x = (event.clientX - rect.left)
+    const y = (event.clientY - rect.top)
 
-    const color = getColor()
-    const lineWidth = getLineWidth()
-    ctx.beginPath()
-    ctx.moveTo(start.x, start.y)
-    ctx.lineTo(x, y)
-    ctx.strokeStyle = color
-    ctx.lineWidth = lineWidth
-    ctx.stroke()
-
-    start = { x, y }
+    points.push(`${x},${y}`)
+    line.setAttribute('points', `${points.join(' ')}`) 
+    innerLine.setAttribute('points', `${points.join(' ')}`)
   }
 
   function mouseupHandler(event: MouseEvent) {
     document.removeEventListener('mousemove', mousemoveHandler)
     document.removeEventListener('mouseup', mouseupHandler)
+    points = []
+    innerLine.remove()
   }
 
   function getColor() {
@@ -51,11 +72,11 @@ export function useDrawLine(canvas: HTMLCanvasElement) {
 
   function getLineWidth() {
     if(toolsStore.penSize === 'small')
-      return 1
-    else if(toolsStore.penSize ==='medium')
-      return 3
-    else if(toolsStore.penSize === 'large')
       return 5
+    else if(toolsStore.penSize ==='medium')
+      return 7
+    else if(toolsStore.penSize === 'large')
+      return 9
     return 1
   }
 
