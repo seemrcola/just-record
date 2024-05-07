@@ -55,6 +55,6 @@ export const useToolsStore = defineStore('tools', () => {
     showPenChoose,
     changeShowChoose,
 
-    clear
+    clear,
   }
 })

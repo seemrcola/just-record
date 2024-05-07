@@ -2,8 +2,8 @@ import type { Ref } from 'vue'
 import { createApp } from 'vue'
 import Coord from '../components/Coord.vue'
 import type { Mode } from '../types'
-import { useCanvas } from './utils'
 import { useScreenshotStore } from '../store'
+import { useCanvas } from './utils'
 
 export function useDrawRect(
   rectDOM: HTMLElement,

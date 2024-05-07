@@ -1,4 +1,4 @@
-import { useToolsStore } from "../../store"
+import { useToolsStore } from '../../store'
 
 export function useDrawLine(canvas: HTMLCanvasElement, svg: SVGElement) {
   let line = document.createElementNS('http://www.w3.org/2000/svg', 'polyline')
@@ -19,7 +19,7 @@ export function useDrawLine(canvas: HTMLCanvasElement, svg: SVGElement) {
   function startDrawLine() {
     svg.addEventListener('mousedown', mousedownHandler)
     coverSvg()
-  } 
+  }
 
   function stopDrawLine() {
     svg.removeEventListener('mousedown', mousedownHandler)
@@ -29,7 +29,7 @@ export function useDrawLine(canvas: HTMLCanvasElement, svg: SVGElement) {
     document.addEventListener('mousemove', mousemoveHandler)
     document.addEventListener('mouseup', mouseupHandler)
     const x = (event.clientX - rect.left)
-    const y = (event.clientY - rect.top) 
+    const y = (event.clientY - rect.top)
 
     // 一根我们想画的线
     line = document.createElementNS('http://www.w3.org/2000/svg', 'polyline')
@@ -55,7 +55,7 @@ export function useDrawLine(canvas: HTMLCanvasElement, svg: SVGElement) {
     const y = (event.clientY - rect.top)
 
     points.push(`${x},${y}`)
-    line.setAttribute('points', `${points.join(' ')}`) 
+    line.setAttribute('points', `${points.join(' ')}`)
     innerLine.setAttribute('points', `${points.join(' ')}`)
   }
 
@@ -71,17 +71,17 @@ export function useDrawLine(canvas: HTMLCanvasElement, svg: SVGElement) {
   }
 
   function getLineWidth() {
-    if(toolsStore.penSize === 'small')
+    if (toolsStore.penSize === 'small')
       return 3
-    else if(toolsStore.penSize ==='medium')
+    else if (toolsStore.penSize === 'medium')
       return 5
-    else if(toolsStore.penSize === 'large')
+    else if (toolsStore.penSize === 'large')
       return 7
     return 1
   }
 
   return {
     startDrawLine,
-    stopDrawLine
+    stopDrawLine,
   }
 }

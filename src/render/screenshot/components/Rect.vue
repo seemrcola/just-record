@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue'
 import { useDrawRect } from '../composables/drawRect'
 import { useDragRect } from '../composables/dragRect'
 import { useResizeRect } from '../composables/resizeRect'
-import { useDownload, useMosaic, useSaveScreenshot, useDrawLine } from '../composables/tools'
+import { useDownload, useDrawLine, useMosaic, useSaveScreenshot } from '../composables/tools'
 import { useResizeObserver } from '../composables/utils'
 import type { Mode, Position } from '../types/index.d'
 
@@ -53,12 +53,13 @@ function handlePosMousedown(event: MouseEvent) {
 }
 
 function download() {
-  useDownload(screenshot.value!)
+  useDownload(screenshot.value!, editarea.value!)
   window.useScreenshot.close()
 }
 
 async function save() {
-  const res = await useSaveScreenshot(screenshot.value!)
+  const saveHanlder = useSaveScreenshot(screenshot.value!, editarea.value!)
+  const res = await saveHanlder.save()
   if (res)
     window.useScreenshot.close()
 }
@@ -93,7 +94,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="rect" ref="rect" @mousedown="handleRectMousedown">
+  <div ref="rect" class="rect" @mousedown="handleRectMousedown">
     <!-- 这里是大小展示区域 -->
     <div
       min-w="80px" p-1 bg-dark-2 text-light text-sm rounded-sm absolute top--36px left-10px z-999
@@ -104,7 +105,7 @@ onMounted(() => {
     <!-- 这里是截图区域 -->
     <div>
       <canvas ref="screenshot" fixed z-99 />
-      <svg ref="editarea" fixed z-99 ></svg>
+      <svg ref="editarea" fixed z-99 />
     </div>
     <!-- 这里是缩放区域 -->
     <div v-if="mode !== 'edit'" class="box">

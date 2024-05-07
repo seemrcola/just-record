@@ -1,7 +1,21 @@
 export function useSaveScreenshot(screenshot: HTMLCanvasElement, svg: SVGElement) {
-  // 拿到图片的blob格式
-  // 将canvas转换为Blob
-  return new Promise((resolve, reject) => {
+  const ctx = screenshot.getContext('2d')!
+
+  function save() {
+    return new Promise((resolve, reject) => {
+      // 获取svg内容
+      const xml = new XMLSerializer().serializeToString(svg)
+      const svgUrl = `data:image/svg+xml;base64,${btoa(xml)}`
+      const img = new Image()
+      img.src = svgUrl
+      img.onload = () => {
+        ctx.drawImage(img, 0, 0)
+        saveCanvasAsPng(resolve, reject)
+      }
+    })
+  }
+
+  function saveCanvasAsPng(resolve: (value: boolean) => void, reject: (reason: any) => void) {
     screenshot.toBlob((blob) => {
       // 使用Clipboard API写入剪贴板
       navigator.clipboard.write([
@@ -18,5 +32,9 @@ export function useSaveScreenshot(screenshot: HTMLCanvasElement, svg: SVGElement
           reject(false)
         })
     }, 'image/png')
-  })
+  }
+
+  return {
+    save,
+  }
 }
