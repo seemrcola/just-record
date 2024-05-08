@@ -94,13 +94,14 @@ function useDragSVG(
   let startFlag = false
   let start = { x: 0, y: 0 }
 
-  target.addEventListener('mousedown', mousedownHandler)
+  target.onmousedown = mousedownHandler
   target.style.position = 'fixed'
   let innerLine: SVGPolylineElement = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
 
   function mousedownHandler(e: MouseEvent) {
     e.preventDefault()
     e.stopPropagation()
+    
     startFlag = true
     document.addEventListener('mousemove', mousemoveHandler)
     document.addEventListener('mouseup', mouseupHandler)
@@ -109,6 +110,9 @@ function useDragSVG(
   }
 
   function mousemoveHandler(e: MouseEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+
     if (!startFlag)
       return
 
@@ -126,6 +130,9 @@ function useDragSVG(
   }
 
   function mouseupHandler(e: MouseEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+
     startFlag = false
     document.removeEventListener('mousemove', mousemoveHandler)
     document.removeEventListener('mouseup', mouseupHandler)

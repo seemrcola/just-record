@@ -1,5 +1,6 @@
 export * from './save'
 export * from './download'
 export * from './mosaic'
-export * from './drawLine'
+export * from './line'
 export * from './rect'
+export * from './ellipse'

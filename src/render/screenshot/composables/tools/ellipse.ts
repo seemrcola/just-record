@@ -1,7 +1,7 @@
 import { useToolsStore } from '../../store'
 
-export function useDrawSVGRect(canvas: HTMLCanvasElement, svg: SVGElement) {
-  let svgRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
+export function useDrawSVGEllipse(canvas: HTMLCanvasElement, svg: SVGElement) {
+  let svgEllipse = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse')
 
   const toolsStore = useToolsStore()
   const rect = canvas.getBoundingClientRect()!
@@ -10,16 +10,16 @@ export function useDrawSVGRect(canvas: HTMLCanvasElement, svg: SVGElement) {
 
   const { abs } = Math
 
-  function startDrawRect() {
+  function startDrawEllipse() {
     svg.addEventListener('mousedown', mousedownHandler)
   }
 
-  function stopDrawRect() {
+  function stopDrawEllipse() {
     svg.removeEventListener('mousedown', mousedownHandler)
   }
 
   function mousedownHandler(event: MouseEvent) {
-    svgRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
+    svgEllipse = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse')
 
     document.addEventListener('mousemove', mousemoveHandler)
     document.addEventListener('mouseup', mouseupHandler)
@@ -28,44 +28,38 @@ export function useDrawSVGRect(canvas: HTMLCanvasElement, svg: SVGElement) {
     const y = (event.clientY - rect.top)
     start = { x, y }
 
-    svgRect.setAttribute('x', `${start.x}`)
-    svgRect.setAttribute('y', `${start.y}`)
+    svgEllipse.setAttribute('cx', `${start.x}`)
+    svgEllipse.setAttribute('cy', `${start.y}`)
 
-    svg.appendChild(svgRect)
+    svg.appendChild(svgEllipse)
   }
 
   function mousemoveHandler(event: MouseEvent) {
     const x = (event.clientX - rect.left)
     const y = (event.clientY - rect.top)
 
-    const width = abs(x - start.x)
-    const height = abs(y - start.y)
+    const rx = abs(x - start.x)
+    const ry = abs(y - start.y)
 
-    // 如果跨过了初始点
-    if (x < start.x) svgRect.setAttribute('x', `${x}`)
-    if (y < start.y) svgRect.setAttribute('y', `${y}`)
-
-    svgRect.setAttribute('width', `${width}`)
-    svgRect.setAttribute('height', `${height}`)
-    svgRect.setAttribute('stroke', getColor())
-    svgRect.setAttribute('stroke-width', '3')
-    svgRect.setAttribute('fill', 'none')
-    svgRect.setAttribute('rx', '5')
-    svgRect.setAttribute('ry', '5')
+    svgEllipse.setAttribute('rx', `${rx}`)
+    svgEllipse.setAttribute('ry', `${ry}`)
+    svgEllipse.setAttribute('stroke', getColor())
+    svgEllipse.setAttribute('stroke-width', '3')
+    svgEllipse.setAttribute('fill', 'none')
   }
 
   function mouseupHandler(event: MouseEvent) {
     document.removeEventListener('mousemove', mousemoveHandler)
-    useDragSVG(svgRect)
+    useDragSVG(svgEllipse)
   }
 
   function getColor() {
-    return toolsStore.rectColor
+    return toolsStore.ellipseColor
   }
 
   return {
-    startDrawRect,
-    stopDrawRect,
+    startDrawEllipse,
+    stopDrawEllipse,
   }
 }
 
@@ -114,9 +108,9 @@ function useDragSVG(
   }
 
   function updatePolylinePoints(dx: number, dy: number, ele: SVGElement) {
-    const x = parseInt(ele.getAttribute('x')!)
-    const y = parseInt(ele.getAttribute('y')!)
-    ele.setAttribute('x', `${x + dx}`)
-    ele.setAttribute('y', `${y + dy}`)
+    const x = parseInt(ele.getAttribute('cx')!)
+    const y = parseInt(ele.getAttribute('cy')!)
+    ele.setAttribute('cx', `${x + dx}`)
+    ele.setAttribute('cy', `${y + dy}`)
   }
 }

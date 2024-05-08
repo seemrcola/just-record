@@ -35,7 +35,7 @@ function changeColor(color: Color) {
     <div v-if="store.showPenChoose" class="choose">
       <BaseSize @change-size="changeSize" />
       <div h-4 mx-1 w-2px bg-gray />
-      <BaseColor @change-color="changeColor" />
+      <BaseColor :color="store.penColor" @change-color="changeColor" />
     </div>
   </div>
 </template>

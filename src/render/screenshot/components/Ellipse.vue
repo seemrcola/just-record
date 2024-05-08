@@ -4,32 +4,32 @@ import type { Color } from '../types'
 import BaseColor from './BaseColor.vue'
 
 const emits = defineEmits<{
-  (e: 'rect'): void
+  (e: 'ellipse'): void
 }>()
 
 const store = useToolsStore()
 
 function pen() {
-  store.changeShowChoose('Rect')
-  emits('rect')
+  store.changeShowChoose('Ellipse')
+  emits('ellipse')
 }
 
 function changeColor(color: Color) {
-  store.setRectColor(color)
+  store.setEllipseColor(color)
 }
 </script>
 
 <template>
   <div relative>
     <div
-      h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:rectangle-outline-rounded text-light
-      :class="{ 'text-light': !store.showRectChoose, 'text-red': store.showRectChoose }"
+      h-4 w-4 cursor-pointer px-2 py-1 i-mdi:checkbox-blank-circle-outline text-light
+      :class="{ 'text-light': !store.showEllipseChoose, 'text-red': store.showEllipseChoose }"
       @mousedown.stop
       @click="pen"
     />
-    <div v-if="store.showRectChoose" class="choose">
-      <BaseColor :color="store.rectColor" @change-color="changeColor" />
-    </div> 
+    <div v-if="store.showEllipseChoose" class="choose">
+      <BaseColor :color="store.ellipseColor" @change-color="changeColor" />
+    </div>
   </div>
 </template>
 

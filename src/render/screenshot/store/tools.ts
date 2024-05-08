@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { Color, MosaicType, Size } from '../types'
 
-type ToolType = 'Mosaic' | 'Pen' | 'Rect'
+type ToolType = 'Mosaic' | 'Pen' | 'Rect' | 'Ellipse'
 
 export const useToolsStore = defineStore('tools', () => {
   const mosaicType = ref<MosaicType>('light')
@@ -10,11 +10,13 @@ export const useToolsStore = defineStore('tools', () => {
   const showMosaicChoose = ref(false)
   const showPenChoose = ref(false)
   const showRectChoose = ref(false)
-  const showList = [showMosaicChoose, showPenChoose, showRectChoose]
+  const showEllipseChoose = ref(false)
+  const showList = [showMosaicChoose, showPenChoose, showRectChoose, showEllipseChoose]
 
   const penSize = ref<Size>('small')
   const penColor = ref<Color>('red')
   const rectColor = ref<Color>('red')
+  const ellipseColor = ref<Color>('red')
 
   function setMosaicType(type: MosaicType) {
     mosaicType.value = type
@@ -31,6 +33,10 @@ export const useToolsStore = defineStore('tools', () => {
     rectColor.value = color
   }
 
+  function setEllipseColor(color: Color) {
+    ellipseColor.value = color
+  }
+
   function changeShowChoose(type: ToolType) {
     showList.forEach(show => show.value = false)
     switch (type) {
@@ -42,6 +48,9 @@ export const useToolsStore = defineStore('tools', () => {
         break
       case 'Rect':
         showRectChoose.value = true
+        break
+      case 'Ellipse':
+        showEllipseChoose.value = true
         break
       
       default:
@@ -62,10 +71,13 @@ export const useToolsStore = defineStore('tools', () => {
     setPenColor,
     rectColor,
     setRectColor,
+    ellipseColor,
+    setEllipseColor,
 
     showMosaicChoose,
     showPenChoose,
     showRectChoose,
+    showEllipseChoose,
     changeShowChoose,
 
     clear,

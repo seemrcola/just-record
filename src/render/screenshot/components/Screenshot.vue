@@ -3,13 +3,14 @@ import { onMounted, ref } from 'vue'
 import { useDragRect } from '../composables/dragRect'
 import { useDrawRect } from '../composables/drawRect'
 import { useResizeRect } from '../composables/resizeRect'
-import { useDownload, useDrawSVGLine, useMosaic, useSaveScreenshot, useDrawSVGRect} from '../composables/tools'
+import { useDownload, useDrawSVGLine, useMosaic, useSaveScreenshot, useDrawSVGRect, useDrawSVGEllipse } from '../composables/tools'
 import { useResizeObserver } from '../composables/utils'
 import type { Mode, Position } from '../types/index.d'
 
 import Mosaic from './Mosaic.vue'
 import Pen from './Pen.vue'
 import Rect from './Rect.vue'
+import Ellipse from './Ellipse.vue'
 
 const mode = ref<Mode>('draw')
 let drag: ReturnType<typeof useDragRect>
@@ -23,6 +24,7 @@ const editarea = ref<SVGSVGElement>()
 let drawLine: ReturnType<typeof useDrawSVGLine>
 let mosaic: ReturnType<typeof useMosaic>
 let drawRect: ReturnType<typeof useDrawSVGRect>
+let drawEllipse: ReturnType<typeof useDrawSVGEllipse>
 
 // 监听截图区域大小变化
 const observeSize = useResizeObserver(screenshot as any)
@@ -96,10 +98,18 @@ async function penHandler() {
   drawLine.startDrawLine()
 }
 
+function drawEllipseHandler() {
+  upperSvg()
+  drawEllipse = useDrawSVGEllipse(screenshot.value!, editarea.value!)
+  stopAllTools()
+  drawEllipse.startDrawEllipse()
+}
+
 async function stopAllTools() {
   mosaic?.stopMosaic()
   drawLine?.stopDrawLine()
   drawRect?.stopDrawRect()
+  drawEllipse?.stopDrawEllipse()
 }
 
 function upperCanvas() {
@@ -145,6 +155,7 @@ onMounted(() => {
     <!-- 这里是功能区域 -->
     <div bg-dark-2 shadow-light flex items-center class="tools">
       <div flex @click.stop="changeToEditMode">
+        <Ellipse @ellipse="drawEllipseHandler" />
         <Rect @rect="drawRectHandler" />
         <Mosaic @mosaic="drawMosaicHanlder" />
         <Pen @pen="penHandler" />
