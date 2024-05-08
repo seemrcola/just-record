@@ -18,7 +18,6 @@ const position = ref<Position>('left')
 const screenshot = ref<HTMLCanvasElement>()
 const rect = ref<HTMLDivElement>()
 const editarea = ref<SVGSVGElement>()
-const proxyDOM = ref<HTMLDivElement>()
 
 let drawLine: ReturnType<typeof useDrawLine>
 let mosaic: ReturnType<typeof useMosaic>
@@ -39,18 +38,11 @@ function handleRectMousedown(event: MouseEvent) {
 // 切换到edit模式
 function changeToEditMode() {
   mode.value = 'edit'
-
   const rect = screenshot.value!.getBoundingClientRect()!
-
   editarea.value!.setAttribute('width', `${rect.width}px`)
   editarea.value!.setAttribute('height', `${rect.height}px`)
   editarea.value!.style.left = `${rect.left}px`
   editarea.value!.style.top = `${rect.top}px`
-
-  proxyDOM.value!.style.width = `${rect.width}px`
-  proxyDOM.value!.style.height = `${rect.height}px`
-  proxyDOM.value!.style.left = `${rect.left}px`
-  proxyDOM.value!.style.top = `${rect.top}px`
 }
 
 // 切换到resize模式
@@ -82,13 +74,15 @@ function close() {
 }
 
 async function drawMosaic() {
-  mosaic = useMosaic(proxyDOM.value!, screenshot.value!)
+  upperCanvas()
+  mosaic = useMosaic(screenshot.value!)
   stopAllTools()
   mosaic.startMosaic()
 }
 
 async function pen() {
-  drawLine = useDrawLine(proxyDOM.value!, screenshot.value!, editarea.value!)
+  upperSvg()
+  drawLine = useDrawLine(screenshot.value!, editarea.value!)
   stopAllTools()
   drawLine.startDrawLine()
 }
@@ -96,6 +90,16 @@ async function pen() {
 async function stopAllTools() {
   mosaic?.stopMosaic()
   drawLine?.stopDrawLine()
+}
+
+function upperCanvas() {
+  // 让上层是canvas只需要将editarea的pointer-events属性设置为none即可
+  editarea.value!.style.pointerEvents = 'none'
+}
+
+function upperSvg() {
+  // 让上层是svg需要将editarea的pointer-events属性设置为auto
+  editarea.value!.style.pointerEvents = 'auto'
 }
 
 onMounted(() => {
@@ -114,9 +118,8 @@ onMounted(() => {
     </div>
     <!-- 这里是截图区域 -->
     <div>
-      <div ref="proxyDOM" fixed z-100></div>
-      <canvas ref="screenshot" fixed z-99 />
-      <svg ref="editarea" fixed z-99></svg>  
+      <canvas ref="screenshot" fixed />
+      <svg ref="editarea" fixed></svg>  
     </div>
     <!-- 这里是缩放区域 -->
     <div v-if="mode !== 'edit'" class="box">

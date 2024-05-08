@@ -1,6 +1,7 @@
 import { useToolsStore } from '../../store'
+import { useDragSVG } from '../utils/useDragSVG'
 
-export function useDrawLine(proxyDOM: HTMLElement, canvas: HTMLCanvasElement, svg: SVGElement) {
+export function useDrawLine(canvas: HTMLCanvasElement, svg: SVGElement) {
   let line = document.createElementNS('http://www.w3.org/2000/svg', 'polyline')
   let innerLine = document.createElementNS('http://www.w3.org/2000/svg', 'polyline')
 
@@ -9,11 +10,18 @@ export function useDrawLine(proxyDOM: HTMLElement, canvas: HTMLCanvasElement, sv
   let points: string[] = []
 
   function startDrawLine() {
-    proxyDOM.addEventListener('mousedown', mousedownHandler)
+    svg.addEventListener('mousedown', mousedownHandler)
   }
 
   function stopDrawLine() {
-    proxyDOM.removeEventListener('mousedown', mousedownHandler)
+    svg.removeEventListener('mousedown', mousedownHandler)
+  }
+
+  function drawLine(svg: SVGElement, color: string, lineWidth: number) {
+    svg.setAttribute('stroke', `${color}`)
+    svg.setAttribute('stroke-width', `${lineWidth}`)
+    svg.setAttribute('fill', 'none')
+    svg.setAttribute('points', `${points.join(' ')}`)
   }
 
   function mousedownHandler(event: MouseEvent) {
@@ -22,20 +30,14 @@ export function useDrawLine(proxyDOM: HTMLElement, canvas: HTMLCanvasElement, sv
     const x = (event.clientX - rect.left)
     const y = (event.clientY - rect.top)
 
+    points.push(`${x},${y}`)
+
     // 一根我们想画的线
     line = document.createElementNS('http://www.w3.org/2000/svg', 'polyline')
-    line.setAttribute('stroke', `${getColor()}`)
-    line.setAttribute('stroke-width', `${getLineWidth()}`)
-    line.setAttribute('fill', 'none')
-    points.push(`${x},${y}`)
-    line.setAttribute('points', `${points.join(' ')}`)
+    drawLine(line, getColor(), getLineWidth())
     // 中间画一根黑色的线
     innerLine = document.createElementNS('http://www.w3.org/2000/svg', 'polyline')
-    innerLine.setAttribute('stroke', 'white')
-    innerLine.setAttribute('stroke-width', '1')
-    innerLine.setAttribute('fill', 'none')
-    innerLine.setAttribute('points', `${points.join(' ')}`)
-    svg.appendChild(innerLine)
+    drawLine(innerLine, 'white', 1)
 
     svg.appendChild(line)
     svg.appendChild(innerLine)
@@ -61,6 +63,9 @@ export function useDrawLine(proxyDOM: HTMLElement, canvas: HTMLCanvasElement, sv
     document.removeEventListener('mouseup', mouseupHandler)
     points = []
     innerLine.remove()
+
+    // 添加拖拽能力
+    useDragSVG(line, svg)
   }
 
   function getColor() {

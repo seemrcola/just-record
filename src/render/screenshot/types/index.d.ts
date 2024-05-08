@@ -1,2 +1,2 @@
-export * from './rect.d'
-export * from './tools.d'
+export * from './rect'
+export * from './tools'

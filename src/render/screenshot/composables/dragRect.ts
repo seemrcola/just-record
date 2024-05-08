@@ -1,5 +1,5 @@
 import type { Ref } from 'vue'
-import type { Mode } from '../types/index.d'
+import type { Mode } from '../types'
 import { useScreenshotStore } from '../store'
 import { useCanvas } from './utils'
 
