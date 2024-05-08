@@ -56,7 +56,7 @@ export function useDrawSVGEllipse(canvas: HTMLCanvasElement, svg: SVGElement) {
   function mouseupHandler(event: MouseEvent) {
     document.removeEventListener('mousemove', mousemoveHandler)
     document.removeEventListener('mouseup', mouseupHandler)
-    useDragSVG(svgEllipse)
+    useDragSVG(svgEllipse, undo)
   }
 
   function getColor() {
@@ -71,6 +71,7 @@ export function useDrawSVGEllipse(canvas: HTMLCanvasElement, svg: SVGElement) {
 
 function useDragSVG(
   target: SVGElement,
+  undo: ReturnType<typeof useUndo>
 ) {
   let startFlag = false
   let start = { x: 0, y: 0 }
@@ -86,6 +87,8 @@ function useDragSVG(
     document.addEventListener('mousemove', mousemoveHandler)
     document.addEventListener('mouseup', mouseupHandler)
     start = { x: e.pageX, y: e.pageY }
+
+    undo.track('svg')
   }
 
   function mousemoveHandler(e: MouseEvent) {

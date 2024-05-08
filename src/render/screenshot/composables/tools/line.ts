@@ -70,7 +70,7 @@ export function useDrawSVGLine(canvas: HTMLCanvasElement, svg: SVGElement) {
     innerLine.remove()
 
     // 添加拖拽能力
-    useDragSVG(line, svg)
+    useDragSVG(line, svg, undo)
   }
 
   function getColor() {
@@ -96,6 +96,7 @@ export function useDrawSVGLine(canvas: HTMLCanvasElement, svg: SVGElement) {
 function useDragSVG(
   target: SVGElement,
   parent: SVGElement,
+  undo: ReturnType<typeof useUndo>
 ) {
   let startFlag = false
   let start = { x: 0, y: 0 }
