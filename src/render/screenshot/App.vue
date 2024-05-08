@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { App } from 'vue'
 import { createApp, nextTick, onMounted, onUnmounted, ref } from 'vue'
-import Rect from './components/Rect.vue'
+import Screenshot from './components/Screenshot.vue'
 import { useScreenshotStore, useToolsStore } from './store'
 
 let img: HTMLImageElement
@@ -35,7 +35,7 @@ function backgroundImage(thumbnail: string) {
 
 async function drawRect() {
   rect?.unmount()
-  const app = createApp(Rect)
+  const app = createApp(Screenshot)
   app.mount(wrapper.value!)
   rect = app
 }
