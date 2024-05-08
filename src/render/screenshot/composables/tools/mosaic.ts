@@ -1,7 +1,9 @@
 import { useToolsStore } from '../../store'
+import { useUndo } from './undo'
 
-export function useMosaic(canvas: HTMLCanvasElement, svg?: SVGElement) {
+export function useMosaic(canvas: HTMLCanvasElement, svg: SVGElement) {
   const store = useToolsStore()
+  const undo = useUndo(canvas, svg)
 
   const ratio = window.devicePixelRatio
   const mosaicRadius = 24
@@ -38,6 +40,7 @@ export function useMosaic(canvas: HTMLCanvasElement, svg?: SVGElement) {
     const color = getMosaicColor({ x: gridLeft, y: gridTop }, size)
     // 绘制矩形
     ctx.fillStyle = color
+    // ctx.fillStyle = 'red'
     ctx.fillRect(gridLeft, gridTop, size, size)
   }
 
@@ -85,6 +88,9 @@ export function useMosaic(canvas: HTMLCanvasElement, svg?: SVGElement) {
   function mousedownHanlder(event: MouseEvent) {
     document.addEventListener('mousemove', mousemoveHanlder)
     document.addEventListener('mouseup', mouseupHanlder)
+
+    console.log('mosaic undo')
+    undo.track('canvas')
   }
 
   function mousemoveHanlder(event: MouseEvent) {

@@ -1,9 +1,11 @@
 import { useToolsStore } from '../../store'
+import { useUndo } from './undo'
 
 export function useDrawSVGEllipse(canvas: HTMLCanvasElement, svg: SVGElement) {
   let svgEllipse = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse')
 
   const toolsStore = useToolsStore()
+  const undo = useUndo(canvas, svg)
   const rect = canvas.getBoundingClientRect()!
 
   let start = { x: 0, y: 0 }
@@ -32,6 +34,9 @@ export function useDrawSVGEllipse(canvas: HTMLCanvasElement, svg: SVGElement) {
     svgEllipse.setAttribute('cy', `${start.y}`)
 
     svg.appendChild(svgEllipse)
+
+    console.log('ellipse undo')
+    undo.track('svg')
   }
 
   function mousemoveHandler(event: MouseEvent) {
@@ -50,6 +55,7 @@ export function useDrawSVGEllipse(canvas: HTMLCanvasElement, svg: SVGElement) {
 
   function mouseupHandler(event: MouseEvent) {
     document.removeEventListener('mousemove', mousemoveHandler)
+    document.removeEventListener('mouseup', mouseupHandler)
     useDragSVG(svgEllipse)
   }
 
@@ -93,7 +99,7 @@ function useDragSVG(
     const { x, y } = start
     const deltaX = pageX - x
     const deltaY = pageY - y
-    updatePolylinePoints(deltaX, deltaY, target);
+    updatePolylinePoints(deltaX, deltaY, target)
 
     start = { x: pageX, y: pageY }
   }
@@ -101,15 +107,15 @@ function useDragSVG(
   function mouseupHandler(e: MouseEvent) {
     e.preventDefault()
     e.stopPropagation()
-    
+
     startFlag = false
     document.removeEventListener('mousemove', mousemoveHandler)
     document.removeEventListener('mouseup', mouseupHandler)
   }
 
   function updatePolylinePoints(dx: number, dy: number, ele: SVGElement) {
-    const x = parseInt(ele.getAttribute('cx')!)
-    const y = parseInt(ele.getAttribute('cy')!)
+    const x = Number.parseInt(ele.getAttribute('cx')!)
+    const y = Number.parseInt(ele.getAttribute('cy')!)
     ele.setAttribute('cx', `${x + dx}`)
     ele.setAttribute('cy', `${y + dy}`)
   }

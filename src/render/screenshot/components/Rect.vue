@@ -29,7 +29,7 @@ function changeColor(color: Color) {
     />
     <div v-if="store.showRectChoose" class="choose">
       <BaseColor :color="store.rectColor" @change-color="changeColor" />
-    </div> 
+    </div>
   </div>
 </template>
 

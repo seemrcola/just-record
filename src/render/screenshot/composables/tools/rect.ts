@@ -1,9 +1,11 @@
 import { useToolsStore } from '../../store'
+import { useUndo } from './undo'
 
 export function useDrawSVGRect(canvas: HTMLCanvasElement, svg: SVGElement) {
   let svgRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
 
   const toolsStore = useToolsStore()
+  const undo = useUndo(canvas, svg)
   const rect = canvas.getBoundingClientRect()!
 
   let start = { x: 0, y: 0 }
@@ -32,6 +34,9 @@ export function useDrawSVGRect(canvas: HTMLCanvasElement, svg: SVGElement) {
     svgRect.setAttribute('y', `${start.y}`)
 
     svg.appendChild(svgRect)
+
+    console.log('rect undo')
+    undo.track('svg')
   }
 
   function mousemoveHandler(event: MouseEvent) {
@@ -42,8 +47,10 @@ export function useDrawSVGRect(canvas: HTMLCanvasElement, svg: SVGElement) {
     const height = abs(y - start.y)
 
     // 如果跨过了初始点
-    if (x < start.x) svgRect.setAttribute('x', `${x}`)
-    if (y < start.y) svgRect.setAttribute('y', `${y}`)
+    if (x < start.x)
+      svgRect.setAttribute('x', `${x}`)
+    if (y < start.y)
+      svgRect.setAttribute('y', `${y}`)
 
     svgRect.setAttribute('width', `${width}`)
     svgRect.setAttribute('height', `${height}`)
@@ -56,6 +63,7 @@ export function useDrawSVGRect(canvas: HTMLCanvasElement, svg: SVGElement) {
 
   function mouseupHandler(event: MouseEvent) {
     document.removeEventListener('mousemove', mousemoveHandler)
+    document.removeEventListener('mouseup', mouseupHandler)
     useDragSVG(svgRect)
   }
 
@@ -99,7 +107,7 @@ function useDragSVG(
     const { x, y } = start
     const deltaX = pageX - x
     const deltaY = pageY - y
-    updatePolylinePoints(deltaX, deltaY, target);
+    updatePolylinePoints(deltaX, deltaY, target)
 
     start = { x: pageX, y: pageY }
   }
@@ -107,15 +115,15 @@ function useDragSVG(
   function mouseupHandler(e: MouseEvent) {
     e.preventDefault()
     e.stopPropagation()
-    
+
     startFlag = false
     document.removeEventListener('mousemove', mousemoveHandler)
     document.removeEventListener('mouseup', mouseupHandler)
   }
 
   function updatePolylinePoints(dx: number, dy: number, ele: SVGElement) {
-    const x = parseInt(ele.getAttribute('x')!)
-    const y = parseInt(ele.getAttribute('y')!)
+    const x = Number.parseInt(ele.getAttribute('x')!)
+    const y = Number.parseInt(ele.getAttribute('y')!)
     ele.setAttribute('x', `${x + dx}`)
     ele.setAttribute('y', `${y + dy}`)
   }

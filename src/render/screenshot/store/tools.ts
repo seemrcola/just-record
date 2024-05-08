@@ -52,7 +52,7 @@ export const useToolsStore = defineStore('tools', () => {
       case 'Ellipse':
         showEllipseChoose.value = true
         break
-      
+
       default:
         break
     }

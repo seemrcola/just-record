@@ -1,10 +1,12 @@
 import { useToolsStore } from '../../store'
+import { useUndo } from './undo'
 
 export function useDrawSVGLine(canvas: HTMLCanvasElement, svg: SVGElement) {
   let line = document.createElementNS('http://www.w3.org/2000/svg', 'polyline')
   let innerLine = document.createElementNS('http://www.w3.org/2000/svg', 'polyline')
 
   const toolsStore = useToolsStore()
+  const undo = useUndo(canvas, svg)
   const rect = canvas.getBoundingClientRect()!
   let points: string[] = []
 
@@ -40,6 +42,9 @@ export function useDrawSVGLine(canvas: HTMLCanvasElement, svg: SVGElement) {
 
     svg.appendChild(line)
     svg.appendChild(innerLine)
+
+    console.log('line undo')
+    undo.track('svg')
   }
 
   function mousemoveHandler(event: MouseEvent) {
@@ -49,8 +54,9 @@ export function useDrawSVGLine(canvas: HTMLCanvasElement, svg: SVGElement) {
     // 如果和最后一个点的绝对距离小于3，则不画线
     const lastPoint = points[points.length - 1]
     const [lx, ly] = lastPoint.split(',')
-    const distance = Math.sqrt(Math.pow(x - parseInt(lx), 2) + Math.pow(y - parseInt(ly), 2))
-    if (distance < 3) return
+    const distance = Math.sqrt((x - Number.parseInt(lx)) ** 2 + (y - Number.parseInt(ly)) ** 2)
+    if (distance < 3)
+      return
 
     points.push(`${x},${y}`)
     line.setAttribute('points', `${points.join(' ')}`)
@@ -89,19 +95,19 @@ export function useDrawSVGLine(canvas: HTMLCanvasElement, svg: SVGElement) {
 
 function useDragSVG(
   target: SVGElement,
-  parent: SVGElement
+  parent: SVGElement,
 ) {
   let startFlag = false
   let start = { x: 0, y: 0 }
 
   target.onmousedown = mousedownHandler
   target.style.position = 'fixed'
-  let innerLine: SVGPolylineElement = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+  let innerLine: SVGPolylineElement = document.createElementNS('http://www.w3.org/2000/svg', 'polyline')
 
   function mousedownHandler(e: MouseEvent) {
     e.preventDefault()
     e.stopPropagation()
-    
+
     startFlag = true
     document.addEventListener('mousemove', mousemoveHandler)
     document.addEventListener('mouseup', mouseupHandler)
@@ -122,9 +128,9 @@ function useDragSVG(
     const deltaY = pageY - y
 
     // 更新 polyline 的位置
-    const newPoints = updatePolylinePoints(deltaX, deltaY, target);
-    target.setAttribute('points', newPoints);
-    innerLine.setAttribute('points', newPoints);
+    const newPoints = updatePolylinePoints(deltaX, deltaY, target)
+    target.setAttribute('points', newPoints)
+    innerLine.setAttribute('points', newPoints)
 
     start = { x: pageX, y: pageY }
   }
@@ -136,24 +142,24 @@ function useDragSVG(
     startFlag = false
     document.removeEventListener('mousemove', mousemoveHandler)
     document.removeEventListener('mouseup', mouseupHandler)
-    innerLine.remove();
+    innerLine.remove()
   }
 
   function flagDrawing() {
-    const pointsArray = target.getAttribute('points')!.split(' ');
-    innerLine = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-    innerLine.setAttribute('points', pointsArray.join(' '));
-    innerLine.setAttribute('style', 'fill:none;stroke:white;stroke-width:1');
-    parent.appendChild(innerLine);
+    const pointsArray = target.getAttribute('points')!.split(' ')
+    innerLine = document.createElementNS('http://www.w3.org/2000/svg', 'polyline')
+    innerLine.setAttribute('points', pointsArray.join(' '))
+    innerLine.setAttribute('style', 'fill:none;stroke:white;stroke-width:1')
+    parent.appendChild(innerLine)
   }
 
   function updatePolylinePoints(dx: number, dy: number, ele: SVGElement) {
-    const pointsArray = ele.getAttribute('points')!.split(' ');
-    const newPointsArray = pointsArray.map(point => {
-      const [x, y] = point.split(',');
-      return `${parseFloat(x) + dx},${parseFloat(y) + dy}`;
-    });
+    const pointsArray = ele.getAttribute('points')!.split(' ')
+    const newPointsArray = pointsArray.map((point) => {
+      const [x, y] = point.split(',')
+      return `${Number.parseFloat(x) + dx},${Number.parseFloat(y) + dy}`
+    })
 
-    return newPointsArray.join(' ');
+    return newPointsArray.join(' ')
   }
 }

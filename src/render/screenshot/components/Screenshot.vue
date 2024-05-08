@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue'
 import { useDragRect } from '../composables/dragRect'
 import { useDrawRect } from '../composables/drawRect'
 import { useResizeRect } from '../composables/resizeRect'
-import { useDownload, useDrawSVGLine, useMosaic, useSaveScreenshot, useDrawSVGRect, useDrawSVGEllipse } from '../composables/tools'
+import { useDownload, useDrawSVGEllipse, useDrawSVGLine, useDrawSVGRect, useMosaic, useSaveScreenshot, useUndo } from '../composables/tools'
 import { useResizeObserver } from '../composables/utils'
 import type { Mode, Position } from '../types/index.d'
 
@@ -41,7 +41,9 @@ function handleRectMousedown(event: MouseEvent) {
 
 // 切换到edit模式
 function changeToEditMode() {
+  // mode 改动
   mode.value = 'edit'
+  // svg 初始化宽高 预备编辑
   const rect = screenshot.value!.getBoundingClientRect()!
   editarea.value!.setAttribute('width', `${rect.width}px`)
   editarea.value!.setAttribute('height', `${rect.height}px`)
@@ -69,8 +71,13 @@ async function download() {
 async function save() {
   const saveHanlder = useSaveScreenshot(screenshot.value!, editarea.value!)
   const res = await saveHanlder.save()
-  if (res) 
+  if (res)
     window.useScreenshot.close()
+}
+
+function undo() {
+  const {undo} = useUndo(screenshot.value!, editarea.value!)
+  undo()
 }
 
 function close() {
@@ -86,7 +93,7 @@ function drawRectHandler() {
 
 async function drawMosaicHanlder() {
   upperCanvas()
-  mosaic = useMosaic(screenshot.value!)
+  mosaic = useMosaic(screenshot.value!, editarea.value!)
   stopAllTools()
   mosaic.startMosaic()
 }
@@ -139,7 +146,7 @@ onMounted(() => {
     <!-- 这里是截图区域 -->
     <div>
       <canvas ref="screenshot" fixed />
-      <svg ref="editarea" fixed></svg>  
+      <svg ref="editarea" fixed />
     </div>
     <!-- 这里是缩放区域 -->
     <div v-if="mode !== 'edit'" class="box">
@@ -162,6 +169,7 @@ onMounted(() => {
       </div>
       <div h-5 w-2px bg-gray mx-3 />
       <div flex>
+        <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:undo-rounded text-light @click="undo" />
         <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:download text-light @click="download" />
         <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:close text-red @click="close" />
         <div h-4 w-4 cursor-pointer px-2 py-1 i-icon-park-outline:correct text-blue @click="save" />
