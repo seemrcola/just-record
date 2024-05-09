@@ -11,6 +11,7 @@ import Mosaic from './Mosaic.vue'
 import Pen from './Pen.vue'
 import Rect from './Rect.vue'
 import Ellipse from './Ellipse.vue'
+import Text from './Text.vue'
 
 const mode = ref<Mode>('draw')
 let drag: ReturnType<typeof useDragRect>
@@ -98,6 +99,10 @@ async function drawMosaicHanlder() {
   mosaic.startMosaic()
 }
 
+async function drawTextHandler() {
+
+}
+
 async function penHandler() {
   upperSvg()
   drawLine = useDrawSVGLine(screenshot.value!, editarea.value!)
@@ -165,6 +170,7 @@ onMounted(() => {
         <Ellipse @ellipse="drawEllipseHandler" />
         <Rect @rect="drawRectHandler" />
         <Mosaic @mosaic="drawMosaicHanlder" />
+        <Text @text="drawTextHandler" />
         <Pen @pen="penHandler" />
       </div>
       <div h-5 w-2px bg-gray mx-3 />
@@ -172,7 +178,7 @@ onMounted(() => {
         <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:undo-rounded text-light @click="undo" />
         <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:download text-light @click="download" />
         <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:close text-red @click="close" />
-        <div h-4 w-4 cursor-pointer px-2 py-1 i-icon-park-outline:correct text-blue @click="save" />
+        <div h-4 w-4 cursor-pointer px-2 py-1 i-charm:tick text-blue @click="save" />
       </div>
     </div>
   </div>

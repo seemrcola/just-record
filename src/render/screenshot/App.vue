@@ -2,7 +2,7 @@
 import type { App } from 'vue'
 import { createApp, nextTick, onMounted, onUnmounted, ref } from 'vue'
 import Screenshot from './components/Screenshot.vue'
-import { useScreenshotStore, useToolsStore } from './store'
+import { useScreenshotStore, useToolsStore, useHistoryStore } from './store'
 
 let img: HTMLImageElement
 let rect: App<Element>
@@ -80,6 +80,9 @@ window.useScreenshot.onScreenshotClosed(() => {
 
   const toolsStore = useToolsStore()
   toolsStore.clear()
+
+  const historyStore = useHistoryStore()
+  historyStore.history.clear()
 })
 
 onMounted(() => window.addEventListener('keydown', escHandler))
