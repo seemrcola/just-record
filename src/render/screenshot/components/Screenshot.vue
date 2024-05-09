@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue'
 import { useDragRect } from '../composables/dragRect'
 import { useDrawRect } from '../composables/drawRect'
 import { useResizeRect } from '../composables/resizeRect'
-import { useDownload, useDrawSVGEllipse, useDrawSVGLine, useDrawSVGRect, useMosaic, useSaveScreenshot, useUndo } from '../composables/tools'
+import { useDownload, useDrawSVGEllipse, useDrawSVGLine, useDrawSVGRect, useMosaic, useSaveScreenshot, useUndo, useText } from '../composables/tools'
 import { useResizeObserver } from '../composables/utils'
 import type { Mode, Position } from '../types/index.d'
 
@@ -26,6 +26,7 @@ let drawLine: ReturnType<typeof useDrawSVGLine>
 let mosaic: ReturnType<typeof useMosaic>
 let drawRect: ReturnType<typeof useDrawSVGRect>
 let drawEllipse: ReturnType<typeof useDrawSVGEllipse>
+let text: ReturnType<typeof useText>
 
 // 监听截图区域大小变化
 const observeSize = useResizeObserver(screenshot as any)
@@ -77,7 +78,7 @@ async function save() {
 }
 
 function undo() {
-  const {undo} = useUndo(screenshot.value!, editarea.value!)
+  const { undo } = useUndo(screenshot.value!, editarea.value!)
   undo()
 }
 
@@ -100,7 +101,10 @@ async function drawMosaicHanlder() {
 }
 
 async function drawTextHandler() {
-
+  upperSvg()
+  text = await useText(screenshot.value!, editarea.value!)
+  stopAllTools()
+  text.startWriteText()
 }
 
 async function penHandler() {
@@ -122,6 +126,7 @@ async function stopAllTools() {
   drawLine?.stopDrawLine()
   drawRect?.stopDrawRect()
   drawEllipse?.stopDrawEllipse()
+  text?.stopWriteText()
 }
 
 function upperCanvas() {
