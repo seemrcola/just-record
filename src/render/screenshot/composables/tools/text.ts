@@ -19,8 +19,8 @@ export function useText(canvas: HTMLCanvasElement, svg: SVGElement) {
   }
 
   function mousedownHandler(event: MouseEvent) {
-    // 取消默认事件
-    event.preventDefault()
+    undo.track()
+
     event.stopPropagation()
     const y = event.clientY - rect.top
     const x = event.clientX - rect.left
@@ -37,20 +37,54 @@ export function useText(canvas: HTMLCanvasElement, svg: SVGElement) {
   }
 
   function createInput(left: number, top: number) {
+    const color = getColor()
+    const size = getSize()
+
     input = document.createElement('input')
     input.type = 'text'
-    input.style.position = 'fixed'
-    input.style.top = top + 'px'
-    input.style.left = left + 'px'
-    input.style.zIndex = '999'
+    input.style.cssText = `
+        position: fixed;
+        left: ${left}px;
+        top: ${top}px;
+        border: none;
+        outline: none;
+        box-shadow: none;
+        text-line-through: none;
+        background-color: transparent;
+        font-size: ${size}px;
+        color: ${color};
+        font-family: Arial, sans-serif;
+        z-index: 9999;
+    `
 
     document.body.appendChild(input)
     input.focus()
 
     input.addEventListener('blur', (e) => {
       textSvg.textContent = (e.target as HTMLInputElement).value
+      textSvg.setAttribute('fill', `${color}`)
+      textSvg.setAttribute('font-size', `${size}`)
+
       input.remove()
     })
+  }
+
+  function getColor() {
+    return toolsStore.textColor
+  }
+
+  function getSize() {
+    const size = toolsStore.textSize
+    if(size === 'small') {
+      return  12
+    }
+    if(size ==='medium') {
+      return 16
+    }
+    if(size === 'large') {
+      return 20
+    }
+    return 12
   }
 
   return {

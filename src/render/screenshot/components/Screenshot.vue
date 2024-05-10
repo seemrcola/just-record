@@ -33,7 +33,7 @@ const observeSize = useResizeObserver(screenshot as any)
 
 // 切换到drag模式
 function handleRectMousedown(event: MouseEvent) {
-  event.preventDefault()
+  
   event.stopPropagation()
   // 如果是编辑状态 则不进入drag模式
   if (mode.value === 'edit')
@@ -55,7 +55,7 @@ function changeToEditMode() {
 
 // 切换到resize模式
 function handlePosMousedown(event: MouseEvent) {
-  event.preventDefault()
+  
   event.stopPropagation()
   mode.value = 'resize'
   const posDOM = event.target as HTMLElement

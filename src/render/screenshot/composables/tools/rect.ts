@@ -88,7 +88,7 @@ function useDragSVG(
   target.style.position = 'fixed'
 
   function mousedownHandler(e: MouseEvent) {
-    e.preventDefault()
+    
     e.stopPropagation()
 
     startFlag = true
@@ -100,7 +100,7 @@ function useDragSVG(
   }
 
   function mousemoveHandler(e: MouseEvent) {
-    e.preventDefault()
+    
     e.stopPropagation()
 
     if (!startFlag)
@@ -116,7 +116,7 @@ function useDragSVG(
   }
 
   function mouseupHandler(e: MouseEvent) {
-    e.preventDefault()
+    
     e.stopPropagation()
 
     startFlag = false

@@ -10,7 +10,7 @@ const wrapper = ref<HTMLDivElement>()
 
 function escHandler(event: KeyboardEvent) {
   if (event.key === 'Escape') {
-    event.preventDefault()
+    
     event.stopPropagation()
     window.useScreenshot.close()
   }
