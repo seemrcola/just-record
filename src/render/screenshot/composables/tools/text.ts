@@ -1,12 +1,9 @@
-import { nextTick } from 'vue'
 import { useToolsStore } from '../../store'
 import { useUndo } from './undo'
 
 export function useText(canvas: HTMLCanvasElement, svg: SVGElement) {
   const toolsStore = useToolsStore()
   const undo = useUndo(canvas, svg)
-  let textSvg = document.createElementNS('http://www.w3.org/2000/svg', 'text')
-  let input = document.createElement('input')
 
   const rect = canvas.getBoundingClientRect()
 
@@ -25,47 +22,57 @@ export function useText(canvas: HTMLCanvasElement, svg: SVGElement) {
     const y = event.clientY - rect.top
     const x = event.clientX - rect.left
     // 创建一个文本节点
+    let textSvg = document.createElementNS('http://www.w3.org/2000/svg', 'text')
     textSvg?.remove()
     textSvg = document.createElementNS('http://www.w3.org/2000/svg', 'text')
     textSvg.setAttribute('x', x.toString())
     textSvg.setAttribute('y', y.toString())
-    createInput(event.clientX, event.clientY)
+    createInput(event.clientX, event.clientY, textSvg)
     // 将文本节点添加到svg中
     svg.appendChild(textSvg)
-
-    stopWriteText()
   }
 
-  function createInput(left: number, top: number) {
+  function createInput(left: number, top: number, textSvg: SVGTextContentElement) {
     const color = getColor()
     const size = getSize()
 
-    input = document.createElement('input')
-    input.type = 'text'
-    input.style.cssText = `
-        position: fixed;
-        left: ${left}px;
-        top: ${top}px;
-        border: none;
-        outline: none;
-        box-shadow: none;
-        text-line-through: none;
-        background-color: transparent;
-        font-size: ${size}px;
-        color: ${color};
-        font-family: Arial, sans-serif;
-        z-index: 9999;
+    const div = document.createElement('div')
+    div.contentEditable = 'true'
+    div.style.cssText = `
+      position: fixed;
+      left: ${left}px;
+      top: ${top}px;
+      box-shadow: none;
+      text-line-through: none;
+      background-color: transparent;
+      font-size: ${size}px;
+      color: ${color};
+      font-family: Arial, sans-serif;
+      z-index: 9999;
     `
 
-    document.body.appendChild(input)
-    input.focus()
+    document.body.appendChild(div)
+    div.focus()
 
-    input.addEventListener('blur', (e) => {
-      textSvg.textContent = (e.target as HTMLInputElement).value
+    div.addEventListener('blur', (e) => {
+      const textContent = (e.target as HTMLDivElement).innerText
       textSvg.setAttribute('fill', `${color}`)
       textSvg.setAttribute('font-size', `${size}`)
+      const splitText = textContent.split('\n')
+      
+      // 创建tspan元素
+      const x = parseFloat(textSvg.getAttribute('x') || '0')
+      for (let i = 0; i < splitText.length; i++) {
+        const tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan')
+        tspan.setAttribute('x', `${x}`)
+        tspan.setAttribute('dy', `${size * 1.2}px`)
+        tspan.textContent = splitText[i]
+        textSvg.appendChild(tspan)
+      }
 
-      input.remove()
+      textSvg.removeEventListener('click', mousedownHandler)
+
+      div?.remove()
     })
   }
 
