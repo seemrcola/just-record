@@ -5,7 +5,6 @@ import type { Color, MosaicType, Size } from '../types'
 type ToolType = 'Mosaic' | 'Pen' | 'Rect' | 'Ellipse' | 'Text'
 
 export const useToolsStore = defineStore('tools', () => {
-
   const showMosaicChoose = ref(false)
   const showPenChoose = ref(false)
   const showRectChoose = ref(false)
@@ -40,7 +39,7 @@ export const useToolsStore = defineStore('tools', () => {
   // Text
   const textSize = ref<Size>('small')
   const textColor = ref<Color>('red')
-  function setTextColor(color: Color) { 
+  function setTextColor(color: Color) {
     textColor.value = color
   }
   function setTextSize(size: Size) {

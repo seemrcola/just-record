@@ -1,4 +1,4 @@
-import { useUndo } from './undo'
+import type { useUndo } from './undo'
 
 export {
   useDragSVGLine,
@@ -6,10 +6,10 @@ export {
   useDragSVGRect,
 }
 
- function useDragSVGLine(
+function useDragSVGLine(
   target: SVGElement,
   parent: SVGElement,
-  undo: ReturnType<typeof useUndo>
+  undo: ReturnType<typeof useUndo>,
 ) {
   let startFlag = false
   let start = { x: 0, y: 0 }
@@ -62,9 +62,8 @@ export {
     document.removeEventListener('mouseup', mouseupHandler)
 
     // 如果实际没有移动，则不记录 undo
-    if (benchmark.x === e.clientX && benchmark.y === e.clientY) {
+    if (benchmark.x === e.clientX && benchmark.y === e.clientY)
       undo.fallback()
-    }
   }
 
   function flagDrawing() {
@@ -89,7 +88,7 @@ export {
 function useDragSVGEllipse(
   target: SVGElement,
   parent: SVGElement,
-  undo: ReturnType<typeof useUndo>
+  undo: ReturnType<typeof useUndo>,
 ) {
   let startFlag = false
   let start = { x: 0, y: 0 }
@@ -135,17 +134,16 @@ function useDragSVGEllipse(
     startFlag = false
 
     innerSvg?.remove()
-    
+
     document.removeEventListener('mousemove', mousemoveHandler)
     document.removeEventListener('mouseup', mouseupHandler)
 
     // 如果实际没有移动，则不记录 undo
-    if (benchmark.x === e.pageX && benchmark.y === e.pageY) {
+    if (benchmark.x === e.pageX && benchmark.y === e.pageY)
       undo.fallback()
-    }
   }
 
-  function flagDrawing() { 
+  function flagDrawing() {
     innerSvg = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse')
 
     const rx = target.getAttribute('rx') ?? '0'
@@ -160,7 +158,7 @@ function useDragSVGEllipse(
 
     innerSvg.setAttribute('style', 'fill:none;stroke:white;stroke-width:1')
     parent.appendChild(innerSvg)
-   }
+  }
 
   function updatePolylinePoints(dx: number, dy: number, ele: SVGElement) {
     const x = Number.parseInt(ele.getAttribute('cx')!)
@@ -173,7 +171,7 @@ function useDragSVGEllipse(
 function useDragSVGRect(
   target: SVGElement,
   parent: SVGElement,
-  undo: ReturnType<typeof useUndo>
+  undo: ReturnType<typeof useUndo>,
 ) {
   let startFlag = false
   let start = { x: 0, y: 0 }
@@ -184,10 +182,10 @@ function useDragSVGRect(
   target.onmousedown = mousedownHandler
   target.style.position = 'fixed'
 
-  function mousedownHandler(e: MouseEvent) { 
+  function mousedownHandler(e: MouseEvent) {
     e.stopPropagation()
     startFlag = true
-    
+
     document.addEventListener('mousemove', mousemoveHandler)
     document.addEventListener('mouseup', mouseupHandler)
     start = { x: e.pageX, y: e.pageY }
@@ -224,12 +222,11 @@ function useDragSVGRect(
     document.removeEventListener('mouseup', mouseupHandler)
 
     // 如果实际没有移动，则不记录 undo
-    if (benchmark.x === e.pageX && benchmark.y === e.pageY) {
+    if (benchmark.x === e.pageX && benchmark.y === e.pageY)
       undo.fallback()
-    }
   }
 
-  function flagDrawing() { 
+  function flagDrawing() {
     innerSvg = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
 
     const x = target.getAttribute('x') || '0'
@@ -244,7 +241,7 @@ function useDragSVGRect(
 
     innerSvg.setAttribute('style', 'fill:none;stroke:white;stroke-width:1')
     parent.appendChild(innerSvg)
-   }
+  }
 
   function updatePolylinePoints(dx: number, dy: number, ele: SVGElement) {
     const x = Number.parseInt(ele.getAttribute('x')!)

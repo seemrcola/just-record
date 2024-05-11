@@ -2,7 +2,7 @@
 import type { App } from 'vue'
 import { createApp, nextTick, onMounted, onUnmounted, ref } from 'vue'
 import Screenshot from './components/Screenshot.vue'
-import { useScreenshotStore, useToolsStore, useHistoryStore } from './store'
+import { useHistoryStore, useScreenshotStore, useToolsStore } from './store'
 
 let img: HTMLImageElement
 let rect: App<Element>
@@ -10,7 +10,6 @@ const wrapper = ref<HTMLDivElement>()
 
 function escHandler(event: KeyboardEvent) {
   if (event.key === 'Escape') {
-    
     event.stopPropagation()
     window.useScreenshot.close()
   }

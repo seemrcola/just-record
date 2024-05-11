@@ -67,10 +67,10 @@ export function useDrawSVGRect(canvas: HTMLCanvasElement, svg: SVGElement) {
     // 如果矩形的宽和高都为0，则删除该矩形
     const w = svgRect.getAttribute('width') ?? '0'
     const h = svgRect.getAttribute('height') ?? '0'
-    if(w === '0' && h === '0') {
+    if (w === '0' && h === '0') {
       svg.removeChild(svgRect)
       undo.undo()
-      return 
+      return
     }
     useDragSVGRect(svgRect, svg, undo)
   }

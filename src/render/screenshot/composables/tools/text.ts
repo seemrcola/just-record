@@ -58,7 +58,7 @@ export function useText(canvas: HTMLCanvasElement, svg: SVGElement) {
       const textContent = (e.target as HTMLDivElement).innerText
       // 去掉空格和换行符
       const t = textContent.replace(/\s+/g, ' ').replace(/[\n\r]/g, '')
-      if (t === '') { 
+      if (t === '') {
         // 空文本不保存
         textSvg.remove()
         div?.remove()
@@ -70,9 +70,9 @@ export function useText(canvas: HTMLCanvasElement, svg: SVGElement) {
       textSvg.setAttribute('fill', `${color}`)
       textSvg.setAttribute('font-size', `${size}`)
       const splitText = textContent.split('\n')
-      
+
       // 创建tspan元素
-      const x = parseFloat(textSvg.getAttribute('x') || '0')
+      const x = Number.parseFloat(textSvg.getAttribute('x') || '0')
       for (let i = 0; i < splitText.length; i++) {
         const tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan')
         tspan.setAttribute('x', `${x}`)
@@ -93,15 +93,15 @@ export function useText(canvas: HTMLCanvasElement, svg: SVGElement) {
 
   function getSize() {
     const size = toolsStore.textSize
-    if(size === 'small') {
-      return  12
-    }
-    if(size ==='medium') {
+    if (size === 'small')
+      return 12
+
+    if (size === 'medium')
       return 16
-    }
-    if(size === 'large') {
+
+    if (size === 'large')
       return 20
-    }
+
     return 12
   }
 

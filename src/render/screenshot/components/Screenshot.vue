@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue'
 import { useDragRect } from '../composables/dragRect'
 import { useDrawRect } from '../composables/drawRect'
 import { useResizeRect } from '../composables/resizeRect'
-import { useDownload, useDrawSVGEllipse, useDrawSVGLine, useDrawSVGRect, useMosaic, useSaveScreenshot, useUndo, useText } from '../composables/tools'
+import { useDownload, useDrawSVGEllipse, useDrawSVGLine, useDrawSVGRect, useMosaic, useSaveScreenshot, useText, useUndo } from '../composables/tools'
 import { useResizeObserver } from '../composables/utils'
 import type { Mode, Position } from '../types/index.d'
 
@@ -33,7 +33,6 @@ const observeSize = useResizeObserver(screenshot as any)
 
 // 切换到drag模式
 function handleRectMousedown(event: MouseEvent) {
-  
   event.stopPropagation()
   // 如果是编辑状态 则不进入drag模式
   if (mode.value === 'edit')
@@ -55,7 +54,6 @@ function changeToEditMode() {
 
 // 切换到resize模式
 function handlePosMousedown(event: MouseEvent) {
-  
   event.stopPropagation()
   mode.value = 'resize'
   const posDOM = event.target as HTMLElement

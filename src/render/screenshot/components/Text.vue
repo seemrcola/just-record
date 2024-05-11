@@ -33,7 +33,7 @@ function changeColor(color: Color) {
       @click="pen"
     />
     <div v-if="store.showTextChoose" class="choose">
-      <BaseSize @change-size="changeSize" />
+      <BaseSize :size="store.textSize" @change-size="changeSize" />
       <div h-4 mx-1 w-2px bg-gray />
       <BaseColor :color="store.textColor" @change-color="changeColor" />
     </div>

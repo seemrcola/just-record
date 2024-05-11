@@ -26,7 +26,6 @@ export function useDrawRect(
   }
 
   function mousedownHanlder(e: MouseEvent) {
-    
     startFlag = true
     start = {
       x: e.pageX,
@@ -43,8 +42,6 @@ export function useDrawRect(
       return
     if (mode.value !== 'draw')
       return
-
-    
 
     const { abs } = Math
     const { pageX, pageY } = e
@@ -63,7 +60,6 @@ export function useDrawRect(
   }
 
   function mouseupHanlder(e: MouseEvent) {
-    
     startFlag = false
     document.removeEventListener('mousemove', mousemoveHanlder)
     document.removeEventListener('mouseup', mouseupHanlder)

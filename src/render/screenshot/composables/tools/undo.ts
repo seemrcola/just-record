@@ -1,5 +1,5 @@
 import { useHistoryStore } from '../../store'
-import { useDragSVGLine, useDragSVGEllipse } from './dragSvg'
+import { useDragSVGEllipse, useDragSVGLine } from './dragSvg'
 
 export function useUndo(screenshot: HTMLCanvasElement, svg: SVGElement) {
   const ctx = screenshot.getContext('2d')!
@@ -36,7 +36,7 @@ export function useUndo(screenshot: HTMLCanvasElement, svg: SVGElement) {
       const parser = new DOMParser()
       const xmlDoc = parser.parseFromString(top.svg, 'image/svg+xml')
       svg.innerHTML = xmlDoc.documentElement.innerHTML
-      
+
       // 获取svg元素，重新绑定事件
       const lines = svg.querySelectorAll('polyline')
       lines.forEach((line) => {
@@ -56,6 +56,6 @@ export function useUndo(screenshot: HTMLCanvasElement, svg: SVGElement) {
   return {
     track,
     undo,
-    fallback
+    fallback,
   }
 }

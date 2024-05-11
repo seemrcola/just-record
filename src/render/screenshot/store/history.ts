@@ -37,6 +37,6 @@ export const useHistoryStore = defineStore('history', () => {
   const history = ref(new Stack())
 
   return {
-    history
+    history,
   }
 })
