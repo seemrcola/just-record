@@ -1,4 +1,5 @@
 import { useHistoryStore } from '../../store'
+import { useDragSVGLine, useDragSVGEllipse } from './dragSvg'
 
 export function useUndo(screenshot: HTMLCanvasElement, svg: SVGElement) {
   const ctx = screenshot.getContext('2d')!
@@ -6,27 +7,21 @@ export function useUndo(screenshot: HTMLCanvasElement, svg: SVGElement) {
 
   const historyStore = useHistoryStore()
 
-  function track(type: 'canvas' | 'svg' | 'both' = 'both') {
-    if (type === 'canvas') {
-      const dataUrl = screenshot.toDataURL()
-      historyStore.history.push({ canvas: dataUrl })
-    }
-    if (type === 'svg') {
-      const svgData = new XMLSerializer().serializeToString(svg)
-      historyStore.history.push({ svg: svgData })
-    }
-    if (type === 'both') {
-      const dataUrl = screenshot.toDataURL()
-      const svgData = new XMLSerializer().serializeToString(svg)
-      historyStore.history.push({ canvas: dataUrl, svg: svgData })
-    }
+  function track() {
+    const dataUrl = screenshot.toDataURL()
+    const svgData = new XMLSerializer().serializeToString(svg)
+    historyStore.history.push({ canvas: dataUrl, svg: svgData })
+  }
+
+  function fallback() {
+    historyStore.history.pop()
   }
 
   function undo() {
     const top = historyStore.history.top as any
     if (!top)
       return
-    
+
     historyStore.history.pop()
     if (top.canvas) {
       const img = new Image()
@@ -41,11 +36,26 @@ export function useUndo(screenshot: HTMLCanvasElement, svg: SVGElement) {
       const parser = new DOMParser()
       const xmlDoc = parser.parseFromString(top.svg, 'image/svg+xml')
       svg.innerHTML = xmlDoc.documentElement.innerHTML
+      
+      // 获取svg元素，重新绑定事件
+      const lines = svg.querySelectorAll('polyline')
+      lines.forEach((line) => {
+        useDragSVGLine(line, svg, { undo, fallback, track })
+      })
+      const ellipses = svg.querySelectorAll('ellipse')
+      ellipses.forEach((ellipse) => {
+        useDragSVGEllipse(ellipse, svg, { undo, fallback, track })
+      })
+      const rects = svg.querySelectorAll('rect')
+      rects.forEach((rect) => {
+        useDragSVGEllipse(rect, svg, { undo, fallback, track })
+      })
     }
   }
 
   return {
     track,
     undo,
+    fallback
   }
 }

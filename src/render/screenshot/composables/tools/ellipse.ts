@@ -1,4 +1,5 @@
 import { useToolsStore } from '../../store'
+import { useDragSVGEllipse } from './dragSvg'
 import { useUndo } from './undo'
 
 export function useDrawSVGEllipse(canvas: HTMLCanvasElement, svg: SVGElement) {
@@ -35,7 +36,7 @@ export function useDrawSVGEllipse(canvas: HTMLCanvasElement, svg: SVGElement) {
 
     svg.appendChild(svgEllipse)
 
-    undo.track('svg')
+    undo.track()
   }
 
   function mousemoveHandler(event: MouseEvent) {
@@ -65,7 +66,7 @@ export function useDrawSVGEllipse(canvas: HTMLCanvasElement, svg: SVGElement) {
       return
     }
 
-    useDragSVG(svgEllipse, svg, undo)
+    useDragSVGEllipse(svgEllipse, svg, undo)
   }
 
   function getColor() {
@@ -75,84 +76,5 @@ export function useDrawSVGEllipse(canvas: HTMLCanvasElement, svg: SVGElement) {
   return {
     startDrawEllipse,
     stopDrawEllipse,
-  }
-}
-
-function useDragSVG(
-  target: SVGElement,
-  parent: SVGElement,
-  undo: ReturnType<typeof useUndo>
-) {
-  let startFlag = false
-  let start = { x: 0, y: 0 }
-
-  let innerSvg = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse')
-
-  target.onmousedown = mousedownHandler
-  target.style.position = 'fixed'
-
-  function mousedownHandler(e: MouseEvent) {
-    e.stopPropagation()
-    startFlag = true
-
-    document.addEventListener('mousemove', mousemoveHandler)
-    document.addEventListener('mouseup', mouseupHandler)
-    start = { x: e.pageX, y: e.pageY }
-
-    undo.track('svg')
-
-    // 在椭圆中间描一个白色边框的椭圆
-    flagDrawing()
-  }
-
-  function mousemoveHandler(e: MouseEvent) {
-    e.stopPropagation()
-
-    if (!startFlag)
-      return
-
-    const { pageX, pageY } = e
-    const { x, y } = start
-    const deltaX = pageX - x
-    const deltaY = pageY - y
-
-    updatePolylinePoints(deltaX, deltaY, innerSvg)
-    updatePolylinePoints(deltaX, deltaY, target)
-
-    start = { x: pageX, y: pageY }
-  }
-
-  function mouseupHandler(e: MouseEvent) {
-    e.stopPropagation()
-    startFlag = false
-
-    innerSvg?.remove()
-    
-    document.removeEventListener('mousemove', mousemoveHandler)
-    document.removeEventListener('mouseup', mouseupHandler)
-  }
-
-  function flagDrawing() { 
-    innerSvg = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse')
-
-    const rx = target.getAttribute('rx') ?? '0'
-    const ry = target.getAttribute('ry') ?? '0'
-    const cx = target.getAttribute('cx') ?? '0'
-    const cy = target.getAttribute('cy') ?? '0'
-
-    innerSvg.setAttribute('rx', `${rx}`)
-    innerSvg.setAttribute('ry', `${ry}`)
-    innerSvg.setAttribute('cx', `${cx}`)
-    innerSvg.setAttribute('cy', `${cy}`)
-
-    innerSvg.setAttribute('style', 'fill:none;stroke:white;stroke-width:1')
-    parent.appendChild(innerSvg)
-   }
-
-  function updatePolylinePoints(dx: number, dy: number, ele: SVGElement) {
-    const x = Number.parseInt(ele.getAttribute('cx')!)
-    const y = Number.parseInt(ele.getAttribute('cy')!)
-    ele.setAttribute('cx', `${x + dx}`)
-    ele.setAttribute('cy', `${y + dy}`)
   }
 }

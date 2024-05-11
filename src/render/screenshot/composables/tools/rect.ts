@@ -1,5 +1,6 @@
 import { useToolsStore } from '../../store'
 import { useUndo } from './undo'
+import { useDragSVGRect } from './dragSvg'
 
 export function useDrawSVGRect(canvas: HTMLCanvasElement, svg: SVGElement) {
   let svgRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
@@ -21,6 +22,8 @@ export function useDrawSVGRect(canvas: HTMLCanvasElement, svg: SVGElement) {
   }
 
   function mousedownHandler(event: MouseEvent) {
+    undo.track()
+
     svgRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
 
     document.addEventListener('mousemove', mousemoveHandler)
@@ -34,8 +37,6 @@ export function useDrawSVGRect(canvas: HTMLCanvasElement, svg: SVGElement) {
     svgRect.setAttribute('y', `${start.y}`)
 
     svg.appendChild(svgRect)
-
-    undo.track('svg')
   }
 
   function mousemoveHandler(event: MouseEvent) {
@@ -71,7 +72,7 @@ export function useDrawSVGRect(canvas: HTMLCanvasElement, svg: SVGElement) {
       undo.undo()
       return 
     }
-    useDragSVG(svgRect, svg, undo)
+    useDragSVGRect(svgRect, svg, undo)
   }
 
   function getColor() {
@@ -81,83 +82,5 @@ export function useDrawSVGRect(canvas: HTMLCanvasElement, svg: SVGElement) {
   return {
     startDrawRect,
     stopDrawRect,
-  }
-}
-
-function useDragSVG(
-  target: SVGElement,
-  parent: SVGElement,
-  undo: ReturnType<typeof useUndo>
-) {
-  let startFlag = false
-  let start = { x: 0, y: 0 }
-  let innerSvg = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
-
-  target.onmousedown = mousedownHandler
-  target.style.position = 'fixed'
-
-  function mousedownHandler(e: MouseEvent) {
-    
-    e.stopPropagation()
-
-    startFlag = true
-    document.addEventListener('mousemove', mousemoveHandler)
-    document.addEventListener('mouseup', mouseupHandler)
-    start = { x: e.pageX, y: e.pageY }
-
-    undo.track('svg')
-
-    flagDrawing()
-  }
-
-  function mousemoveHandler(e: MouseEvent) {
-    e.stopPropagation()
-
-    if (!startFlag)
-      return
-
-    const { pageX, pageY } = e
-    const { x, y } = start
-    const deltaX = pageX - x
-    const deltaY = pageY - y
-
-    updatePolylinePoints(deltaX, deltaY, innerSvg)
-    updatePolylinePoints(deltaX, deltaY, target)
-
-    start = { x: pageX, y: pageY }
-  }
-
-  function mouseupHandler(e: MouseEvent) {
-    e.stopPropagation()
-    startFlag = false
-
-    innerSvg?.remove()
-
-    document.removeEventListener('mousemove', mousemoveHandler)
-    document.removeEventListener('mouseup', mouseupHandler)
-  }
-
-  function flagDrawing() { 
-    innerSvg = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
-
-    const x = target.getAttribute('x') || '0'
-    const y = target.getAttribute('y') || '0'
-    const width = target.getAttribute('width') || '0'
-    const height = target.getAttribute('height') || '0'
-
-    innerSvg.setAttribute('x', x)
-    innerSvg.setAttribute('y', y)
-    innerSvg.setAttribute('width', width)
-    innerSvg.setAttribute('height', height)
-
-    innerSvg.setAttribute('style', 'fill:none;stroke:white;stroke-width:1')
-    parent.appendChild(innerSvg)
-   }
-
-  function updatePolylinePoints(dx: number, dy: number, ele: SVGElement) {
-    const x = Number.parseInt(ele.getAttribute('x')!)
-    const y = Number.parseInt(ele.getAttribute('y')!)
-    ele.setAttribute('x', `${x + dx}`)
-    ele.setAttribute('y', `${y + dy}`)
   }
 }
