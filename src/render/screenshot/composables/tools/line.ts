@@ -43,7 +43,6 @@ export function useDrawSVGLine(canvas: HTMLCanvasElement, svg: SVGElement) {
     svg.appendChild(line)
     svg.appendChild(innerLine)
 
-    console.log('line undo')
     undo.track('svg')
   }
 
@@ -68,6 +67,14 @@ export function useDrawSVGLine(canvas: HTMLCanvasElement, svg: SVGElement) {
     document.removeEventListener('mouseup', mouseupHandler)
     points = []
     innerLine.remove()
+
+    // 如果线长度为0，则不画线
+    const pointsArray = line.getAttribute('points')!.split(' ')
+    if (pointsArray.length < 2) {
+      line.remove()
+      undo.undo()
+      return
+    }
 
     // 添加拖拽能力
     useDragSVG(line, svg, undo)

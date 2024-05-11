@@ -35,7 +35,6 @@ export function useDrawSVGRect(canvas: HTMLCanvasElement, svg: SVGElement) {
 
     svg.appendChild(svgRect)
 
-    console.log('rect undo')
     undo.track('svg')
   }
 
@@ -64,6 +63,14 @@ export function useDrawSVGRect(canvas: HTMLCanvasElement, svg: SVGElement) {
   function mouseupHandler(event: MouseEvent) {
     document.removeEventListener('mousemove', mousemoveHandler)
     document.removeEventListener('mouseup', mouseupHandler)
+    // 如果矩形的宽和高都为0，则删除该矩形
+    const w = svgRect.getAttribute('width') ?? '0'
+    const h = svgRect.getAttribute('height') ?? '0'
+    if(w === '0' && h === '0') {
+      svg.removeChild(svgRect)
+      undo.undo()
+      return 
+    }
     useDragSVG(svgRect, undo)
   }
 

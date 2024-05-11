@@ -89,7 +89,6 @@ export function useMosaic(canvas: HTMLCanvasElement, svg: SVGElement) {
     document.addEventListener('mousemove', mousemoveHanlder)
     document.addEventListener('mouseup', mouseupHanlder)
 
-    console.log('mosaic undo')
     undo.track('canvas')
   }
 

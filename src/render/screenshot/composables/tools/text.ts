@@ -56,6 +56,17 @@ export function useText(canvas: HTMLCanvasElement, svg: SVGElement) {
 
     div.addEventListener('blur', (e) => {
       const textContent = (e.target as HTMLDivElement).innerText
+      // 去掉空格和换行符
+      const t = textContent.replace(/\s+/g, ' ').replace(/[\n\r]/g, '')
+      if (t === '') { 
+        // 空文本不保存
+        textSvg.remove()
+        div?.remove()
+        // 撤销之前的操作
+        undo.undo()
+        return
+      }
+
       textSvg.setAttribute('fill', `${color}`)
       textSvg.setAttribute('font-size', `${size}`)
       const splitText = textContent.split('\n')

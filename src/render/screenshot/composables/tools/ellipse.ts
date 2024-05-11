@@ -35,7 +35,6 @@ export function useDrawSVGEllipse(canvas: HTMLCanvasElement, svg: SVGElement) {
 
     svg.appendChild(svgEllipse)
 
-    console.log('ellipse undo')
     undo.track('svg')
   }
 
@@ -56,6 +55,16 @@ export function useDrawSVGEllipse(canvas: HTMLCanvasElement, svg: SVGElement) {
   function mouseupHandler(event: MouseEvent) {
     document.removeEventListener('mousemove', mousemoveHandler)
     document.removeEventListener('mouseup', mouseupHandler)
+
+    // 如果rx ry均为0 则不画椭圆
+    const rx = svgEllipse.getAttribute('rx') ?? '0'
+    const ry = svgEllipse.getAttribute('ry') ?? '0'
+    if (rx === '0' && ry === '0') {
+      svg.removeChild(svgEllipse)
+      undo.undo()
+      return
+    }
+
     useDragSVG(svgEllipse, undo)
   }
 
