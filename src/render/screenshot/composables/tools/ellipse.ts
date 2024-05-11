@@ -43,14 +43,22 @@ export function useDrawSVGEllipse(canvas: HTMLCanvasElement, svg: SVGElement) {
     const x = (event.clientX - rect.left)
     const y = (event.clientY - rect.top)
 
-    const rx = abs(x - start.x)
-    const ry = abs(y - start.y)
-
-    svgEllipse.setAttribute('rx', `${rx}`)
-    svgEllipse.setAttribute('ry', `${ry}`)
     svgEllipse.setAttribute('stroke', getColor())
     svgEllipse.setAttribute('stroke-width', '3')
     svgEllipse.setAttribute('fill', 'none')
+
+    // 计算cx和cy 使我的鼠标开始点和结束点为外接矩形
+    const cx = (start.x + x) / 2
+    const cy = (start.y + y) / 2
+    svgEllipse.setAttribute('cx', `${cx}`)
+    svgEllipse.setAttribute('cy', `${cy}`)
+    // 处理rx和ry
+    const dx = abs(x - start.x)
+    const dy = abs(y - start.y)
+    const rx = abs(dx / 2)
+    const ry = abs(dy / 2)
+    svgEllipse.setAttribute('rx', `${rx}`)
+    svgEllipse.setAttribute('ry', `${ry}`)
   }
 
   function mouseupHandler(event: MouseEvent) {
