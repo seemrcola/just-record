@@ -71,7 +71,7 @@ export function useDrawSVGRect(canvas: HTMLCanvasElement, svg: SVGElement) {
       undo.undo()
       return 
     }
-    useDragSVG(svgRect, undo)
+    useDragSVG(svgRect, svg, undo)
   }
 
   function getColor() {
@@ -86,10 +86,12 @@ export function useDrawSVGRect(canvas: HTMLCanvasElement, svg: SVGElement) {
 
 function useDragSVG(
   target: SVGElement,
+  parent: SVGElement,
   undo: ReturnType<typeof useUndo>
 ) {
   let startFlag = false
   let start = { x: 0, y: 0 }
+  let innerSvg = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
 
   target.onmousedown = mousedownHandler
   target.style.position = 'fixed'
@@ -104,10 +106,11 @@ function useDragSVG(
     start = { x: e.pageX, y: e.pageY }
 
     undo.track('svg')
+
+    flagDrawing()
   }
 
   function mousemoveHandler(e: MouseEvent) {
-    
     e.stopPropagation()
 
     if (!startFlag)
@@ -117,19 +120,39 @@ function useDragSVG(
     const { x, y } = start
     const deltaX = pageX - x
     const deltaY = pageY - y
+
+    updatePolylinePoints(deltaX, deltaY, innerSvg)
     updatePolylinePoints(deltaX, deltaY, target)
 
     start = { x: pageX, y: pageY }
   }
 
   function mouseupHandler(e: MouseEvent) {
-    
     e.stopPropagation()
-
     startFlag = false
+
+    innerSvg?.remove()
+
     document.removeEventListener('mousemove', mousemoveHandler)
     document.removeEventListener('mouseup', mouseupHandler)
   }
+
+  function flagDrawing() { 
+    innerSvg = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
+
+    const x = target.getAttribute('x') || '0'
+    const y = target.getAttribute('y') || '0'
+    const width = target.getAttribute('width') || '0'
+    const height = target.getAttribute('height') || '0'
+
+    innerSvg.setAttribute('x', x)
+    innerSvg.setAttribute('y', y)
+    innerSvg.setAttribute('width', width)
+    innerSvg.setAttribute('height', height)
+
+    innerSvg.setAttribute('style', 'fill:none;stroke:white;stroke-width:1')
+    parent.appendChild(innerSvg)
+   }
 
   function updatePolylinePoints(dx: number, dy: number, ele: SVGElement) {
     const x = Number.parseInt(ele.getAttribute('x')!)
