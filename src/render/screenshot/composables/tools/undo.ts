@@ -1,5 +1,5 @@
 import { useHistoryStore } from '../../store'
-import { useDragSVGEllipse, useDragSVGLine } from './dragSvg'
+import { useDragSVGEllipse, useDragSVGLine, useDragSVGRect } from './dragSvg'
 
 export function useUndo(screenshot: HTMLCanvasElement, svg: SVGElement) {
   const ctx = screenshot.getContext('2d')!
@@ -48,7 +48,7 @@ export function useUndo(screenshot: HTMLCanvasElement, svg: SVGElement) {
       })
       const rects = svg.querySelectorAll('rect')
       rects.forEach((rect) => {
-        useDragSVGEllipse(rect, svg, { undo, fallback, track })
+        useDragSVGRect(rect, svg, { undo, fallback, track })
       })
     }
   }
