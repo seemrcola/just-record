@@ -73,13 +73,13 @@ window.useScreenshot.onScreenshotClosed(() => {
     body.removeChild(child)
     child = body.lastElementChild
   }
-
+  // 保证截图时不会受到背景颜色的影响
   const screenshot = document.querySelector('.screenshot-root') as HTMLDivElement
   screenshot.style.backgroundColor = 'rgba(0, 0, 0, 0)'
-
+  // 清除工具栏被激活的功能
   const toolsStore = useToolsStore()
   toolsStore.clear()
-
+  // 清除历史记录
   const historyStore = useHistoryStore()
   historyStore.history.clear()
 })
