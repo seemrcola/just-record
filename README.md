@@ -35,3 +35,4 @@ https://github.com/027xiguapi/pear-rec
 
 ### bug
 - 目前打包还存在问题  无法开启录制
+- 第一次使用electron win上一堆bug还没解决
