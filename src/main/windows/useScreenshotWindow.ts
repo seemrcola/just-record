@@ -68,7 +68,7 @@ export async function useScreenshotWindow() {
 
   if (process.env.VITE_DEV_SERVER_URL) {
     await childWindow.loadURL(`${url}screenshot.html`)
-    childWindow.webContents.openDevTools({ mode: 'right' })
+    childWindow.webContents.openDevTools({ mode: 'detach' })
   }
 
   else { await childWindow.loadFile(screenshotHtml) }

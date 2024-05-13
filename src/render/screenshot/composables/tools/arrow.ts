@@ -13,6 +13,7 @@ export function useDrawSVGArrow(canvas: HTMLCanvasElement, svg: SVGElement) {
 
   let start = { x: 0, y: 0 }
 
+  // fixme : 如何才能让箭头的颜色跟随主题色变化？
   defineMarker()
 
   function defineMarker() {
