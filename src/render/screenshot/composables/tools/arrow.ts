@@ -3,9 +3,10 @@ import { useUndo } from './undo'
 
 export function useDrawSVGArrow(canvas: HTMLCanvasElement, svg: SVGElement) {
   let svgArrow = document.createElementNS('http://www.w3.org/2000/svg', 'line')
-  let marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker')
   let polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon')
   let defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs')
+
+  let IDRandom = 0
 
   const toolsStore = useToolsStore()
   const undo = useUndo(canvas, svg)
@@ -13,15 +14,16 @@ export function useDrawSVGArrow(canvas: HTMLCanvasElement, svg: SVGElement) {
 
   let start = { x: 0, y: 0 }
 
-  // fixme : 如何才能让箭头的颜色跟随主题色变化？
-  defineMarker()
+  defineDefs()
 
-  function defineMarker() {
+  function defineDefs() {
     defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
     svg.appendChild(defs);
+  }
 
-    marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
-    marker.setAttribute('id', 'svgArrowhead');
+  function defineMarker(id: number) {
+    const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+    marker.setAttribute('id', `svgArrowhead${id}`);
     marker.setAttribute('markerWidth', '10');
     marker.setAttribute('markerHeight', '7');
     marker.setAttribute('refX', '0');
@@ -50,6 +52,9 @@ export function useDrawSVGArrow(canvas: HTMLCanvasElement, svg: SVGElement) {
     document.addEventListener('mousemove', mousemoveHandler)
     document.addEventListener('mouseup', mouseupHandler)
 
+    IDRandom = Math.floor(Date.now())
+    defineMarker(IDRandom)
+
     polygon.setAttribute('fill', `${getColor()}`);
 
     const { pageX, pageY } = event
@@ -60,7 +65,7 @@ export function useDrawSVGArrow(canvas: HTMLCanvasElement, svg: SVGElement) {
     svgArrow = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     svgArrow.setAttribute('stroke', `${getColor()}`);
     svgArrow.setAttribute('stroke-width', '2');
-    svgArrow.setAttribute('marker-end', 'url(#svgArrowhead)');
+    svgArrow.setAttribute('marker-end', `url(#svgArrowhead${IDRandom})`);
     svgArrow.setAttribute('x1', `${start.x}`);
     svgArrow.setAttribute('y1', `${start.y}`);
     svgArrow.setAttribute('x2', `${x}`);
