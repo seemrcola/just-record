@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue'
 import { useDragRect } from '../composables/dragRect'
 import { useDrawRect } from '../composables/drawRect'
 import { useResizeRect } from '../composables/resizeRect'
-import { useDownload, useDrawSVGEllipse, useDrawSVGLine, useDrawSVGRect, useMosaic, useSaveScreenshot, useText, useUndo } from '../composables/tools'
+import { useDownload, useDrawSVGEllipse, useDrawSVGLine, useDrawSVGRect, useDrawSVGArrow, useMosaic, useSaveScreenshot, useText, useUndo } from '../composables/tools'
 import { useResizeObserver } from '../composables/utils'
 import type { Mode, Position } from '../types/index.d'
 
@@ -12,6 +12,7 @@ import Pen from './Pen.vue'
 import Rect from './Rect.vue'
 import Ellipse from './Ellipse.vue'
 import Text from './Text.vue'
+import Arrow from './Arrow.vue'
 
 const mode = ref<Mode>('draw')
 let drag: ReturnType<typeof useDragRect>
@@ -27,6 +28,7 @@ let mosaic: ReturnType<typeof useMosaic>
 let drawRect: ReturnType<typeof useDrawSVGRect>
 let drawEllipse: ReturnType<typeof useDrawSVGEllipse>
 let text: ReturnType<typeof useText>
+let arrow: ReturnType<typeof useDrawSVGArrow>
 
 // 监听截图区域大小变化
 const observeSize = useResizeObserver(screenshot as any)
@@ -105,6 +107,14 @@ async function drawTextHandler() {
   text.startWriteText()
 }
 
+async function drawArrowHandler() {
+  upperSvg()
+  console.log(useDrawSVGArrow, '---')
+  arrow = await useDrawSVGArrow(screenshot.value!, editarea.value!)
+  stopAllTools()
+  arrow.startDrawArrow()
+}
+
 async function penHandler() {
   upperSvg()
   drawLine = useDrawSVGLine(screenshot.value!, editarea.value!)
@@ -125,6 +135,7 @@ async function stopAllTools() {
   drawRect?.stopDrawRect()
   drawEllipse?.stopDrawEllipse()
   text?.stopWriteText()
+  arrow?.stopDrawArrow()
 }
 
 function upperCanvas() {
@@ -172,9 +183,10 @@ onMounted(() => {
       <div flex @click.stop="changeToEditMode">
         <Ellipse @ellipse="drawEllipseHandler" />
         <Rect @rect="drawRectHandler" />
-        <Mosaic @mosaic="drawMosaicHanlder" />
+        <Arrow @arrow="drawArrowHandler" />
         <Text @text="drawTextHandler" />
         <Pen @pen="penHandler" />
+        <Mosaic @mosaic="drawMosaicHanlder" />
       </div>
       <div h-5 w-2px bg-gray mx-3 />
       <div flex>

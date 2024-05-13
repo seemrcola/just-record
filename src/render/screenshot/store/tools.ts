@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { Color, MosaicType, Size } from '../types'
 
-type ToolType = 'Mosaic' | 'Pen' | 'Rect' | 'Ellipse' | 'Text'
+type ToolType = 'Mosaic' | 'Pen' | 'Rect' | 'Ellipse' | 'Text' | 'Arrow'
 
 export const useToolsStore = defineStore('tools', () => {
   const showMosaicChoose = ref(false)
@@ -10,7 +10,8 @@ export const useToolsStore = defineStore('tools', () => {
   const showRectChoose = ref(false)
   const showEllipseChoose = ref(false)
   const showTextChoose = ref(false)
-  const showList = [showMosaicChoose, showPenChoose, showRectChoose, showEllipseChoose, showTextChoose]
+  const showArrowChoose = ref(false) 
+  const showList = [showMosaicChoose, showPenChoose, showRectChoose, showEllipseChoose, showTextChoose, showArrowChoose]
 
   // Mosaic
   const mosaicType = ref<MosaicType>('light')
@@ -45,6 +46,11 @@ export const useToolsStore = defineStore('tools', () => {
   function setTextSize(size: Size) {
     textSize.value = size
   }
+  // Arrow
+  const arrowColor = ref<Color>('red')
+  function setArrowColor(color: Color) {
+    arrowColor.value = color
+  }
 
   // Show Choose
   function changeShowChoose(type: ToolType) {
@@ -64,6 +70,9 @@ export const useToolsStore = defineStore('tools', () => {
         break
       case 'Text':
         showTextChoose.value = true
+        break
+      case 'Arrow':
+        showArrowChoose.value = true
         break
 
       default:
@@ -90,12 +99,15 @@ export const useToolsStore = defineStore('tools', () => {
     setTextColor,
     textSize,
     setTextSize,
+    arrowColor,
+    setArrowColor,
 
     showMosaicChoose,
     showPenChoose,
     showRectChoose,
     showEllipseChoose,
     showTextChoose,
+    showArrowChoose,
     changeShowChoose,
 
     clear,
