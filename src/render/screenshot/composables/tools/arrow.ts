@@ -4,7 +4,6 @@ import { useDragSVGLine } from './dragSvg'
 
 export function useDrawSVGArrow(canvas: HTMLCanvasElement, svg: SVGElement) {
   let svgArrow = document.createElementNS('http://www.w3.org/2000/svg', 'line')
-  let defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs')
 
   let IDRandom = 0
 
@@ -18,7 +17,7 @@ export function useDrawSVGArrow(canvas: HTMLCanvasElement, svg: SVGElement) {
   defineDefs()
 
   function defineDefs() {
-    defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs')
+    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs')
     svg.appendChild(defs)
   }
 
