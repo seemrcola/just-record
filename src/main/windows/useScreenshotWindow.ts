@@ -54,6 +54,7 @@ export async function useScreenshotWindow() {
       preload,
     },
   })
+  childWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
 
   // 设置窗口在所有工作区都可见
   childWindow.setVisibleOnAllWorkspaces(true)
@@ -68,7 +69,7 @@ export async function useScreenshotWindow() {
 
   if (process.env.VITE_DEV_SERVER_URL) {
     await childWindow.loadURL(`${url}screenshot.html`)
-    childWindow.webContents.openDevTools({ mode: 'right' })
+    childWindow.webContents.openDevTools({ mode: 'detach' })
   }
 
   else { await childWindow.loadFile(screenshotHtml) }

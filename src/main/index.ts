@@ -82,6 +82,7 @@ async function createWindow() {
       preload,
     },
   })
+  win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
 
   // recordWindow
   const recordWindow = await useRecordWindow()

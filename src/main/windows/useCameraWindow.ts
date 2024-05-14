@@ -44,6 +44,7 @@ export async function useCameraWindow() {
       preload,
     },
   })
+  childWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
 
   // 设置窗口在所有工作区都可见
   childWindow.setVisibleOnAllWorkspaces(true)
