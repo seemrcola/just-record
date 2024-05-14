@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue'
 import { useDragRect } from '../composables/dragRect'
 import { useDrawRect } from '../composables/drawRect'
 import { useResizeRect } from '../composables/resizeRect'
-import { useDownload, useDrawSVGEllipse, useDrawSVGLine, useDrawSVGRect, useDrawSVGArrow, useMosaic, useSaveScreenshot, useText, useUndo } from '../composables/tools'
+import { useDownload, useDrawSVGArrow, useDrawSVGEllipse, useDrawSVGLine, useDrawSVGRect, useMosaic, useSaveScreenshot, useText, useUndo } from '../composables/tools'
 import { useResizeObserver } from '../composables/utils'
 import type { Mode, Position } from '../types/index.d'
 

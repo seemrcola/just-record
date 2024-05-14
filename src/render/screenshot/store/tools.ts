@@ -10,7 +10,7 @@ export const useToolsStore = defineStore('tools', () => {
   const showRectChoose = ref(false)
   const showEllipseChoose = ref(false)
   const showTextChoose = ref(false)
-  const showArrowChoose = ref(false) 
+  const showArrowChoose = ref(false)
   const showList = [showMosaicChoose, showPenChoose, showRectChoose, showEllipseChoose, showTextChoose, showArrowChoose]
 
   // Mosaic

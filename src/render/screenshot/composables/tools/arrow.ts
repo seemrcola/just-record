@@ -17,25 +17,25 @@ export function useDrawSVGArrow(canvas: HTMLCanvasElement, svg: SVGElement) {
   defineDefs()
 
   function defineDefs() {
-    defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-    svg.appendChild(defs);
+    defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs')
+    svg.appendChild(defs)
   }
 
   function defineMarker(id: number) {
-    const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
-    marker.setAttribute('id', `svgArrowhead${id}`);
-    marker.setAttribute('markerWidth', '10');
-    marker.setAttribute('markerHeight', '7');
-    marker.setAttribute('refX', '0');
-    marker.setAttribute('refY', '3.5');
-    marker.setAttribute('orient', 'auto');
+    const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker')
+    marker.setAttribute('id', `svgArrowhead${id}`)
+    marker.setAttribute('markerWidth', '10')
+    marker.setAttribute('markerHeight', '7')
+    marker.setAttribute('refX', '0')
+    marker.setAttribute('refY', '3.5')
+    marker.setAttribute('orient', 'auto')
 
-    polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-    polygon.setAttribute('points', '0 0, 10 3.5, 0 7');
-    polygon.setAttribute('fill', `${getColor()}`);
+    polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon')
+    polygon.setAttribute('points', '0 0, 10 3.5, 0 7')
+    polygon.setAttribute('fill', `${getColor()}`)
 
-    marker.appendChild(polygon);
-    defs.appendChild(marker);
+    marker.appendChild(polygon)
+    defs.appendChild(marker)
   }
 
   function startDrawArrow() {
@@ -55,23 +55,23 @@ export function useDrawSVGArrow(canvas: HTMLCanvasElement, svg: SVGElement) {
     IDRandom = Math.floor(Date.now())
     defineMarker(IDRandom)
 
-    polygon.setAttribute('fill', `${getColor()}`);
+    polygon.setAttribute('fill', `${getColor()}`)
 
     const { pageX, pageY } = event
     const x = pageX - rect.left
     const y = pageY - rect.top
     start = { x, y }
 
-    svgArrow = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    svgArrow.setAttribute('stroke', `${getColor()}`);
-    svgArrow.setAttribute('stroke-width', '2');
-    svgArrow.setAttribute('marker-end', `url(#svgArrowhead${IDRandom})`);
-    svgArrow.setAttribute('x1', `${start.x}`);
-    svgArrow.setAttribute('y1', `${start.y}`);
-    svgArrow.setAttribute('x2', `${x}`);
-    svgArrow.setAttribute('y2', `${y}`);
+    svgArrow = document.createElementNS('http://www.w3.org/2000/svg', 'line')
+    svgArrow.setAttribute('stroke', `${getColor()}`)
+    svgArrow.setAttribute('stroke-width', '2')
+    svgArrow.setAttribute('marker-end', `url(#svgArrowhead${IDRandom})`)
+    svgArrow.setAttribute('x1', `${start.x}`)
+    svgArrow.setAttribute('y1', `${start.y}`)
+    svgArrow.setAttribute('x2', `${x}`)
+    svgArrow.setAttribute('y2', `${y}`)
 
-    svg.appendChild(svgArrow);
+    svg.appendChild(svgArrow)
   }
 
   function mousemoveHandler(event: MouseEvent) {
@@ -79,8 +79,8 @@ export function useDrawSVGArrow(canvas: HTMLCanvasElement, svg: SVGElement) {
     const x = pageX - rect.left
     const y = pageY - rect.top
 
-    svgArrow.setAttribute('x2', `${x}`);
-    svgArrow.setAttribute('y2', `${y}`);
+    svgArrow.setAttribute('x2', `${x}`)
+    svgArrow.setAttribute('y2', `${y}`)
   }
 
   function mouseupHandler(event: MouseEvent) {
