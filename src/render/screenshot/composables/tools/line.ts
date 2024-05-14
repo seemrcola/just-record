@@ -1,6 +1,6 @@
 import { useToolsStore } from '../../store'
 import { useUndo } from './undo'
-import { useDragSVGLine } from './dragSvg'
+import { useDragSVGPolyLine } from './dragSvg'
 
 export function useDrawSVGLine(canvas: HTMLCanvasElement, svg: SVGElement) {
   let line = document.createElementNS('http://www.w3.org/2000/svg', 'polyline')
@@ -78,7 +78,7 @@ export function useDrawSVGLine(canvas: HTMLCanvasElement, svg: SVGElement) {
     }
 
     // 添加拖拽能力
-    useDragSVGLine(line, svg, undo)
+    useDragSVGPolyLine(line, svg, undo)
   }
 
   function getColor() {

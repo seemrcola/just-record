@@ -1,9 +1,9 @@
 import { useToolsStore } from '../../store'
 import { useUndo } from './undo'
+import { useDragSVGLine } from './dragSvg'
 
 export function useDrawSVGArrow(canvas: HTMLCanvasElement, svg: SVGElement) {
   let svgArrow = document.createElementNS('http://www.w3.org/2000/svg', 'line')
-  let polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon')
   let defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs')
 
   let IDRandom = 0
@@ -14,6 +14,7 @@ export function useDrawSVGArrow(canvas: HTMLCanvasElement, svg: SVGElement) {
 
   let start = { x: 0, y: 0 }
 
+  // 定义箭头区域
   defineDefs()
 
   function defineDefs() {
@@ -24,18 +25,21 @@ export function useDrawSVGArrow(canvas: HTMLCanvasElement, svg: SVGElement) {
   function defineMarker(id: number) {
     const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker')
     marker.setAttribute('id', `svgArrowhead${id}`)
-    marker.setAttribute('markerWidth', '10')
-    marker.setAttribute('markerHeight', '7')
+    marker.setAttribute('markerWidth', '6')
+    marker.setAttribute('markerHeight', '4')
     marker.setAttribute('refX', '0')
-    marker.setAttribute('refY', '3.5')
+    marker.setAttribute('refY', '2')
     marker.setAttribute('orient', 'auto')
 
-    polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon')
-    polygon.setAttribute('points', '0 0, 10 3.5, 0 7')
+    const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon')
+    polygon.setAttribute('points', '0 0, 6 2, 0 4')
     polygon.setAttribute('fill', `${getColor()}`)
 
     marker.appendChild(polygon)
+    const defs = document.querySelector('defs')!
     defs.appendChild(marker)
+
+    console.log(defs, marker, svg)
   }
 
   function startDrawArrow() {
@@ -55,8 +59,6 @@ export function useDrawSVGArrow(canvas: HTMLCanvasElement, svg: SVGElement) {
     IDRandom = Math.floor(Date.now())
     defineMarker(IDRandom)
 
-    polygon.setAttribute('fill', `${getColor()}`)
-
     const { pageX, pageY } = event
     const x = pageX - rect.left
     const y = pageY - rect.top
@@ -64,7 +66,7 @@ export function useDrawSVGArrow(canvas: HTMLCanvasElement, svg: SVGElement) {
 
     svgArrow = document.createElementNS('http://www.w3.org/2000/svg', 'line')
     svgArrow.setAttribute('stroke', `${getColor()}`)
-    svgArrow.setAttribute('stroke-width', '2')
+    svgArrow.setAttribute('stroke-width', '4')
     svgArrow.setAttribute('marker-end', `url(#svgArrowhead${IDRandom})`)
     svgArrow.setAttribute('x1', `${start.x}`)
     svgArrow.setAttribute('y1', `${start.y}`)
@@ -86,6 +88,9 @@ export function useDrawSVGArrow(canvas: HTMLCanvasElement, svg: SVGElement) {
   function mouseupHandler(event: MouseEvent) {
     document.removeEventListener('mousemove', mousemoveHandler)
     document.removeEventListener('mouseup', mouseupHandler)
+
+    // 添加拖拽
+    useDragSVGLine(svgArrow, svg, undo)
   }
 
   function getColor() {

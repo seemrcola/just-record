@@ -22,7 +22,7 @@ function changeColor(color: Color) {
 <template>
   <div relative>
     <div
-      h-4 w-4 cursor-pointer px-2 py-1 i-mdi:checkbox-blank-circle-outline text-light
+      h-4 w-4 cursor-pointer px-2 py-1 i-mdi:ellipse-outline text-light
       :class="{ 'text-light': !store.showEllipseChoose, 'text-red': store.showEllipseChoose }"
       @mousedown.stop
       @click="pen"
@@ -39,7 +39,7 @@ function changeColor(color: Color) {
   left: 50%;
   bottom: -42px;
   padding: 6px 12px;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.5);
   transform: translateX(-50%);
   display: flex;
   align-items: center;

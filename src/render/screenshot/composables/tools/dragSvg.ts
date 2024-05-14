@@ -2,11 +2,97 @@ import type { useUndo } from './undo'
 
 export {
   useDragSVGLine,
+  useDragSVGPolyLine,
   useDragSVGEllipse,
   useDragSVGRect,
 }
 
 function useDragSVGLine(
+  target: SVGElement,
+  parent: SVGElement,
+  undo: ReturnType<typeof useUndo>,
+) {
+  let startFlag = false
+  let start = { x: 0, y: 0 }
+  let benchmark = { x: 0, y: 0 }
+
+  target.onmousedown = mousedownHandler
+  target.style.position = 'fixed'
+  let innerLine: SVGLineElement = document.createElementNS('http://www.w3.org/2000/svg', 'line')
+
+  function mousedownHandler(e: MouseEvent) {
+    undo.track()
+
+    e.stopPropagation()
+    startFlag = true
+
+    document.addEventListener('mousemove', mousemoveHandler)
+    document.addEventListener('mouseup', mouseupHandler)
+    start = { x: e.pageX, y: e.pageY }
+    benchmark = { x: e.pageX, y: e.pageY }
+
+    flagDrawing()
+  }
+
+  function mousemoveHandler(e: MouseEvent) {
+    e.stopPropagation()
+
+    if (!startFlag)
+      return
+
+    const { pageX, pageY } = e
+    const { x, y } = start
+    const deltaX = pageX - x
+    const deltaY = pageY - y
+
+    // 更新 line 的位置
+    updateLine(deltaX, deltaY, innerLine)
+    updateLine(deltaX, deltaY, target)
+
+    start = { x: pageX, y: pageY }
+  }
+
+  function mouseupHandler(e: MouseEvent) {
+    e.stopPropagation()
+    startFlag = false
+
+    innerLine?.remove()
+
+    document.removeEventListener('mousemove', mousemoveHandler)
+    document.removeEventListener('mouseup', mouseupHandler)
+
+    // 如果实际没有移动，则不记录 undo
+    if (benchmark.x === e.pageX && benchmark.y === e.pageY)
+      undo.fallback()
+  }
+
+  function flagDrawing() {
+    innerLine = document.createElementNS('http://www.w3.org/2000/svg', 'line')
+    innerLine.setAttribute('style', 'fill:none;stroke:white;stroke-width:1')
+    const x1 = target.getAttribute('x1') || '0'
+    const y1 = target.getAttribute('y1') || '0'
+    const x2 = target.getAttribute('x2') || '0'
+    const y2 = target.getAttribute('y2') || '0'
+    innerLine.setAttribute('x1', `${x1}`)
+    innerLine.setAttribute('y1', `${y1}`)
+    innerLine.setAttribute('x2', `${x2}`)
+    innerLine.setAttribute('y2', `${y2}`)
+    parent.appendChild(innerLine)
+  }
+
+  function updateLine(dx: number, dy: number, line: SVGElement) {
+    const x1 = Number.parseFloat(line.getAttribute('x1')!)
+    const y1 = Number.parseFloat(line.getAttribute('y1')!)
+    const x2 = Number.parseFloat(line.getAttribute('x2')!)
+    const y2 = Number.parseFloat(line.getAttribute('y2')!)
+    line.setAttribute('x1', `${x1 + dx}`)
+    line.setAttribute('y1', `${y1 + dy}`)
+    line.setAttribute('x2', `${x2 + dx}`)
+    line.setAttribute('y2', `${y2 + dy}`)
+  }
+}
+
+function useDragSVGPolyLine(
   target: SVGElement,
   parent: SVGElement,
   undo: ReturnType<typeof useUndo>,

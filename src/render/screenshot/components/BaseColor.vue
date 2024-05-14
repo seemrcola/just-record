@@ -22,8 +22,8 @@ function changeColor(color: Color) {
     <div w-6 h-4 mx-1 bg-yellow-5 :class="{ 'active-border': props.color === 'yellow' }" @click="changeColor('yellow')" />
     <div w-6 h-4 mx-1 bg-blue-5 :class="{ 'active-border': props.color === 'blue' }" @click="changeColor('blue')" />
     <div w-6 h-4 mx-1 bg-purple-5 :class="{ 'active-border': props.color === 'purple' }" @click="changeColor('purple')" />
-    <div w-6 h-4 mx-1 bg-light :class="{ 'active-border': props.color === 'light' }" @click="changeColor('light')" />
-    <div w-6 h-4 mx-1 bg-dark :class="{ 'active-border': props.color === 'dark' }" @click="changeColor('dark')" />
+    <div w-6 h-4 mx-1 bg-light :class="{ 'active-border': props.color === 'white' }" @click="changeColor('white')" />
+    <div w-6 h-4 mx-1 bg-dark :class="{ 'active-border': props.color === 'black' }" @click="changeColor('black')" />
   </div>
 </template>
 

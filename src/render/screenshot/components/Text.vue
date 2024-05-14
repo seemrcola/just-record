@@ -46,7 +46,7 @@ function changeColor(color: Color) {
   left: 50%;
   bottom: -42px;
   padding: 6px 12px;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.5);
   transform: translateX(-50%);
   display: flex;
   align-items: center;
