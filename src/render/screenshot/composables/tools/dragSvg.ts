@@ -16,6 +16,8 @@ function useDragSVGLine(
   let start = { x: 0, y: 0 }
   let benchmark = { x: 0, y: 0 }
 
+  target.style.cursor = 'pointer'
+
   target.onmousedown = mousedownHandler
   target.style.position = 'fixed'
   let innerLine: SVGLineElement = document.createElementNS('http://www.w3.org/2000/svg', 'line')
@@ -101,6 +103,8 @@ function useDragSVGPolyLine(
   let start = { x: 0, y: 0 }
   let benchmark = { x: 0, y: 0 }
 
+  target.style.cursor = 'pointer'
+
   target.onmousedown = mousedownHandler
   target.style.position = 'fixed'
   let innerLine: SVGPolylineElement = document.createElementNS('http://www.w3.org/2000/svg', 'polyline')
@@ -179,6 +183,8 @@ function useDragSVGEllipse(
   let startFlag = false
   let start = { x: 0, y: 0 }
   let benchmark = { x: 0, y: 0 }
+
+  target.style.cursor = 'pointer'
 
   let innerSvg = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse')
 
@@ -262,6 +268,8 @@ function useDragSVGRect(
   let startFlag = false
   let start = { x: 0, y: 0 }
   let benchmark = { x: 0, y: 0 }
+
+  target.style.cursor = 'pointer'
 
   let innerSvg = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
 
