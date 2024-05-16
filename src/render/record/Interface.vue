@@ -1,17 +1,12 @@
 <script setup lang="ts">
 import { nextTick, onMounted, onUnmounted, ref } from 'vue'
-import { useDialog } from 'naive-ui'
-import { db, useRecorder, useSvgRegion } from './composables'
-import Player from './components/Player.vue'
+import { useRecorder, useSvgRegion } from './composables'
 
 let stream: MediaStream | null
 let fileWritableStream: any
 let rectOptions: RecordOptions
 
 const isReplay = ref(false)
-const playUrl = ref('')
-
-const dialog = useDialog()
 
 onMounted(() => {
   init()
@@ -21,7 +16,6 @@ const recorder = useRecorder({
   startCallback: () => {},
   stopCallback: () => {},
   dataavailableCallback: (recordData: Blob) => {
-    db.addRecord('data-record', recordData)
     fileWritableStream?.write(recordData)
   },
 })
@@ -37,7 +31,6 @@ function init() {
       // 点击开始按钮之后要做一些准备工作
       onStartRecord: async (recordOptions: RecordOptions) => {
         rectOptions = recordOptions
-        await db.deleteRecord('data-record')
         if (rectOptions.fullScreen)
           await recordFullScreen()
         else
@@ -53,7 +46,7 @@ function init() {
           stream = null
           fileWritableStream = null
 
-          replay()
+          window.useRecord.hide()
         })
       },
       onStartRecordSuccess: async () => {
@@ -151,54 +144,13 @@ async function getDisplayStream() {
   return combinedStream
 }
 
-function replay() {
-  // 重新打开窗口 确保窗口打开
-  window.useRecord.show()
-  dialog.warning({
-    title: '🔔提示',
-    content: '录屏文件已保',
-    positiveText: '预览',
-    negativeText: '关闭',
-    onPositiveClick: () => {
-      setTimeout(async () => {
-        // 打开Player
-        isReplay.value = true
-
-        // 生成url
-        const allRecords = await db.getAllRecord('data-record')
-        const blob = new Blob(allRecords.map(record => record.data), { type: 'video/webm' })
-        const url = URL.createObjectURL(blob)
-        playUrl.value = url
-      }, 0)
-    },
-    onNegativeClick: () => {
-      setTimeout(() => {
-        closePlayer()
-      }, 200)
-    },
-  })
-}
-
-function closePlayer() {
-  isReplay.value = false
-  playUrl.value = ''
-  window.useRecord.hide()
-}
-
 window.useRecord.onRecordShow(async () => {})
 window.useRecord.onRecordHide(async () => {})
-
-let closeListener: (e: KeyboardEvent) => void
-window.addEventListener('keydown', closeListener = (e) => {
-  if (e.key === 'Escape')
-    closePlayer()
-})
 
 onUnmounted(() => {
   recorder?.endRecording()
   fileWritableStream?.close()
   fileWritableStream = null
-  window.removeEventListener('keydown', closeListener)
 })
 </script>
 
@@ -206,9 +158,6 @@ onUnmounted(() => {
   <div w-full h-full>
     <div v-show="!isReplay" id="the_mask_wrapper" w-full h-full flex-center bg-transparent class="mask">
     <!-- svg -->
-    </div>
-    <div v-show="isReplay" class="replay-mask mask" w-full h-full flex-center>
-      <Player v-if="playUrl" :url="playUrl" @close="closePlayer" />
     </div>
   </div>
 </template>
