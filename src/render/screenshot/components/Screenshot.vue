@@ -77,6 +77,10 @@ async function save() {
     window.useScreenshot.close()
 }
 
+async function isofix() {
+  
+}
+
 function undo() {
   const { undo } = useUndo(screenshot.value!, editarea.value!)
   undo()
@@ -191,6 +195,7 @@ onMounted(() => {
       <div flex>
         <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:undo-rounded text-light @click="undo" />
         <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:download text-light @click="download" />
+        <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:mic-external-off-outline text-light @click="isofix" ></div>
         <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:close text-red @click="close" />
         <div h-4 w-4 cursor-pointer px-2 py-1 i-charm:tick text-blue @click="save" />
       </div>

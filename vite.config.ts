@@ -70,6 +70,7 @@ export default defineConfig(({ command }) => {
           index: 'index.html',
           record: 'record.html',
           camera: 'camera.html',
+          image: 'image.html',
           screenshot: 'screenshot.html',
         },
       },

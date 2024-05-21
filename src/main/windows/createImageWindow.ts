@@ -1,7 +1,7 @@
 import { dirname, join } from 'node:path'
 import * as process from 'node:process'
 import { fileURLToPath } from 'node:url'
-import { BrowserWindow, screen, shell } from 'electron'
+import { BrowserWindow, shell } from 'electron'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -24,45 +24,32 @@ process.env.VITE_PUBLIC = process.env.VITE_DEV_SERVER_URL
 
 const preload = join(__dirname, '../preload/index.mjs')
 const url = process.env.VITE_DEV_SERVER_URL
-const recordHtml = join(process.env.DIST, 'record.html')
+const imageHtml = join(process.env.DIST, 'image.html')
 
-function getSize() {
-  const { size, scaleFactor } = screen.getPrimaryDisplay()
-  return [size.width * scaleFactor, size.height * scaleFactor]
+interface Config {
+  height: number  
+  width: number
+  x: number
+  y: number
 }
 
-export async function useRecordWindow() {
-  const [width, height] = getSize()
-
+export async function useCameraWindow(config: Config) {
   const childWindow = new BrowserWindow({
-    width,
-    height,
-    title: 'Record',
-    show: false,
+    width: config.width,
+    height: config.height,
+    title: 'Image',
+    x: config.x,
+    y: config.y,
 
-    // movable: false,
-    // frame: false,
-    // resizable: false,
-    // fullscreen: platform === 'win',
-    // transparent: true,
-    // simpleFullscreen: true,
-
-    movable: false, // 是否可移动
     frame: false, // 无边框窗口
-    resizable: false, // 窗口大小是否可调整
-    hasShadow: false, // 窗口是否有阴影
-    transparent: true, // 使窗口透明
-    autoHideMenuBar: true, // 自动隐藏菜单栏
-    useContentSize: true, // width 和 height 将设置为 web 页面的尺寸
-    fullscreenable: true, // 窗口是否可以进入全屏状态
-    fullscreen: true, // 窗口是否全屏
-    simpleFullscreen: true, // 在 macOS 上使用 pre-Lion 全屏
+    resizable: true, // 窗口大小是否可调整
+    hasShadow: true, // 窗口是否有阴影
+    transparent: false, // 使窗口透明
     webPreferences: {
       preload,
     },
   })
-
-  // 设置窗口在所有工作区都可见
+  // 窗口置顶
   childWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
 
   // 最上层
@@ -75,11 +62,11 @@ export async function useRecordWindow() {
   })
 
   if (process.env.VITE_DEV_SERVER_URL) {
-    await childWindow.loadURL(`${url}record.html`)
+    await childWindow.loadURL(`${url}image.html`)
     0 && childWindow.webContents.openDevTools({ mode: 'detach' })
   }
 
-  else { await childWindow.loadFile(recordHtml) }
+  else { await childWindow.loadFile(imageHtml) }
 
   return childWindow
 }

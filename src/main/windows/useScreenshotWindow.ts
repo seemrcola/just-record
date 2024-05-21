@@ -54,10 +54,10 @@ export async function useScreenshotWindow() {
       preload,
     },
   })
-  childWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
 
   // 设置窗口在所有工作区都可见
-  childWindow.setVisibleOnAllWorkspaces(true)
+  childWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+
   // 最上层
   childWindow.setAlwaysOnTop(true, 'screen-saver')
 
