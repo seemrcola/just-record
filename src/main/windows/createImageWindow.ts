@@ -26,14 +26,7 @@ const preload = join(__dirname, '../preload/index.mjs')
 const url = process.env.VITE_DEV_SERVER_URL
 const imageHtml = join(process.env.DIST, 'image.html')
 
-interface Config {
-  height: number  
-  width: number
-  x: number
-  y: number
-}
-
-export async function useCameraWindow(config: Config) {
+export async function useImageWindow(config: IsofixConfig) {
   const childWindow = new BrowserWindow({
     width: config.width,
     height: config.height,
@@ -63,7 +56,7 @@ export async function useCameraWindow(config: Config) {
 
   if (process.env.VITE_DEV_SERVER_URL) {
     await childWindow.loadURL(`${url}image.html`)
-    0 && childWindow.webContents.openDevTools({ mode: 'detach' })
+    childWindow.webContents.openDevTools({ mode: 'right' })
   }
 
   else { await childWindow.loadFile(imageHtml) }

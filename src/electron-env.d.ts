@@ -8,6 +8,14 @@ declare interface RecordOptions {
   fullScreen: boolean
 }
 
+declare interface IsofixConfig {
+  height: number
+  width: number
+  x: number
+  y: number
+  base64: string
+}
+
 declare namespace NodeJS {
   interface ProcessEnv {
     VSCODE_DEBUG?: 'true'
@@ -61,7 +69,13 @@ interface Window {
   useScreenshot: {
     'open': () => Promise<any>
     'close': () => Promise<any>
-    'onScreenshotOpened': (cb: (any) => void) => void
+    'onScreenshotOpened': (cb: (thumbnail: string) => void) => void
     'onScreenshotClosed': (cb: () => void) => void
+  }
+
+  useImage: {
+    'isofix': (config: IsofixConfig) => Promise<any>
+    'onIsofixFinished': (cb: (res: string) => void) => void
+    'close': () => Promise<any>
   }
 }

@@ -65,6 +65,38 @@ function handlePosMousedown(event: MouseEvent) {
   resize.startResize(event)
 }
 
+// 固钉功能 这个功能比较特殊 需要使用到另一个窗口 ----------------------------------
+async function isofix() {
+  const rect = screenshot.value!.getBoundingClientRect()!
+  const ctx = screenshot.value!.getContext('2d')!
+  const xml = new XMLSerializer().serializeToString(editarea.value!)
+  const svgUrl = `data:image/svg+xml;base64,${btoa(xml)}`
+  const img = new Image()
+  img.src = svgUrl
+  img.onload = () => {
+    // 考虑设备像素比例
+    const ratio = window.devicePixelRatio || 1
+    // 在绘制之前调整Canvas缩放
+    ctx.scale(ratio, ratio)
+    // 将 SVG 绘制到 Canvas 上，考虑缩放比
+    ctx.drawImage(img, 0, 0, rect.width / ratio, rect.height / ratio)
+    // 恢复 Canvas 缩放
+    ctx.scale(1 / ratio, 1 / ratio)
+    // 拿到img的base64
+    const base64 = screenshot.value!.toDataURL('image/png')
+
+    window.useImage.isofix({
+      width: rect.width,
+      height: rect.height,
+      x: rect.left,
+      y: rect.top,
+      base64: base64
+    })
+    window.useScreenshot.close()
+  }
+}
+// --------------------------------------------------------------------------
+
 async function download() {
   await useDownload(screenshot.value!, editarea.value!)
   // window.useScreenshot.close()
@@ -75,10 +107,6 @@ async function save() {
   const res = await saveHanlder.save()
   if (res)
     window.useScreenshot.close()
-}
-
-async function isofix() {
-  
 }
 
 function undo() {
@@ -162,7 +190,8 @@ onMounted(() => {
 <template>
   <div ref="rect" class="rect" @mousedown="handleRectMousedown">
     <!-- 这里是大小展示区域 -->
-    <div min-w="80px" select-none	 p-1 bg-dark-2 text-light text-sm rounded-sm absolute top--36px left-10px z-999 class="monospace">
+    <div min-w="80px" select-none p-1 bg-dark-2 text-light text-sm rounded-sm absolute top--36px left-10px z-999
+      class="monospace">
       {{ observeSize.width }} * {{ observeSize.height }}
     </div>
     <!-- 这里是截图区域 -->
@@ -193,9 +222,10 @@ onMounted(() => {
       </div>
       <div h-5 w-2px bg-gray mx-3 />
       <div flex>
+        <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:mic-external-off-outline text-light @click="isofix">
+        </div>
         <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:undo-rounded text-light @click="undo" />
         <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:download text-light @click="download" />
-        <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:mic-external-off-outline text-light @click="isofix" ></div>
         <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:close text-red @click="close" />
         <div h-4 w-4 cursor-pointer px-2 py-1 i-charm:tick text-blue @click="save" />
       </div>

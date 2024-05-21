@@ -13,6 +13,7 @@ import { useCameraDrag, useDrag } from './useDrag'
 import { useRecord } from './useRecord'
 import { useCamera } from './useCamera'
 import { useScreenshot } from './useScreenshot'
+import { useImage } from './useImage'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -102,6 +103,8 @@ async function createWindow() {
   useCamera(cameraWindow)
   // screenshot
   useScreenshot(screenshotWindow)
+  // image
+  useImage()
 
   if (process.env.VITE_DEV_SERVER_URL) {
     await win.loadURL(url)

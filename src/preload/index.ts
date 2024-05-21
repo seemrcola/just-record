@@ -4,6 +4,7 @@ import { useRecord } from './useRecord'
 import { useVersions } from './useVersions'
 import { useCamera } from './useCamera'
 import { useScreenshot } from './useScreenshot'
+import { useImage } from './useImage'
 import './ipcRender'
 
 // --------- Preload scripts loading ---------
@@ -40,3 +41,5 @@ useRecord()
 useCamera()
 // useScreenshot-----
 useScreenshot()
+// useImage----------
+useImage()
