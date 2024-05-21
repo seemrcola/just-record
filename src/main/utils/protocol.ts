@@ -39,7 +39,7 @@ export function protocolHandle() {
       )
 
       // 打印解码后的URL，以便调试。
-      console.log('decodedUrl', decodedUrl)
+      // console.log('decodedUrl', decodedUrl)
 
       // 根据操作系统平台，可能需要转换路径格式。
       // 如果是Windows平台，调用convertPath方法转换路径；否则，直接使用解码后的URL。
@@ -47,7 +47,7 @@ export function protocolHandle() {
         = process.platform === 'win32' ? convertPath(decodedUrl) : decodedUrl
 
       // 打印最终的文件路径，以便调试。
-      console.log('fullPath', fullPath)
+      // console.log('fullPath', fullPath)
 
       // 异步读取文件内容。
       const data = await fs.promises.readFile(fullPath)

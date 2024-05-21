@@ -32,7 +32,6 @@ export function useSaveScreenshot(screenshot: HTMLCanvasElement, svg: SVGElement
         }),
       ])
         .then(() => {
-          console.log('Image copied to clipboard')
           resolve(true)
         })
         .catch((error) => {

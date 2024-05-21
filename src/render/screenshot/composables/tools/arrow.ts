@@ -37,8 +37,6 @@ export function useDrawSVGArrow(canvas: HTMLCanvasElement, svg: SVGElement) {
     marker.appendChild(polygon)
     const defs = document.querySelector('defs')!
     defs.appendChild(marker)
-
-    console.log(defs, marker, svg)
   }
 
   function startDrawArrow() {

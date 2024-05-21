@@ -109,7 +109,6 @@ async function drawTextHandler() {
 
 async function drawArrowHandler() {
   upperSvg()
-  console.log(useDrawSVGArrow, '---')
   arrow = await useDrawSVGArrow(screenshot.value!, editarea.value!)
   stopAllTools()
   arrow.startDrawArrow()
@@ -159,7 +158,7 @@ onMounted(() => {
 <template>
   <div ref="rect" class="rect" @mousedown="handleRectMousedown">
     <!-- 这里是大小展示区域 -->
-    <div min-w="80px" p-1 bg-dark-2 text-light text-sm rounded-sm absolute top--36px left-10px z-999 class="monospace">
+    <div min-w="80px" select-none	 p-1 bg-dark-2 text-light text-sm rounded-sm absolute top--36px left-10px z-999 class="monospace">
       {{ observeSize.width }} * {{ observeSize.height }}
     </div>
     <!-- 这里是截图区域 -->
