@@ -43,7 +43,7 @@ export async function useImageWindow(config: IsofixConfig) {
     },
   })
   // 窗口置顶
-  childWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+  childWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true })
 
   // 最上层
   childWindow.setAlwaysOnTop(true, 'screen-saver')

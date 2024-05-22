@@ -1,4 +1,4 @@
-import { ipcMain, BrowserWindow } from 'electron'
+import { BrowserWindow, ipcMain } from 'electron'
 import { useImageWindow } from './windows/createImageWindow'
 
 export function useImage() {

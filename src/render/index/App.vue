@@ -28,10 +28,10 @@ function startTimer(status: boolean) {
   <Suspense>
     <div h-full flex items-center px-4>
       <RecordBar class="no-drag" />
-      <Timer class="no-drag"  ref="timer" h-28px w-160px mx-3 />
-      <Clock class="no-drag"  h-6 w-6 mr-3 @start-timer="startTimer" />
-      <Camera class="no-drag"  h-6 w-6 mr-3 />
-      <Screenshot class="no-drag"  h-5 w-5 />
+      <Timer ref="timer" class="no-drag" h-28px w-160px mx-3 />
+      <Clock class="no-drag" h-6 w-6 mr-3 @start-timer="startTimer" />
+      <Camera class="no-drag" h-6 w-6 mr-3 />
+      <Screenshot class="no-drag" h-5 w-5 />
     </div>
   </Suspense>
 </template>

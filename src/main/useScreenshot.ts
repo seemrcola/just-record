@@ -1,5 +1,4 @@
 import { BrowserWindow, desktopCapturer, ipcMain, screen } from 'electron'
-import { useImageWindow } from './windows/createImageWindow'
 
 const imgWinList = []
 

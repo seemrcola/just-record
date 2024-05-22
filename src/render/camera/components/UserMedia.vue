@@ -21,11 +21,11 @@ onMounted(() => {
 
 <template>
   <div class="video-container" w-full h-full bg-amber-500>
-    <video 
-      ref="video" 
+    <video
+      ref="video"
       w-full h-full rounded-full fixed z-max mirror
-      autoplay muted playsinline  
-      @click.stop 
+      autoplay muted playsinline
+      @click.stop
     />
   </div>
 </template>

@@ -4,10 +4,10 @@
 import { onMounted, ref } from 'vue'
 
 const props = defineProps({
-  x: {type: Number, default: 0},
-  y: {type: Number, default: 0},
-  width: {type: Number, default: 0},
-  height: {type: Number, default: 0},
+  x: { type: Number, default: 0 },
+  y: { type: Number, default: 0 },
+  width: { type: Number, default: 0 },
+  height: { type: Number, default: 0 },
 })
 
 const resizeWrapper = ref<HTMLDivElement | null>(null)
@@ -24,14 +24,14 @@ onMounted(() => {
 <template>
   <div ref="resizeWrapper" fixed z-max>
     <!-- 八个方位的点 -->
-    <div class="resize-point lt"></div>
-    <div class="resize-point rt"></div>
-    <div class="resize-point lb"></div>
-    <div class="resize-point rb"></div>
-    <div class="resize-point t"></div>
-    <div class="resize-point b"></div>
-    <div class="resize-point l"></div>
-    <div class="resize-point r"></div>
+    <div class="resize-point lt" />
+    <div class="resize-point rt" />
+    <div class="resize-point lb" />
+    <div class="resize-point rb" />
+    <div class="resize-point t" />
+    <div class="resize-point b" />
+    <div class="resize-point l" />
+    <div class="resize-point r" />
   </div>
 </template>
 

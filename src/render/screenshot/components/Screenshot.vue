@@ -75,7 +75,7 @@ async function isofix() {
   const img = new Image()
   img.src = svgUrl
   img.onload = () => {
-    const { width, height } = screenshot.value! 
+    const { width, height } = screenshot.value!
     // 考虑设备像素比例
     const ratio = window.devicePixelRatio || 1
     // 在绘制之前调整Canvas缩放
@@ -92,7 +92,7 @@ async function isofix() {
       height: rect.height,
       x: rect.left,
       y: rect.top,
-      base64: base64
+      base64,
     })
     window.useScreenshot.close()
   }
@@ -192,8 +192,10 @@ onMounted(() => {
 <template>
   <div ref="rect" class="rect" @mousedown="handleRectMousedown">
     <!-- 这里是大小展示区域 -->
-    <div min-w="80px" select-none p-1 bg-dark-2 text-light text-sm rounded-sm absolute top--36px left-10px z-999
-      class="monospace">
+    <div
+      min-w="80px" select-none p-1 bg-dark-2 text-light text-sm rounded-sm absolute top--36px left-10px z-999
+      class="monospace"
+    >
       {{ observeSize.width }} * {{ observeSize.height }}
     </div>
     <!-- 这里是截图区域 -->
@@ -224,8 +226,7 @@ onMounted(() => {
       </div>
       <div h-5 w-2px bg-gray mx-3 />
       <div flex>
-        <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:mic-external-off-outline text-light @click="isofix">
-        </div>
+        <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:mic-external-off-outline text-light @click="isofix" />
         <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:undo-rounded text-light @click="undo" />
         <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:download text-light @click="download" />
         <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:close text-red @click="close" />

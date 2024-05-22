@@ -32,7 +32,7 @@ interface Window {
     chrome: () => string
     electron: () => string
   }
-  
+
   // expose in the `electron/preload/useRecord.ts`
   useRecord: {
     'show': (flag: boolean = true) => Promise<any>

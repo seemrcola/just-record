@@ -14,7 +14,7 @@ export function useImage() {
 
     close: () => {
       return ipcRenderer.invoke('close')
-    }
+    },
   }
 
   contextBridge.exposeInMainWorld('useImage', api)
