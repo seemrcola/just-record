@@ -1,7 +1,5 @@
 import { BrowserWindow, desktopCapturer, ipcMain, screen } from 'electron'
 
-const imgWinList = []
-
 function getSize() {
   const { size, scaleFactor } = screen.getPrimaryDisplay()
   return [size.width * scaleFactor, size.height * scaleFactor]

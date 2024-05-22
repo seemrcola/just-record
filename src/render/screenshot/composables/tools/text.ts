@@ -27,6 +27,7 @@ export function useText(canvas: HTMLCanvasElement, svg: SVGElement) {
     textSvg = document.createElementNS('http://www.w3.org/2000/svg', 'text')
     textSvg.setAttribute('x', x.toString())
     textSvg.setAttribute('y', y.toString())
+    textSvg.setAttribute('style', 'user-select: none; pointer-events: none;')
     createInput(event.clientX, event.clientY, textSvg)
     // 将文本节点添加到svg中
     svg.appendChild(textSvg)
