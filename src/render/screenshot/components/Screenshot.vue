@@ -69,18 +69,20 @@ function handlePosMousedown(event: MouseEvent) {
 async function isofix() {
   const rect = screenshot.value!.getBoundingClientRect()!
   const ctx = screenshot.value!.getContext('2d')!
+
   const xml = new XMLSerializer().serializeToString(editarea.value!)
   const svgUrl = `data:image/svg+xml;base64,${btoa(xml)}`
   const img = new Image()
   img.src = svgUrl
   img.onload = () => {
+    const { width, height } = screenshot.value! 
     // 考虑设备像素比例
     const ratio = window.devicePixelRatio || 1
     // 在绘制之前调整Canvas缩放
     ctx.scale(ratio, ratio)
     // 将 SVG 绘制到 Canvas 上，考虑缩放比
-    ctx.drawImage(img, 0, 0, rect.width / ratio, rect.height / ratio)
-    // 恢复 Canvas 缩放
+    ctx.drawImage(img, 0, 0, width / ratio, height / ratio)
+    // // 恢复 Canvas 缩放
     ctx.scale(1 / ratio, 1 / ratio)
     // 拿到img的base64
     const base64 = screenshot.value!.toDataURL('image/png')
