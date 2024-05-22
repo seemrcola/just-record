@@ -32,13 +32,7 @@ interface Window {
     chrome: () => string
     electron: () => string
   }
-
-  // expose in the `electron/preload/useDrag.ts`
-  useDrag: {
-    'drag': (opt: { x: number, y: number }) => void
-    'camera:drag': (opt: { x: number, y: number }) => void
-  }
-
+  
   // expose in the `electron/preload/useRecord.ts`
   useRecord: {
     'show': (flag: boolean = true) => Promise<any>

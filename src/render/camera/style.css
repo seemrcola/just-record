@@ -8,6 +8,12 @@ html, body {
   padding: 0;
   overflow: hidden;
   border-radius: 50%;
+  user-select: none; /* 禁止文本选择以避免拖动时选中文字 */
+  -webkit-app-region: drag; /* 使该区域可拖动 */
+}
+
+.no-drag {
+  -webkit-app-region: no-drag; /* 使该区域不可拖动 */
 }
 
 #app {

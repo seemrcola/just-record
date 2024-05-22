@@ -5,7 +5,6 @@ const imgSrc = ref('')
 function close() {
   window.useImage.close()
 }
-console.log(window.useImage)
 window.useImage.onIsofixFinished((imgUrl: string) => {
   imgSrc.value = imgUrl
 })

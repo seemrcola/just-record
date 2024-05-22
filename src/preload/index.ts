@@ -1,5 +1,4 @@
 import { useLoading } from './useLoading'
-import { useDrag } from './useDrag'
 import { useRecord } from './useRecord'
 import { useVersions } from './useVersions'
 import { useCamera } from './useCamera'
@@ -33,8 +32,6 @@ setTimeout(removeLoading, 1000)
 
 // versions----------
 useVersions()
-// drag--------------
-useDrag()
 // record------------
 useRecord()
 // camera-----------

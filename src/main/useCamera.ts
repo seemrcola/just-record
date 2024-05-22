@@ -1,9 +1,10 @@
 import { BrowserWindow, ipcMain } from 'electron'
+import { useCameraWindow } from './windows/createCameraWindow'
 
-export function useCamera(win: BrowserWindow) {
-  ipcMain.handle('camera:open', () => {
-    win.show()
-    // 获取全部窗口
+export function useCamera() {
+  let win: BrowserWindow
+  ipcMain.handle('camera:open', async () => {
+    win = await useCameraWindow()
 
     const allWindows = BrowserWindow.getAllWindows()
     // 遍历窗口通知所有窗口已经打开摄像头
@@ -13,7 +14,7 @@ export function useCamera(win: BrowserWindow) {
   })
 
   ipcMain.handle('camera:close', () => {
-    win.hide()
+    win.destroy()
 
     const allWindows = BrowserWindow.getAllWindows()
     // 遍历窗口通知所有窗口已经打开摄像头

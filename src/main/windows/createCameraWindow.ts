@@ -31,14 +31,12 @@ export async function useCameraWindow() {
     width: 240,
     height: 240,
     title: 'Camera',
-    show: false,
     x: 200,
     y: 200,
 
-    movable: false, // 是否可移动
     frame: false, // 无边框窗口
     resizable: false, // 窗口大小是否可调整
-    hasShadow: false, // 窗口是否有阴影
+    hasShadow: true, // 窗口是否有阴影
     transparent: true, // 使窗口透明
     webPreferences: {
       preload,
