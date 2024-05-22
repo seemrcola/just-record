@@ -48,6 +48,9 @@ export async function useImageWindow(config: IsofixConfig) {
   // 最上层
   childWindow.setAlwaysOnTop(true, 'screen-saver')
 
+  // 缩放时维持比例
+  childWindow.setAspectRatio(config.width / config.height)
+
   childWindow.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith('https:'))
       shell.openExternal(url)
@@ -56,7 +59,7 @@ export async function useImageWindow(config: IsofixConfig) {
 
   if (process.env.VITE_DEV_SERVER_URL) {
     await childWindow.loadURL(`${url}image.html`)
-    childWindow.webContents.openDevTools({ mode: 'right' })
+    0 && childWindow.webContents.openDevTools({ mode: 'detach' })
   }
 
   else { await childWindow.loadFile(imageHtml) }
