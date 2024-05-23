@@ -6,7 +6,6 @@ export function useMosaic(canvas: HTMLCanvasElement, svg: SVGElement) {
   const undo = useUndo(canvas, svg)
 
   const ratio = window.devicePixelRatio
-  const mosaicRadius = 24
   // 获取到画布的rect
   const rect = canvas.getBoundingClientRect()
   // 拿到画布的上下文
@@ -97,6 +96,8 @@ export function useMosaic(canvas: HTMLCanvasElement, svg: SVGElement) {
     const x = (pageX - rect.left) * ratio
     const y = (pageY - rect.top) * ratio
 
+    const mosaicRadius = getMosaicSize()
+
     if (store.mosaicType === 'heavy')
       drawMosaicHeavily({ x, y }, mosaicRadius)
     if (store.mosaicType === 'light')
@@ -106,6 +107,17 @@ export function useMosaic(canvas: HTMLCanvasElement, svg: SVGElement) {
   function mouseupHanlder() {
     document.removeEventListener('mousemove', mousemoveHanlder)
     document.removeEventListener('mouseup', mouseupHanlder)
+  }
+
+  function getMosaicSize() {
+    if (store.mosaicSize === 'small') 
+      return 24
+    if (store.mosaicSize === 'medium') 
+      return 36
+    if (store.mosaicSize === 'large') 
+      return 48
+
+    return 24
   }
 
   return {

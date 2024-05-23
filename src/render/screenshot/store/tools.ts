@@ -15,8 +15,12 @@ export const useToolsStore = defineStore('tools', () => {
 
   // Mosaic
   const mosaicType = ref<MosaicType>('light')
+  const mosaicSize = ref<Size>('small')
   function setMosaicType(type: MosaicType) {
     mosaicType.value = type
+  }
+  function setMosaicSize(size: Size) {
+    mosaicSize.value = size
   }
   // Pen
   const penSize = ref<Size>('small')
@@ -86,6 +90,8 @@ export const useToolsStore = defineStore('tools', () => {
 
   return {
     mosaicType,
+    mosaicSize,
+    setMosaicSize,
     setMosaicType,
     penSize,
     setPenSize,

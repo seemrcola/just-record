@@ -1,5 +1,7 @@
 <script setup lang='ts'>
+import type { Size } from '../types'
 import { useToolsStore } from '../store'
+import BaseSize from './BaseSize.vue'
 
 const emits = defineEmits<{
   (e: 'mosaic'): void
@@ -15,6 +17,10 @@ function mosaic() {
   store.changeShowChoose('Mosaic')
   emits('mosaic')
 }
+
+function changeSize(size: Size) {
+  store.setMosaicSize(size)
+}
 </script>
 
 <template>
@@ -26,6 +32,8 @@ function mosaic() {
       @click="mosaic"
     />
     <div v-if="store.showMosaicChoose" class="choose">
+      <BaseSize :size="store.mosaicSize" @change-size="changeSize" />
+      <div h-4 mx-1 w-2px bg-gray />
       <div
         :class="{ 'bg-orange': store.mosaicType === 'light' }"
         i-mingcute:mosaic-line mx-2 text-light text-1.15rem
