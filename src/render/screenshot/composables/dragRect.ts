@@ -1,14 +1,16 @@
 import type { Ref } from 'vue'
+import { ref } from 'vue'
 import type { Mode } from '../types'
 import { useScreenshotStore } from '../store'
 import { useCanvas } from './utils'
+
 
 export function useDragRect(
   rectDOM: HTMLElement,
   screenshot: HTMLCanvasElement,
   mode: Ref<Mode>,
 ) {
-  let startFlag = false
+  let startFlag = ref(false)
   let start = { x: 0, y: 0 }
 
   const store = useScreenshotStore()
@@ -18,14 +20,14 @@ export function useDragRect(
   }
 
   function mousedownHandler(e: MouseEvent) {
-    startFlag = true
+    startFlag.value = true
     document.addEventListener('mousemove', mousemoveHandler)
     document.addEventListener('mouseup', mouseupHandler)
     start = { x: e.pageX, y: e.pageY }
   }
 
   function mousemoveHandler(e: MouseEvent) {
-    if (!startFlag)
+    if (!startFlag.value)
       return
     if (mode.value !== 'drag')
       return
@@ -56,7 +58,7 @@ export function useDragRect(
   }
 
   function mouseupHandler(e: MouseEvent) {
-    startFlag = false
+    startFlag.value = false
     document.removeEventListener('mousemove', mousemoveHandler)
     document.removeEventListener('mouseup', mouseupHandler)
 
@@ -72,5 +74,6 @@ export function useDragRect(
   return {
     startDrag,
     stopDrag,
+    startFlag,
   }
 }

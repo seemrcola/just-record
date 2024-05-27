@@ -1,5 +1,5 @@
 import type { Ref } from 'vue'
-import { createApp } from 'vue'
+import { createApp, ref } from 'vue'
 import Coord from '../components/Coord.vue'
 import type { Mode } from '../types'
 import { useScreenshotStore } from '../store'
@@ -10,7 +10,7 @@ export function useDrawRect(
   screenshot: HTMLCanvasElement,
   mode: Ref<Mode>,
 ) {
-  let startFlag = false
+  let startFlag = ref(false)
   let start = {
     x: 0,
     y: 0,
@@ -26,7 +26,7 @@ export function useDrawRect(
   }
 
   function mousedownHanlder(e: MouseEvent) {
-    startFlag = true
+    startFlag.value = true
     start = {
       x: e.pageX,
       y: e.pageY,
@@ -38,7 +38,7 @@ export function useDrawRect(
   }
 
   function mousemoveHanlder(e: MouseEvent) {
-    if (!startFlag)
+    if (!startFlag.value)
       return
     if (mode.value !== 'draw')
       return
@@ -62,7 +62,7 @@ export function useDrawRect(
   }
 
   function mouseupHanlder(e: MouseEvent) {
-    startFlag = false
+    startFlag.value = false
     document.removeEventListener('mousemove', mousemoveHanlder)
     document.removeEventListener('mouseup', mouseupHanlder)
     stopDraw()
@@ -96,5 +96,6 @@ export function useDrawRect(
   return {
     startDraw,
     stopDraw,
+    startFlag,
   }
 }

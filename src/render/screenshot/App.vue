@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { App } from 'vue'
 import { createApp, nextTick, onMounted, onUnmounted, ref } from 'vue'
-import Screenshot from './components/Screenshot.vue'
+import Screenshot from './components/index.vue'
 import { useHistoryStore, useScreenshotStore, useToolsStore } from './store'
 
 let img: HTMLImageElement

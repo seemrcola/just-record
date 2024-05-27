@@ -31,7 +31,6 @@ let drawEllipse: ReturnType<typeof useDrawSVGEllipse>
 let text: ReturnType<typeof useText>
 let arrow: ReturnType<typeof useDrawSVGArrow>
 
-
 // 监听工具栏的显示和隐藏 fixme: 这个写法是不是不够好 有没有不需要监听的写法
 let closeObserver: () => void
 function observeDOMDisplay(dom: HTMLElement) {
@@ -254,7 +253,12 @@ onUnmounted(() => {
       <div class="rb" data-pos="right-bottom" @mousedown="handlePosMousedown" />
     </div>
     <!-- 这里是功能区域 -->
-    <div ref='tools' bg-dark-2 shadow-light flex items-center class="tools">
+    <div 
+      ref='tools'
+      bg-dark-2 shadow-light flex items-center 
+      class="tools"
+      :class="{ 'visible-none': resize?.startFlag?.value || drag?.startFlag?.value || draw?.startFlag?.value }"
+    >
       <div flex @click.stop="changeToEditMode">
         <Ellipse @ellipse="drawEllipseHandler" />
         <Rect @rect="drawRectHandler" />
@@ -287,6 +291,10 @@ onUnmounted(() => {
   border-radius: 4px;
   position: absolute;
   z-index: 999;
+}
+
+.tools.visible-none {
+  visibility: hidden;
 }
 
 .box>div {

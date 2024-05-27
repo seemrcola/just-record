@@ -1,4 +1,5 @@
 import type { Ref } from 'vue'
+import { ref } from 'vue'
 import type { Mode, Position } from '../types'
 import { useScreenshotStore } from '../store'
 import { useCanvas } from './utils'
@@ -8,7 +9,7 @@ export function useResizeRect(
   screenshot: HTMLCanvasElement,
   mode: Ref<Mode>,
 ) {
-  let startFlag = false
+  let startFlag = ref(false)
   let dragMode: 'corner' | 'side' = 'corner'
   let pos: Position = 'left'
   let peerPoint = { x: 0, y: 0 }
@@ -21,7 +22,7 @@ export function useResizeRect(
   const side = ['top', 'bottom', 'left', 'right']
 
   function startResize(event: MouseEvent, position: Position) {
-    startFlag = true
+    startFlag.value = true
     pos = position
     start.x = event.pageX
     start.y = event.pageY
@@ -43,7 +44,7 @@ export function useResizeRect(
   }
 
   function mousemoveHanlder(event: MouseEvent) {
-    if (!startFlag)
+    if (!startFlag.value)
       return
     if (mode.value !== 'resize')
       return
@@ -109,7 +110,7 @@ export function useResizeRect(
   }
 
   function mouseupHanlder() {
-    startFlag = false
+    startFlag.value = false
     document.removeEventListener('mousemove', mousemoveHanlder)
     document.removeEventListener('mouseup', mouseupHanlder)
 
@@ -124,5 +125,6 @@ export function useResizeRect(
   return {
     startResize,
     stopResize,
+    startFlag,
   }
 }
