@@ -52,6 +52,5 @@ https://github.com/027xiguapi/pear-rec
 仅实现这个项目的其中一个小功能，即录制功能/截图功能。
 
 ### bug
-- 目前打包还存在问题  无法开启录制
 - 第一次使用electron win上一堆bug还没解决
 - 有时候固钉功能执行到将svg转base64时会报错 暂未找到复现方案
