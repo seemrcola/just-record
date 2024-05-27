@@ -9,7 +9,7 @@ export function useResizeRect(
   screenshot: HTMLCanvasElement,
   mode: Ref<Mode>,
 ) {
-  let startFlag = ref(false)
+  const startFlag = ref(false)
   let dragMode: 'corner' | 'side' = 'corner'
   let pos: Position = 'left'
   let peerPoint = { x: 0, y: 0 }

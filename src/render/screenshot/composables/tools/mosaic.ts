@@ -110,11 +110,11 @@ export function useMosaic(canvas: HTMLCanvasElement, svg: SVGElement) {
   }
 
   function getMosaicSize() {
-    if (store.mosaicSize === 'small') 
+    if (store.mosaicSize === 'small')
       return 24
-    if (store.mosaicSize === 'medium') 
+    if (store.mosaicSize === 'medium')
       return 36
-    if (store.mosaicSize === 'large') 
+    if (store.mosaicSize === 'large')
       return 48
 
     return 24

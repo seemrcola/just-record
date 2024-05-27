@@ -4,13 +4,12 @@ import type { Mode } from '../types'
 import { useScreenshotStore } from '../store'
 import { useCanvas } from './utils'
 
-
 export function useDragRect(
   rectDOM: HTMLElement,
   screenshot: HTMLCanvasElement,
   mode: Ref<Mode>,
 ) {
-  let startFlag = ref(false)
+  const startFlag = ref(false)
   let start = { x: 0, y: 0 }
 
   const store = useScreenshotStore()

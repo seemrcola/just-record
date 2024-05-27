@@ -13,5 +13,4 @@ export type Position
 // drag : 拖动状态
 // resize : 缩放状态
 // edit : 编辑状态
-export type Mode =  'init' | 'draw' | 'drag' | 'resize' | 'edit'
-
+export type Mode = 'init' | 'draw' | 'drag' | 'resize' | 'edit'

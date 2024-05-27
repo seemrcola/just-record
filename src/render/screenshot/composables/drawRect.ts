@@ -10,7 +10,7 @@ export function useDrawRect(
   screenshot: HTMLCanvasElement,
   mode: Ref<Mode>,
 ) {
-  let startFlag = ref(false)
+  const startFlag = ref(false)
   let start = {
     x: 0,
     y: 0,
