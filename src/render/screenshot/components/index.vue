@@ -14,7 +14,7 @@ import Ellipse from './Ellipse.vue'
 import Text from './Text.vue'
 import Arrow from './Arrow.vue'
 
-const mode = ref<Mode>('draw')
+const mode = ref<Mode>('init')
 let drag: ReturnType<typeof useDragRect>
 let draw: ReturnType<typeof useDrawRect>
 let resize: ReturnType<typeof useResizeRect>
@@ -31,10 +31,14 @@ let drawEllipse: ReturnType<typeof useDrawSVGEllipse>
 let text: ReturnType<typeof useText>
 let arrow: ReturnType<typeof useDrawSVGArrow>
 
+// 为了解决一开始的时候tools就显示的问题 fixme 有没有更好的办法
+let toolsFirstShow = ref(true)
+
 // 监听工具栏的显示和隐藏 fixme: 这个写法是不是不够好 有没有不需要监听的写法
 let closeObserver: () => void
 function observeDOMDisplay(dom: HTMLElement) {
   const observer = new MutationObserver(() => {
+    toolsFirstShow.value = false
     // 获取到工具栏的rect
     const toolsRect = tools.value!.getBoundingClientRect()
     // 获取到截图区域的rect
@@ -221,8 +225,13 @@ onMounted(() => {
   draw.startDraw()
   drag.startDrag()
 
+  // 当这个页面出现的时候，进入draw模式
+  mode.value = 'draw'
+
   // 处理工具栏的位置 不让它超出屏幕
   closeObserver = observeDOMDisplay(rect.value!)
+
+  console.log(resize.startFlag.value, drag.startFlag.value, draw.startFlag.value, '---')
 })
 
 onUnmounted(() => {
@@ -262,7 +271,7 @@ onUnmounted(() => {
       ref="tools"
       bg-dark-2 shadow-light flex items-center
       class="tools"
-      :class="{ 'visible-none': resize?.startFlag?.value || drag?.startFlag?.value || draw?.startFlag?.value }"
+      :class="{ 'visible-none': toolsFirstShow || resize?.startFlag?.value || drag?.startFlag?.value || draw?.startFlag?.value }"
     >
       <div flex @click.stop="changeToEditMode">
         <Ellipse @ellipse="drawEllipseHandler" />
