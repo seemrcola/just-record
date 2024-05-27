@@ -1,5 +1,5 @@
 <script setup lang='ts'>
-import { onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { useDragRect } from '../composables/dragRect'
 import { useDrawRect } from '../composables/drawRect'
 import { useResizeRect } from '../composables/resizeRect'
@@ -14,14 +14,15 @@ import Ellipse from './Ellipse.vue'
 import Text from './Text.vue'
 import Arrow from './Arrow.vue'
 
-const mode = ref<Mode>('init')
+const mode = ref<Mode>('draw')
 let drag: ReturnType<typeof useDragRect>
 let draw: ReturnType<typeof useDrawRect>
 let resize: ReturnType<typeof useResizeRect>
-const position = ref<Position>('left')
+let position: Position = 'left'
 const screenshot = ref<HTMLCanvasElement>()
 const rect = ref<HTMLDivElement>()
 const editarea = ref<SVGSVGElement>()
+const tools = ref<HTMLDivElement>()
 
 let drawLine: ReturnType<typeof useDrawSVGLine>
 let mosaic: ReturnType<typeof useMosaic>
@@ -30,6 +31,33 @@ let drawEllipse: ReturnType<typeof useDrawSVGEllipse>
 let text: ReturnType<typeof useText>
 let arrow: ReturnType<typeof useDrawSVGArrow>
 
+
+// 监听工具栏的显示和隐藏 fixme: 这个写法是不是不够好 有没有不需要监听的写法
+let closeObserver: () => void
+function observeDOMDisplay(dom: HTMLElement) {
+  const observer = new MutationObserver(() => {
+    // 获取到工具栏的rect
+    const toolsRect = tools.value!.getBoundingClientRect()
+    // 获取到截图区域的rect
+    const rectRect = rect.value!.getBoundingClientRect()
+    const offsetTop = rectRect.top + rectRect.height + toolsRect.height
+    // 是否超出屏幕
+    const ifOutOfScreen = offsetTop >= window.innerHeight
+    if (ifOutOfScreen) {
+      // 超出屏幕则将工具栏固定在右下角
+      tools.value!.style.right = '0'
+      tools.value!.style.bottom = '0'
+    } else {
+      // 未超出屏幕则将工具栏恢复原状
+      tools.value!.style.right = '0'
+      tools.value!.style.bottom = '-36px'
+    }
+  })
+  observer.observe(dom, { attributes: true, attributeFilter: ['style'] })
+  // 关闭监听
+  return () => observer.disconnect()
+}
+
 // 监听截图区域大小变化
 const observeSize = useResizeObserver(screenshot as any)
 
@@ -37,8 +65,7 @@ const observeSize = useResizeObserver(screenshot as any)
 function handleRectMousedown(event: MouseEvent) {
   event.stopPropagation()
   // 如果是编辑状态 则不进入drag模式
-  if (mode.value === 'edit')
-    return
+  if (mode.value === 'edit') return
   mode.value = 'drag'
 }
 
@@ -46,6 +73,10 @@ function handleRectMousedown(event: MouseEvent) {
 function changeToEditMode() {
   // mode 改动
   mode.value = 'edit'
+  // 清除draw和drag和resize的监听
+  draw.stopDraw()
+  drag.stopDrag()
+  resize.stopResize()
   // svg 初始化宽高 预备编辑
   const rect = screenshot.value!.getBoundingClientRect()!
   editarea.value!.setAttribute('width', `${rect.width}px`)
@@ -59,10 +90,9 @@ function handlePosMousedown(event: MouseEvent) {
   event.stopPropagation()
   mode.value = 'resize'
   const posDOM = event.target as HTMLElement
-  position.value = posDOM.dataset.pos as Position
-
-  resize = useResizeRect(rect.value!, screenshot.value!, mode, position)
-  resize.startResize(event)
+  position = posDOM.dataset.pos as Position
+ 
+  resize.startResize(event, position)
 }
 
 // 固钉功能 这个功能比较特殊 需要使用到另一个窗口 ----------------------------------
@@ -184,21 +214,27 @@ function upperSvg() {
 onMounted(() => {
   draw = useDrawRect(rect.value!, screenshot.value!, mode)
   drag = useDragRect(rect.value!, screenshot.value!, mode)
+  resize = useResizeRect(rect.value!, screenshot.value!, mode)
+
   draw.startDraw()
   drag.startDrag()
 
-  // 当这个页面出现 就表示 开始绘制
-  mode.value = 'draw'
+  // 处理工具栏的位置 不让它超出屏幕
+  closeObserver = observeDOMDisplay(rect.value!)
+})
+
+onUnmounted(() => {
+  drag.stopDrag()
+  draw.stopDraw()
+  closeObserver()
 })
 </script>
 
 <template>
   <div ref="rect" class="rect" @mousedown="handleRectMousedown">
     <!-- 这里是大小展示区域 -->
-    <div
-      min-w="80px" select-none p-1 bg-dark-2 text-light text-sm rounded-sm absolute top--36px left-10px z-999
-      class="monospace"
-    >
+    <div min-w="80px" select-none p-1 bg-dark-2 text-light text-sm rounded-sm absolute top--36px left-10px z-999
+      class="monospace">
       {{ observeSize.width }} * {{ observeSize.height }}
     </div>
     <!-- 这里是截图区域 -->
@@ -218,7 +254,7 @@ onMounted(() => {
       <div class="rb" data-pos="right-bottom" @mousedown="handlePosMousedown" />
     </div>
     <!-- 这里是功能区域 -->
-    <div bg-dark-2 shadow-light flex items-center class="tools" v-show="mode === 'init'">
+    <div ref='tools' bg-dark-2 shadow-light flex items-center class="tools">
       <div flex @click.stop="changeToEditMode">
         <Ellipse @ellipse="drawEllipseHandler" />
         <Rect @rect="drawRectHandler" />
@@ -250,8 +286,6 @@ onMounted(() => {
   padding: 4px 12px;
   border-radius: 4px;
   position: absolute;
-  bottom: -36px;
-  right: 0;
   z-index: 999;
 }
 

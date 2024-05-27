@@ -43,6 +43,8 @@ export function useDrawRect(
     if (mode.value !== 'draw')
       return
 
+    console.log('mousemove', '我是draw，我在执行')
+
     const { abs } = Math
     const { pageX, pageY } = e
 
@@ -70,6 +72,8 @@ export function useDrawRect(
 
   function stopDraw() {
     document.removeEventListener('mousedown', mousedownHanlder)
+    document.removeEventListener('mousemove', mousemoveHanlder)
+    document.removeEventListener('mouseup', mouseupHanlder)
     clearComponent()
   }
 

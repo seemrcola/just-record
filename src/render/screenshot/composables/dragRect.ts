@@ -30,6 +30,8 @@ export function useDragRect(
     if (mode.value !== 'drag')
       return
 
+    console.log('mousemove', '我是drag , 我在执行')
+
     const { pageX, pageY } = e
     const { x, y } = start
     const deltaX = pageX - x
@@ -62,7 +64,9 @@ export function useDragRect(
   }
 
   function stopDrag() {
-    document.removeEventListener('mousedown', mousedownHandler)
+    rectDOM.removeEventListener('mousedown', mousedownHandler)
+    document.removeEventListener('mousemove', mousemoveHandler)
+    document.removeEventListener('mouseup', mouseupHandler)
   }
 
   return {
