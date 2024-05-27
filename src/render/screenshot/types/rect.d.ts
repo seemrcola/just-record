@@ -8,4 +8,10 @@ export type Position
   | 'top'
   | 'bottom'
 
-export type Mode = 'drag' | 'draw' | 'resize' | 'edit'
+// init : 初始状态
+// draw : 绘制状态
+// drag : 拖动状态
+// resize : 缩放状态
+// edit : 编辑状态
+export type Mode =  'init' | 'draw' | 'drag' | 'resize' | 'edit'
+

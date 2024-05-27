@@ -14,7 +14,7 @@ import Ellipse from './Ellipse.vue'
 import Text from './Text.vue'
 import Arrow from './Arrow.vue'
 
-const mode = ref<Mode>('draw')
+const mode = ref<Mode>('init')
 let drag: ReturnType<typeof useDragRect>
 let draw: ReturnType<typeof useDrawRect>
 let resize: ReturnType<typeof useResizeRect>
@@ -186,6 +186,9 @@ onMounted(() => {
   drag = useDragRect(rect.value!, screenshot.value!, mode)
   draw.startDraw()
   drag.startDrag()
+
+  // 当这个页面出现 就表示 开始绘制
+  mode.value = 'draw'
 })
 </script>
 
@@ -215,7 +218,7 @@ onMounted(() => {
       <div class="rb" data-pos="right-bottom" @mousedown="handlePosMousedown" />
     </div>
     <!-- 这里是功能区域 -->
-    <div bg-dark-2 shadow-light flex items-center class="tools">
+    <div bg-dark-2 shadow-light flex items-center class="tools" v-show="mode === 'init'">
       <div flex @click.stop="changeToEditMode">
         <Ellipse @ellipse="drawEllipseHandler" />
         <Rect @rect="drawRectHandler" />

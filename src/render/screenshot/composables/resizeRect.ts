@@ -109,6 +109,8 @@ export function useResizeRect(
     startFlag = false
     document.removeEventListener('mousemove', mousemoveHanlder)
     document.removeEventListener('mouseup', mouseupHanlder)
+
+    mode.value = 'init'
   }
 
   return {

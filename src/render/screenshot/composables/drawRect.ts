@@ -64,6 +64,8 @@ export function useDrawRect(
     document.removeEventListener('mousemove', mousemoveHanlder)
     document.removeEventListener('mouseup', mouseupHanlder)
     stopDraw()
+
+    mode.value = 'init'
   }
 
   function stopDraw() {

@@ -57,6 +57,8 @@ export function useDragRect(
     startFlag = false
     document.removeEventListener('mousemove', mousemoveHandler)
     document.removeEventListener('mouseup', mouseupHandler)
+
+    mode.value = 'init'
   }
 
   function stopDrag() {
