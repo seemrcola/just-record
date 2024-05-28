@@ -3,9 +3,20 @@ import { onMounted, onUnmounted, ref } from 'vue'
 import { useDragRect } from '../composables/dragRect'
 import { useDrawRect } from '../composables/drawRect'
 import { useResizeRect } from '../composables/resizeRect'
-import { useDownload, useDrawSVGArrow, useDrawSVGEllipse, useDrawSVGLine, useDrawSVGRect, useMosaic, useSaveScreenshot, useText, useUndo } from '../composables/tools'
 import { useResizeObserver } from '../composables/utils'
 import type { Mode, Position } from '../types/index.d'
+import { 
+  useDownload, 
+  useDrawSVGArrow, 
+  useDrawSVGEllipse, 
+  useDrawSVGLine, 
+  useDrawSVGRect, 
+  useMosaic, 
+  useSaveScreenshot, 
+  useText, 
+  useUndo 
+} from '../composables/tools'
+
 
 import Mosaic from './Mosaic.vue'
 import Pen from './Pen.vue'
@@ -244,10 +255,8 @@ onUnmounted(() => {
 <template>
   <div ref="rect" class="rect" @mousedown="handleRectMousedown">
     <!-- 这里是大小展示区域 -->
-    <div
-      min-w="80px" select-none p-1 bg-dark-2 text-light text-sm rounded-sm absolute top--36px left-10px z-999
-      class="monospace"
-    >
+    <div min-w="80px" select-none p-1 bg-dark-2 text-light text-sm rounded-sm absolute top--36px left-10px z-999
+      class="monospace">
       {{ observeSize.width }} * {{ observeSize.height }}
     </div>
     <!-- 这里是截图区域 -->
@@ -267,12 +276,13 @@ onUnmounted(() => {
       <div class="rb" data-pos="right-bottom" @mousedown="handlePosMousedown" />
     </div>
     <!-- 这里是功能区域 -->
-    <div
-      ref="tools"
-      bg-dark-2 shadow-light flex items-center
-      class="tools"
-      :class="{ 'visible-none': toolsFirstShow || resize?.startFlag?.value || drag?.startFlag?.value || draw?.startFlag?.value }"
-    >
+    <div ref="tools" bg-dark-2 shadow-light flex items-center class="tools" :class="{
+    'visible-none':
+      toolsFirstShow ||
+      resize?.startFlag?.value ||
+      drag?.startFlag?.value ||
+      draw?.startFlag?.value
+  }">
       <div flex @click.stop="changeToEditMode">
         <Ellipse @ellipse="drawEllipseHandler" />
         <Rect @rect="drawRectHandler" />
