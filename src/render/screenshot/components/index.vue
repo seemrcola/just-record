@@ -3,7 +3,7 @@ import { onMounted, onUnmounted, ref } from 'vue'
 import { useDragRect } from '../composables/dragRect'
 import { useDrawRect } from '../composables/drawRect'
 import { useResizeRect } from '../composables/resizeRect'
-import { useResizeObserver } from '../composables/utils'
+import { useResizeObserver, betterBtoa } from '../composables/utils'
 import type { Mode, Position } from '../types/index.d'
 import { 
   useDownload, 
@@ -117,7 +117,7 @@ async function isofix() {
   const ctx = screenshot.value!.getContext('2d')!
 
   const xml = new XMLSerializer().serializeToString(editarea.value!)
-  const svgUrl = `data:image/svg+xml;base64,${btoa(xml)}`
+  const svgUrl = `data:image/svg+xml;base64,${betterBtoa(xml)}`
   const img = new Image()
   img.src = svgUrl
   img.onload = () => {

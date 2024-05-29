@@ -9,7 +9,7 @@ export function useMosaic(canvas: HTMLCanvasElement, svg: SVGElement) {
   // 获取到画布的rect
   const rect = canvas.getBoundingClientRect()
   // 拿到画布的上下文
-  const ctx = canvas.getContext('2d')!
+  const ctx = canvas.getContext('2d', { willReadFrequently: true })!
 
   // 定义一个函数，用于绘制马赛克(可以重涂)
   function drawMosaicHeavily(point: { x: number, y: number }, size: number) {
@@ -51,6 +51,7 @@ export function useMosaic(canvas: HTMLCanvasElement, svg: SVGElement) {
   function getMosaicColor(point: { x: number, y: number }, size: number) {
     // 计算出马赛克的颜色值
     // 获取正方形区域的像素数据
+    // willReadFrequently设置为true，会缓存该区域的像素数据，提升性能
     const imageData = ctx.getImageData(point.x, point.y, size, size)
     const data = imageData.data
 
