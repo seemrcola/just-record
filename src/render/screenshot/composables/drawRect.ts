@@ -26,6 +26,7 @@ export function useDrawRect(
   }
 
   function mousedownHanlder(e: MouseEvent) {
+    console.log('----------------mousedown')
     startFlag.value = true
     start = {
       x: e.pageX,
@@ -50,6 +51,8 @@ export function useDrawRect(
 
     const width = abs(pageX - start.x)
     const height = abs(pageY - start.y)
+    console.log(start.x, start.y, pageX, pageY)
+    console.log('width', width, 'height', height)
     const x = Math.min(start.x, pageX)
     const y = Math.min(start.y, pageY)
 

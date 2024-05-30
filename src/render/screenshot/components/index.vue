@@ -261,8 +261,8 @@ onUnmounted(() => {
     </div>
     <!-- 这里是截图区域 -->
     <div>
-      <canvas ref="screenshot" fixed />
-      <svg ref="editarea" fixed />
+      <canvas w-0 h-0 ref="screenshot" fixed />
+      <svg w-0 h-0 ref="editarea" fixed />
     </div>
     <!-- 这里是缩放区域 -->
     <div v-if="mode !== 'edit'" class="box">
