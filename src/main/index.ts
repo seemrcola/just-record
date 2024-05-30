@@ -65,8 +65,8 @@ async function createWindow() {
   win = new BrowserWindow({
     width: 340,
     height: 42,
-    x: width - 240,
-    y: 100,
+    // x: width - 240,
+    // y: 100,
     title: 'User Recorder',
     alwaysOnTop: true,
     show: true,
