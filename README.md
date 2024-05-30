@@ -53,4 +53,3 @@ https://github.com/027xiguapi/pear-rec
 
 ### bug
 - 第一次使用electron win上一堆bug还没解决
-- 有时候固钉功能执行到将svg转base64时会报错 暂未找到复现方案
