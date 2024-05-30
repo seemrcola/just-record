@@ -50,22 +50,25 @@ let closeObserver: () => void
 function observeDOMDisplay(dom: HTMLElement) {
   const observer = new MutationObserver(() => {
     toolsFirstShow.value = false
-    // 获取到工具栏的rect
+    // 获取到工具栏的Rect 和 rect的Rect
     const toolsRect = tools.value!.getBoundingClientRect()
-    // 获取到截图区域的rect
     const rectRect = rect.value!.getBoundingClientRect()
-    const offsetTop = rectRect.top + rectRect.height + toolsRect.height
     // 是否超出屏幕
-    const ifOutOfScreen = offsetTop >= window.innerHeight
-    if (ifOutOfScreen) {
-      // 超出屏幕则将工具栏固定在右下角
-      tools.value!.style.right = '0'
+    const ifOutOfScreenY = rectRect.bottom + toolsRect.height >= window.innerHeight
+    const ifOutOfScreenX= rectRect.left + rectRect.width <= toolsRect.width
+    if (ifOutOfScreenY) {
       tools.value!.style.bottom = '0'
     }
     else {
-      // 未超出屏幕则将工具栏恢复原状
-      tools.value!.style.right = '0'
       tools.value!.style.bottom = '-36px'
+    }
+    if(ifOutOfScreenX) {
+      tools.value!.style.left = '0'
+      tools.value!.style.right = 'auto'
+    }
+    else {
+      tools.value!.style.left = 'auto'
+      tools.value!.style.right = '0'
     }
   })
   observer.observe(dom, { attributes: true, attributeFilter: ['style'] })
