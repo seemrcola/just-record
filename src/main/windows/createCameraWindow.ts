@@ -19,47 +19,47 @@ const __dirname = dirname(__filename)
 process.env.DIST_ELECTRON = join(__dirname, '..')
 process.env.DIST = join(process.env.DIST_ELECTRON, '../dist')
 process.env.VITE_PUBLIC = process.env.VITE_DEV_SERVER_URL
-  ? join(process.env.DIST_ELECTRON, '../public')
-  : process.env.DIST
+    ? join(process.env.DIST_ELECTRON, '../public')
+    : process.env.DIST
 
 const preload = join(__dirname, '../preload/index.mjs')
 const url = process.env.VITE_DEV_SERVER_URL
 const cameraHtml = join(process.env.DIST, 'camera.html')
 
 export async function useCameraWindow() {
-  const childWindow = new BrowserWindow({
-    width: 240,
-    height: 240,
-    title: 'Camera',
-    x: 200,
-    y: 200,
+    const childWindow = new BrowserWindow({
+        width: 240,
+        height: 240,
+        title: 'Camera',
+        x: 200,
+        y: 200,
 
-    frame: false, // 无边框窗口
-    resizable: false, // 窗口大小是否可调整
-    hasShadow: true, // 窗口是否有阴影
-    transparent: true, // 使窗口透明
-    webPreferences: {
-      preload,
-    },
-  })
-  // 设置窗口在所有工作区都可见
-  childWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true })
+        frame: false, // 无边框窗口
+        resizable: false, // 窗口大小是否可调整
+        hasShadow: true, // 窗口是否有阴影
+        transparent: true, // 使窗口透明
+        webPreferences: {
+            preload,
+        },
+    })
+    // 设置窗口在所有工作区都可见
+    childWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true })
 
-  // 最上层
-  childWindow.setAlwaysOnTop(true, 'screen-saver')
+    // 最上层
+    childWindow.setAlwaysOnTop(true, 'screen-saver')
 
-  childWindow.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith('https:'))
-      shell.openExternal(url)
-    return { action: 'deny' }
-  })
+    childWindow.webContents.setWindowOpenHandler(({ url }) => {
+        if (url.startsWith('https:'))
+            shell.openExternal(url)
+        return { action: 'deny' }
+    })
 
-  if (process.env.VITE_DEV_SERVER_URL) {
-    await childWindow.loadURL(`${url}camera.html`)
-    0 && childWindow.webContents.openDevTools({ mode: 'detach' })
-  }
+    if (process.env.VITE_DEV_SERVER_URL) {
+        await childWindow.loadURL(`${url}camera.html`)
+        0 && childWindow.webContents.openDevTools({ mode: 'detach' })
+    }
 
-  else { await childWindow.loadFile(cameraHtml) }
+    else { await childWindow.loadFile(cameraHtml) }
 
-  return childWindow
+    return childWindow
 }

@@ -6,99 +6,99 @@ import { useScreenshotStore } from '../store'
 import { useCanvas } from './utils'
 
 export function useDrawRect(
-  rectDOM: HTMLElement,
-  screenshot: HTMLCanvasElement,
-  mode: Ref<Mode>,
+    rectDOM: HTMLElement,
+    screenshot: HTMLCanvasElement,
+    mode: Ref<Mode>,
 ) {
-  const startFlag = ref(false)
-  let start = {
-    x: 0,
-    y: 0,
-  }
-  let coordComponent: ReturnType<typeof createApp> | null = null
-  let coordBox: HTMLElement | null = null
-
-  const store = useScreenshotStore()
-
-  function startDraw() {
-    document.addEventListener('mousedown', mousedownHanlder)
-    drawCoord()
-  }
-
-  function mousedownHanlder(e: MouseEvent) {
-    console.log('----------------mousedown')
-    startFlag.value = true
-    start = {
-      x: e.pageX,
-      y: e.pageY,
+    const startFlag = ref(false)
+    let start = {
+        x: 0,
+        y: 0,
     }
-    rectDOM.style.left = `${start.x}px`
-    rectDOM.style.top = `${start.y}px`
-    document.addEventListener('mousemove', mousemoveHanlder)
-    document.addEventListener('mouseup', mouseupHanlder)
-  }
+    let coordComponent: ReturnType<typeof createApp> | null = null
+    let coordBox: HTMLElement | null = null
 
-  function mousemoveHanlder(e: MouseEvent) {
-    if (!startFlag.value)
-      return
-    if (mode.value !== 'draw')
-      return
+    const store = useScreenshotStore()
 
-    console.log('mousemove', '我是draw，我在执行')
+    function startDraw() {
+        document.addEventListener('mousedown', mousedownHanlder)
+        drawCoord()
+    }
 
-    const { abs } = Math
-    const { pageX, pageY } = e
+    function mousedownHanlder(e: MouseEvent) {
+        console.log('----------------mousedown')
+        startFlag.value = true
+        start = {
+            x: e.pageX,
+            y: e.pageY,
+        }
+        rectDOM.style.left = `${start.x}px`
+        rectDOM.style.top = `${start.y}px`
+        document.addEventListener('mousemove', mousemoveHanlder)
+        document.addEventListener('mouseup', mouseupHanlder)
+    }
 
-    const width = abs(pageX - start.x)
-    const height = abs(pageY - start.y)
-    console.log(start.x, start.y, pageX, pageY)
-    console.log('width', width, 'height', height)
-    const x = Math.min(start.x, pageX)
-    const y = Math.min(start.y, pageY)
+    function mousemoveHanlder(e: MouseEvent) {
+        if (!startFlag.value)
+            return
+        if (mode.value !== 'draw')
+            return
 
-    rectDOM.style.width = `${width}px`
-    rectDOM.style.height = `${height}px`
-    rectDOM.style.left = `${x}px`
-    rectDOM.style.top = `${y}px`
+        console.log('mousemove', '我是draw，我在执行')
 
-    useCanvas(screenshot, { x, y, height, width }, store.imgID)
-  }
+        const { abs } = Math
+        const { pageX, pageY } = e
 
-  function mouseupHanlder(e: MouseEvent) {
-    startFlag.value = false
-    document.removeEventListener('mousemove', mousemoveHanlder)
-    document.removeEventListener('mouseup', mouseupHanlder)
-    stopDraw()
+        const width = abs(pageX - start.x)
+        const height = abs(pageY - start.y)
+        console.log(start.x, start.y, pageX, pageY)
+        console.log('width', width, 'height', height)
+        const x = Math.min(start.x, pageX)
+        const y = Math.min(start.y, pageY)
 
-    mode.value = 'init'
-  }
+        rectDOM.style.width = `${width}px`
+        rectDOM.style.height = `${height}px`
+        rectDOM.style.left = `${x}px`
+        rectDOM.style.top = `${y}px`
 
-  function stopDraw() {
-    document.removeEventListener('mousedown', mousedownHanlder)
-    document.removeEventListener('mousemove', mousemoveHanlder)
-    document.removeEventListener('mouseup', mouseupHanlder)
-    clearComponent()
-  }
+        useCanvas(screenshot, { x, y, height, width }, store.imgID)
+    }
 
-  function drawCoord() {
-    clearComponent()
+    function mouseupHanlder(e: MouseEvent) {
+        startFlag.value = false
+        document.removeEventListener('mousemove', mousemoveHanlder)
+        document.removeEventListener('mouseup', mouseupHanlder)
+        stopDraw()
 
-    const app = createApp(Coord)
-    coordBox = document.createElement('div')
-    coordComponent = app
-    app.mount(coordBox)
-    document.body.appendChild(coordBox)
-  }
+        mode.value = 'init'
+    }
 
-  function clearComponent() {
-    coordComponent?.unmount()
-    coordComponent = null
-    coordBox?.remove()
-  }
+    function stopDraw() {
+        document.removeEventListener('mousedown', mousedownHanlder)
+        document.removeEventListener('mousemove', mousemoveHanlder)
+        document.removeEventListener('mouseup', mouseupHanlder)
+        clearComponent()
+    }
 
-  return {
-    startDraw,
-    stopDraw,
-    startFlag,
-  }
+    function drawCoord() {
+        clearComponent()
+
+        const app = createApp(Coord)
+        coordBox = document.createElement('div')
+        coordComponent = app
+        app.mount(coordBox)
+        document.body.appendChild(coordBox)
+    }
+
+    function clearComponent() {
+        coordComponent?.unmount()
+        coordComponent = null
+        coordBox?.remove()
+    }
+
+    return {
+        startDraw,
+        stopDraw,
+        startFlag,
+    }
 }

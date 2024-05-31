@@ -9,73 +9,73 @@ import pkg from './package.json'
 // import VueDevTools from 'vite-plugin-vue-devtools'
 
 export default defineConfig(({ command }) => {
-  fs.rmSync('dist-electron', { recursive: true, force: true })
+    fs.rmSync('dist-electron', { recursive: true, force: true })
 
-  const isServe = command === 'serve'
-  const isBuild = command === 'build'
-  const sourcemap = isServe || !!process.env.VSCODE_DEBUG
+    const isServe = command === 'serve'
+    const isBuild = command === 'build'
+    const sourcemap = isServe || !!process.env.VSCODE_DEBUG
 
-  return {
-    plugins: [
-      vue(),
-      UnoCss(),
-      // VueDevTools(),
-      electron({
-        main: {
-          entry: 'src/main/index.ts',
-          onstart({ startup }) {
-            if (process.env.VSCODE_DEBUG)
-              console.log(/* For `.vscode/.debug.script.mjs` */'[startup] Electron App')
-            else
-              startup()
-          },
-          vite: {
-            build: {
-              sourcemap,
-              minify: isBuild,
-              outDir: 'dist-electron/main',
-              rollupOptions: {
-                external: Object.keys('dependencies' in pkg ? pkg.dependencies : {}),
-              },
+    return {
+        plugins: [
+            vue(),
+            UnoCss(),
+            // VueDevTools(),
+            electron({
+                main: {
+                    entry: 'src/main/index.ts',
+                    onstart({ startup }) {
+                        if (process.env.VSCODE_DEBUG)
+                            console.log(/* For `.vscode/.debug.script.mjs` */'[startup] Electron App')
+                        else
+                            startup()
+                    },
+                    vite: {
+                        build: {
+                            sourcemap,
+                            minify: isBuild,
+                            outDir: 'dist-electron/main',
+                            rollupOptions: {
+                                external: Object.keys('dependencies' in pkg ? pkg.dependencies : {}),
+                            },
+                        },
+                    },
+                },
+                preload: {
+                    input: 'src/preload/index.ts',
+                    vite: {
+                        build: {
+                            sourcemap: sourcemap ? 'inline' : undefined, // #332
+                            minify: isBuild,
+                            outDir: 'dist-electron/preload',
+                            rollupOptions: {
+                                external: Object.keys('dependencies' in pkg ? pkg.dependencies : {}),
+                            },
+                        },
+                    },
+                },
+                renderer: {},
+            }),
+        ],
+        server: process.env.VSCODE_DEBUG && (() => {
+            const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL)
+            return {
+                host: url.hostname,
+                port: +url.port,
+            }
+        })(),
+
+        build: {
+            rollupOptions: {
+                input: {
+                    index: 'index.html',
+                    record: 'record.html',
+                    camera: 'camera.html',
+                    image: 'image.html',
+                    screenshot: 'screenshot.html',
+                },
             },
-          },
         },
-        preload: {
-          input: 'src/preload/index.ts',
-          vite: {
-            build: {
-              sourcemap: sourcemap ? 'inline' : undefined, // #332
-              minify: isBuild,
-              outDir: 'dist-electron/preload',
-              rollupOptions: {
-                external: Object.keys('dependencies' in pkg ? pkg.dependencies : {}),
-              },
-            },
-          },
-        },
-        renderer: {},
-      }),
-    ],
-    server: process.env.VSCODE_DEBUG && (() => {
-      const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL)
-      return {
-        host: url.hostname,
-        port: +url.port,
-      }
-    })(),
 
-    build: {
-      rollupOptions: {
-        input: {
-          index: 'index.html',
-          record: 'record.html',
-          camera: 'camera.html',
-          image: 'image.html',
-          screenshot: 'screenshot.html',
-        },
-      },
-    },
-
-    clearScreen: false,
-  }
+        clearScreen: false,
+    }
 })

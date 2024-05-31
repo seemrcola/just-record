@@ -1,12 +1,12 @@
 export type Position
-  = 'top-left'
-  | 'top-right'
-  | 'bottom-left'
-  | 'bottom-right'
-  | 'left'
-  | 'right'
-  | 'top'
-  | 'bottom'
+    = 'top-left'
+    | 'top-right'
+    | 'bottom-left'
+    | 'bottom-right'
+    | 'left'
+    | 'right'
+    | 'top'
+    | 'bottom'
 
 // init : 初始状态
 // draw : 绘制状态

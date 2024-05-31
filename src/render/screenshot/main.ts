@@ -8,5 +8,5 @@ import 'virtual:uno.css'
 const pinia = createPinia()
 
 createApp(App)
-  .use(pinia)
-  .mount('#app')
+    .use(pinia)
+    .mount('#app')

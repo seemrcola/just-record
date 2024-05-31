@@ -6,19 +6,19 @@
  */
 
 const safeDOM = {
-  append(parent: HTMLElement, child: HTMLElement) {
-    if (!Array.from(parent.children).find(e => e === child))
-      return parent.appendChild(child)
-  },
-  remove(parent: HTMLElement, child: HTMLElement) {
-    if (Array.from(parent.children).find(e => e === child))
-      return parent.removeChild(child)
-  },
+    append(parent: HTMLElement, child: HTMLElement) {
+        if (!Array.from(parent.children).find(e => e === child))
+            return parent.appendChild(child)
+    },
+    remove(parent: HTMLElement, child: HTMLElement) {
+        if (Array.from(parent.children).find(e => e === child))
+            return parent.removeChild(child)
+    },
 }
 
 function useLoading() {
-  const className = `loaders-css__square-spin`
-  const styleContent = `
+    const className = `loaders-css__square-spin`
+    const styleContent = `
     @keyframes square-spin {
       25% { transform: perspective(100px) rotateX(180deg) rotateY(0); }
       50% { transform: perspective(100px) rotateX(180deg) rotateY(180deg); }
@@ -45,26 +45,26 @@ function useLoading() {
       z-index: 9;
     }
   `
-  const oStyle = document.createElement('style')
-  const oDiv = document.createElement('div')
+    const oStyle = document.createElement('style')
+    const oDiv = document.createElement('div')
 
-  oStyle.id = 'app-loading-style'
-  oStyle.innerHTML = styleContent
-  oDiv.className = 'app-loading-wrap'
-  oDiv.innerHTML = `<div class="${className}"><div></div></div>`
+    oStyle.id = 'app-loading-style'
+    oStyle.innerHTML = styleContent
+    oDiv.className = 'app-loading-wrap'
+    oDiv.innerHTML = `<div class="${className}"><div></div></div>`
 
-  return {
-    appendLoading() {
-      safeDOM.append(document.head, oStyle)
-      safeDOM.append(document.body, oDiv)
-    },
-    removeLoading() {
-      safeDOM.remove(document.head, oStyle)
-      safeDOM.remove(document.body, oDiv)
-    },
-  }
+    return {
+        appendLoading() {
+            safeDOM.append(document.head, oStyle)
+            safeDOM.append(document.body, oDiv)
+        },
+        removeLoading() {
+            safeDOM.remove(document.head, oStyle)
+            safeDOM.remove(document.body, oDiv)
+        },
+    }
 }
 
 export {
-  useLoading,
+    useLoading,
 }

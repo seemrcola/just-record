@@ -4,25 +4,25 @@ import { ref } from 'vue'
 const isCameraOpen = ref(false)
 
 function handleClick() {
-  if (!isCameraOpen.value)
-    window.useCamera.open()
-  else
-    window.useCamera.close()
+    if (!isCameraOpen.value)
+        window.useCamera.open()
+    else
+        window.useCamera.close()
 }
 
 window.useCamera.onCameraOpened(() => {
-  isCameraOpen.value = true
+    isCameraOpen.value = true
 })
 
 window.useCamera.onCameraClosed(() => {
-  isCameraOpen.value = false
+    isCameraOpen.value = false
 })
 </script>
 
 <template>
-  <div
-    i-material-symbols:screen-record-rounded text-light cursor-pointer
-    :class="{ 'bg-red': isCameraOpen }"
-    @click="handleClick"
-  />
+    <div
+        i-material-symbols:screen-record-rounded text-light cursor-pointer
+        :class="{ 'bg-red': isCameraOpen }"
+        @click="handleClick"
+    />
 </template>

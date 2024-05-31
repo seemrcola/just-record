@@ -4,36 +4,36 @@ import { ref } from 'vue'
 const recordingStatus = ref(false)
 
 function toggleRecording(status: 'show' | 'stop') {
-  console.log(status)
-  window.useRecord[status]()
-    .then(() => {})
-    .catch(err => console.error(err))
+    console.log(status)
+    window.useRecord[status]()
+        .then(() => {})
+        .catch(err => console.error(err))
 }
 
 window.useRecord.onStartRecord(() => {
-  recordingStatus.value = true
+    recordingStatus.value = true
 })
 window.useRecord.onStopRecord(() => {
-  recordingStatus.value = false
+    recordingStatus.value = false
 })
 </script>
 
 <template>
-  <div flex>
-    <div
-      class="fade-in hover:scale-110 transition-300"
-      rounded-full
-      cursor-pointer
-      bg-orange-4 p-1
-    >
-      <div
-        class="i-file-icons:fortherecord icon"
-        h-5 w-5 text-light
-        :class="{ 'text-red-5': recordingStatus }"
-        @click="e => toggleRecording(recordingStatus ? 'stop' : 'show')"
-      />
+    <div flex>
+        <div
+            class="fade-in hover:scale-110 transition-300"
+            rounded-full
+            cursor-pointer
+            bg-orange-4 p-1
+        >
+            <div
+                class="i-file-icons:fortherecord icon"
+                h-5 w-5 text-light
+                :class="{ 'text-red-5': recordingStatus }"
+                @click="e => toggleRecording(recordingStatus ? 'stop' : 'show')"
+            />
+        </div>
     </div>
-  </div>
 </template>
 
 <style scoped>

@@ -3,7 +3,7 @@ import UserMedia from './components/UserMedia.vue'
 </script>
 
 <template>
-  <div w-full h-full>
-    <UserMedia />
-  </div>
+    <div w-full h-full>
+        <UserMedia />
+    </div>
 </template>
