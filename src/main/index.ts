@@ -2,7 +2,7 @@ import { release } from 'node:os'
 import * as process from 'node:process'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { BrowserWindow, app, ipcMain, screen, shell } from 'electron'
+import { BrowserWindow, Menu, Tray, app, ipcMain, nativeImage, screen, shell } from 'electron'
 import { useRecordWindow } from './windows/useRecordWindow'
 import { useScreenshotWindow } from './windows/useScreenshotWindow'
 
@@ -46,6 +46,7 @@ if (!app.requestSingleInstanceLock()) {
 }
 
 let win: BrowserWindow | null = null
+let tray: Tray | null = null
 // Here, you can also use other preload
 const preload = join(__dirname, '../preload/index.mjs')
 const url = process.env.VITE_DEV_SERVER_URL
@@ -61,7 +62,7 @@ async function createWindow() {
     protocolHandle()
 
     // 主页面window创建
-    const [width, _] = getSize()
+    const [width, height] = getSize()
     win = new BrowserWindow({
         width: 340,
         height: 42,
@@ -103,8 +104,9 @@ async function createWindow() {
         await win.loadURL(url)
         win.webContents.openDevTools({ mode: 'detach' })
     }
-
-    else { await win.loadFile(indexHtml) }
+    else {
+        await win.loadFile(indexHtml)
+    }
 
     win.webContents.on('did-finish-load', () => {
         win?.webContents.send('main-process-message', new Date().toLocaleString())
@@ -115,6 +117,24 @@ async function createWindow() {
             shell.openExternal(url)
         return { action: 'deny' }
     })
+
+    // 托盘图标
+    const icon = nativeImage.createFromPath(join(__dirname, '../../assets/justrecordTemplate.png'))
+    tray = new Tray(icon)
+    const contextMenu = Menu.buildFromTemplate([
+        {
+            label: 'Quit',
+            click: function () {
+                app.quit()
+            }
+        }
+    ]);
+
+    tray.setToolTip('Just Record');
+    tray.setContextMenu(contextMenu);
+    tray.on('click', () => {
+        // todo anything else?
+    });
 }
 
 app.whenReady().then(createWindow)
