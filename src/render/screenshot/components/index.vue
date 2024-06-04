@@ -1,5 +1,5 @@
 <script setup lang='ts'>
-import { onMounted, onUnmounted, ref } from 'vue'
+import { nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { useDragRect } from '../composables/dragRect'
 import { useDrawRect } from '../composables/drawRect'
 import { useResizeRect } from '../composables/resizeRect'
@@ -44,6 +44,8 @@ let arrow: ReturnType<typeof useDrawSVGArrow>
 // 为了解决一开始的时候tools就显示的问题 fixme 有没有更好的办法
 const toolsFirstShow = ref(true)
 
+// 监听截图区域大小变化
+const observeSize = useResizeObserver(rect as any)
 // 监听工具栏的显示和隐藏 fixme: 这个写法是不是不够好 有没有不需要监听的写法
 let closeObserver: () => void
 function observeDOMDisplay(dom: HTMLElement) {
@@ -55,9 +57,9 @@ function observeDOMDisplay(dom: HTMLElement) {
         // 是否超出屏幕
         const ifOutOfScreenY = rectRect.bottom + toolsRect.height >= window.innerHeight
         const ifOutOfScreenX = rectRect.left + rectRect.width <= toolsRect.width
+
         if (ifOutOfScreenY)
             tools.value!.style.bottom = '0'
-
         else
             tools.value!.style.bottom = '-36px'
 
@@ -74,9 +76,6 @@ function observeDOMDisplay(dom: HTMLElement) {
     // 关闭监听
     return () => observer.disconnect()
 }
-
-// 监听截图区域大小变化
-const observeSize = useResizeObserver(screenshot as any)
 
 // 切换到drag模式
 function handleRectMousedown(event: MouseEvent) {
@@ -95,12 +94,16 @@ function changeToEditMode() {
     draw.stopDraw()
     drag.stopDrag()
     resize.stopResize()
-    // svg 初始化宽高 预备编辑
-    const rect = screenshot.value!.getBoundingClientRect()!
-    editarea.value!.setAttribute('width', `${rect.width}px`)
-    editarea.value!.setAttribute('height', `${rect.height}px`)
-    editarea.value!.style.left = `${rect.left}px`
-    editarea.value!.style.top = `${rect.top}px`
+    // svg 初始化宽高 编辑的时候用（svg给的初始宽高是0 否则默认svg会是300*150 canvas也是默认的300*150 canvas的宽高在draw的时候会被自动改动）
+    const wrapperRect = rect.value!.getBoundingClientRect()!
+    editarea.value!.setAttribute('width', `${wrapperRect.width}px`)
+    editarea.value!.setAttribute('height', `${wrapperRect.height}px`)
+    editarea.value!.style.cssText += `
+        height: ${wrapperRect.height}px;
+        width: ${wrapperRect.width}px;
+        top: ${wrapperRect.top}px;
+        left: ${wrapperRect.left}px;
+    `
 }
 
 // 切换到resize模式
@@ -148,7 +151,6 @@ async function isofix() {
 // --------------------------------------------------------------------------
 
 async function download() {
-    console.log('editarea.value')
     await useDownload(screenshot.value!, editarea.value!)
     // window.useScreenshot.close()
 }
@@ -243,8 +245,6 @@ onMounted(() => {
 
     // 处理工具栏的位置 不让它超出屏幕
     closeObserver = observeDOMDisplay(rect.value!)
-
-    console.log(resize.startFlag.value, drag.startFlag.value, draw.startFlag.value, '---')
 })
 
 onUnmounted(() => {
@@ -255,12 +255,10 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div ref="rect" class="rect" @mousedown="handleRectMousedown">
+    <div ref="rect" box-border fixed z-9 @mousedown="handleRectMousedown">
         <!-- 这里是大小展示区域 -->
-        <div
-            min-w="80px" select-none p-1 bg-dark-2 text-light text-sm rounded-sm absolute top--36px left-10px z-999
-            class="monospace"
-        >
+        <div min-w="80px" select-none p-1 bg-dark-2 text-light text-sm rounded-sm absolute top--36px left-10px z-999
+            class="monospace">
             {{ observeSize.width }} * {{ observeSize.height }}
         </div>
         <!-- 这里是截图区域 -->
@@ -280,15 +278,13 @@ onUnmounted(() => {
             <div class="rb" data-pos="right-bottom" @mousedown="handlePosMousedown" />
         </div>
         <!-- 这里是功能区域 -->
-        <div
-            ref="tools" bg-dark-2 shadow-light flex items-center class="tools" :class="{
-                'visible-none':
-                    toolsFirstShow
-                    || resize?.startFlag?.value
-                    || drag?.startFlag?.value
-                    || draw?.startFlag?.value,
-            }"
-        >
+        <div ref="tools" bg-dark-2 shadow-light flex items-center class="tools" :class="{
+        'visible-none':
+            toolsFirstShow
+            || resize?.startFlag?.value
+            || drag?.startFlag?.value
+            || draw?.startFlag?.value,
+    }">
             <div flex @click.stop="changeToEditMode">
                 <Ellipse @ellipse="drawEllipseHandler" />
                 <Rect @rect="drawRectHandler" />
@@ -299,7 +295,8 @@ onUnmounted(() => {
             </div>
             <div h-5 w-2px bg-gray mx-3 />
             <div flex @mousedown.stop>
-                <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:mic-external-off-outline text-light @click="isofix" />
+                <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:mic-external-off-outline text-light
+                    @click="isofix" />
                 <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:undo-rounded text-light @click="undo" />
                 <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:download text-light @click="download" />
                 <div h-4 w-4 cursor-pointer px-2 py-1 i-material-symbols:close text-red @click="close" />
@@ -310,76 +307,70 @@ onUnmounted(() => {
 </template>
 
 <style scoped lang="scss">
-.rect {
-  box-sizing: border-box;
-  position: fixed;
-  z-index: 9;
-}
-
 .tools {
-  padding: 4px 12px;
-  border-radius: 4px;
-  position: absolute;
-  z-index: 999;
+    padding: 4px 12px;
+    border-radius: 4px;
+    position: absolute;
+    z-index: 999;
 }
 
 .tools.visible-none {
-  visibility: hidden;
+    visibility: hidden;
 }
 
 .box>div {
-  width: 10px;
-  height: 10px;
-  position: absolute;
-  background-color: rgb(40, 139, 226);
-  cursor: pointer;
+    width: 10px;
+    height: 10px;
+    position: absolute;
+    background-color: rgb(40, 139, 226);
+    cursor: pointer;
 }
 
 .l {
-  left: 0;
-  top: 50%;
-  transform: translate(-50%, -50%);
+    left: 0;
+    top: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .r {
-  right: 0;
-  top: 50%;
-  transform: translate(50%, -50%);
+    right: 0;
+    top: 50%;
+    transform: translate(50%, -50%);
 }
 
 .t {
-  left: 50%;
-  top: 0;
-  transform: translate(-50%, -50%);
+    left: 50%;
+    top: 0;
+    transform: translate(-50%, -50%);
 }
 
 .b {
-  left: 50%;
-  bottom: 0;
-  transform: translate(-50%, 50%);
+    left: 50%;
+    bottom: 0;
+    transform: translate(-50%, 50%);
 }
 
 .lt {
-  left: 0;
-  top: 0;
-  transform: translate(-50%, -50%);
+    left: 0;
+    top: 0;
+    transform: translate(-50%, -50%);
 }
 
 .lb {
-  left: 0;
-  bottom: 0;
-  transform: translate(-50%, 50%);
+    left: 0;
+    bottom: 0;
+    transform: translate(-50%, 50%);
 }
 
 .rt {
-  right: 0;
-  top: 0;
-  transform: translate(50%, -50%);
+    right: 0;
+    top: 0;
+    transform: translate(50%, -50%);
 }
 
 .rb {
-  right: 0;
-  bottom: 0;
-  transform: translate(50%, 50%);
+    right: 0;
+    bottom: 0;
+    transform: translate(50%, 50%);
 }
 </style>
