@@ -121,7 +121,9 @@ async function createWindow() {
 
     // 托盘图标
     const isDev = process.env.NODE_ENV === 'development'
-    const trayIcon = isDev ? join(cwd(), 'build/justrecordTemplate@2x.png') : join(__dirname, '../public/icon.png')
+    const trayIcon = isDev
+        ? join(cwd(), 'build/justrecordTemplate@2x.png')
+        : join(cwd(), 'build/justrecordTemplate@2x.png')
     const icon = nativeImage.createFromPath(trayIcon)
     tray = new Tray(icon)
     const contextMenu = Menu.buildFromTemplate([
