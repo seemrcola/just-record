@@ -1,6 +1,7 @@
 import { release } from 'node:os'
 import * as process from 'node:process'
 import { dirname, join } from 'node:path'
+import { cwd } from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { BrowserWindow, Menu, Tray, app, ipcMain, nativeImage, screen, shell } from 'electron'
 import { useRecordWindow } from './windows/useRecordWindow'
@@ -119,22 +120,20 @@ async function createWindow() {
     })
 
     // 托盘图标
-    const icon = nativeImage.createFromPath(join(__dirname, '../../assets/justrecordTemplate.png'))
+    const isDev = process.env.NODE_ENV === 'development'
+    const trayIcon = isDev ? join(cwd(), 'build/justrecordTemplate@2x.png') : join(__dirname, '../public/icon.png')
+    const icon = nativeImage.createFromPath(trayIcon)
     tray = new Tray(icon)
     const contextMenu = Menu.buildFromTemplate([
         {
-            label: 'Quit',
+            label: '退出',
             click: function () {
                 app.quit()
             }
         }
     ]);
-
-    tray.setToolTip('Just Record');
     tray.setContextMenu(contextMenu);
-    tray.on('click', () => {
-        // todo anything else?
-    });
+    tray.on('click', () => { });
 }
 
 app.whenReady().then(createWindow)
