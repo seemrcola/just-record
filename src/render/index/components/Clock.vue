@@ -11,9 +11,6 @@ function handleClick() {
 </script>
 
 <template>
-    <div
-        i-majesticons:timer-line
-        :class="{ 'text-light': !timeStatus, 'text-red-5': timeStatus }"
-        @click="handleClick"
-    />
+    <div i-majesticons:timer-line :class="{ 'text-light': !timeStatus, 'text-red-5': timeStatus }"
+        @click="handleClick" />
 </template>

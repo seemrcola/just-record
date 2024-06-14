@@ -6,7 +6,7 @@ import electron from 'vite-plugin-electron/simple'
 import UnoCss from 'unocss/vite'
 import pkg from './package.json'
 
-// import VueDevTools from 'vite-plugin-vue-devtools'
+import VueDevTools from 'vite-plugin-vue-devtools'
 
 export default defineConfig(({ command }) => {
     fs.rmSync('dist-electron', { recursive: true, force: true })

@@ -1,7 +1,6 @@
 import { release } from 'node:os'
 import * as process from 'node:process'
 import { dirname, join } from 'node:path'
-import { cwd } from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { BrowserWindow, Menu, Tray, app, ipcMain, nativeImage, screen, shell } from 'electron'
 import { useRecordWindow } from './windows/useRecordWindow'
@@ -65,10 +64,8 @@ async function createWindow() {
     // 主页面window创建
     const [width, height] = getSize()
     win = new BrowserWindow({
-        width: 340,
-        height: 42,
-        // x: width - 240,
-        // y: 100,
+        width: 300,
+        height: 34,
         title: 'User Recorder',
         alwaysOnTop: true,
         show: true,
