@@ -26,8 +26,18 @@ function mousemoveHandler(event: MouseEvent) {
     // 颜色值计算
     getColor()
 
-    wrapperRef.value!.style.left = `${coord.value.x - 120}px`
-    wrapperRef.value!.style.top = `${coord.value.y + 60}px`
+    wrapperRef.value!.style.left = `${coord.value.x}px`
+    wrapperRef.value!.style.top = `${coord.value.y}px`
+    // 获取rect
+    const rect = wrapperRef.value!.getBoundingClientRect()
+    // 如果下方超出
+    if (rect.bottom > window.innerHeight) {
+        wrapperRef.value!.style.top = window.innerHeight - rect.height + 'px'
+    }
+    // 如果右侧超出
+    if (rect.right > window.innerWidth) {
+        wrapperRef.value!.style.left = window.innerWidth - rect.width + 'px'
+    }
 }
 
 function magnifying(canvas: HTMLCanvasElement) {
