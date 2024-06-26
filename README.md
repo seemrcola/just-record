@@ -53,3 +53,5 @@ https://github.com/027xiguapi/pear-rec
 
 ### bug
 - 第一次使用electron win上一堆bug还没解决
+- 多屏情况下，截图屏幕会切换一次
+- 上一次的截图画布可能会遗留
